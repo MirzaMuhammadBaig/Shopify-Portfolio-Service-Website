@@ -1,0 +1,15 @@
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.title { font-size: 1.5rem; font-weight: 700; }
+.formCard { margin-bottom: 24px; }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+.row { padding: 16px 20px; }
+.rowMain { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.rowTitle { font-weight: 600; font-size: 0.95rem; }
+.rowMeta { color: var(--color-text-secondary); font-size: 0.85rem; }
+.rowActions { display: flex; align-items: center; gap: 8px; }
+.select { padding: 6px 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text); font-size: 0.8rem; font-family: inherit; }
+.select:focus { border-color: var(--color-primary); outline: none; }
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 32px; }
+.pageBtn { width: 36px; height: 36px; border-radius: 8px; background: var(--color-surface); color: var(--color-text-secondary); font-weight: 600; border: 1px solid var(--color-border); }
+.pageBtn:hover, .pageBtn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }

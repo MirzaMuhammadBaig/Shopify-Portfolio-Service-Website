@@ -1,0 +1,11 @@
+.title { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; }
+.card { max-width: 600px; }
+.form { display: flex; flex-direction: column; gap: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary); }
+.select { width: 100%; padding: 12px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 10px; color: var(--color-text); font-size: 0.95rem; font-family: inherit; }
+.select:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15); }
+.stars { display: flex; gap: 4px; }
+.starBtn { background: none; padding: 4px; font-size: 1.5rem; }
+.starFilled { color: #FFB300; }
+.starEmpty { color: var(--color-surface-light); }

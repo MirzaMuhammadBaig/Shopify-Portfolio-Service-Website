@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── ENUMS ──────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum MessageSender {
+  USER
+  ADMIN
+  SYSTEM
+}
+
+// ─── USERS ──────────────────────────────────────────────
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  password          String
+  firstName         String   @map("first_name")
+  lastName          String   @map("last_name")
+  phone             String?
+  avatar            String?
+  role              Role     @default(USER)
+  isActive          Boolean  @default(true) @map("is_active")
+  emailVerified     Boolean  @default(false) @map("email_verified")
+  verificationToken String?  @map("verification_token")
+  provider          String?  @default("local")
+  refreshToken      String?  @map("refresh_token")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  orders        Order[]
+  customOffers  CustomOffer[]
+  reviews       Review[]
+  conversations Conversation[]
+  payments      Payment[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+// ─── SERVICES ───────────────────────────────────────────
+
+model Service {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String
+  shortDesc   String   @map("short_desc")
+  price       Decimal  @db.Decimal(10, 2)
+  features    Json     @default("[]")
+  icon        String?
+  image       String?
+  isActive    Boolean  @default(true) @map("is_active")
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  orders  Order[]
+  reviews Review[]
+
+  @@index([slug])
+  @@index([isActive, isFeatured])
+  @@map("services")
+}
+
+// ─── ORDERS ─────────────────────────────────────────────
+
+model Order {
+  id             String      @id @default(uuid())
+  orderNumber    String      @unique @map("order_number")
+  userId         String      @map("user_id")
+  serviceId      String?     @map("service_id")
+  customOfferId  String?     @unique @map("custom_offer_id")
+  status         OrderStatus @default(PENDING)
+  totalAmount    Decimal     @db.Decimal(10, 2)
+  requirements   String?
+  deliverables   String?
+  adminNotes     String?     @map("admin_notes")
+  startedAt      DateTime?   @map("started_at")
+  completedAt    DateTime?   @map("completed_at")
+  deliveredAt    DateTime?   @map("delivered_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service     Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  customOffer CustomOffer? @relation(fields: [customOfferId], references: [id], onDelete: SetNull)
+  payment     Payment?
+
+  @@index([userId])
+  @@index([status])
+  @@index([orderNumber])
+  @@map("orders")
+}
+
+// ─── CUSTOM OFFERS ──────────────────────────────────────
+
+model CustomOffer {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  title       String
+  description String
+  budget      Decimal? @db.Decimal(10, 2)
+  deadline    DateTime?
+  adminReply  String?  @map("admin_reply")
+  quotedPrice Decimal? @map("quoted_price") @db.Decimal(10, 2)
+  isAccepted  Boolean  @default(false) @map("is_accepted")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order Order?
+
+  @@index([userId])
+  @@map("custom_offers")
+}
+
+// ─── PAYMENTS ───────────────────────────────────────────
+
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String        @unique @map("order_id")
+  userId        String        @map("user_id")
+  amount        Decimal       @db.Decimal(10, 2)
+  status        PaymentStatus @default(PENDING)
+  method        String?
+  transactionId String?       @map("transaction_id")
+  paidAt        DateTime?     @map("paid_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ─── CONVERSATIONS & MESSAGES ───────────────────────────
+
+model Conversation {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  subject   String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([userId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  conversationId String        @map("conversation_id")
+  sender         MessageSender
+  content        String
+  isRead         Boolean       @default(false) @map("is_read")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([isRead])
+  @@map("messages")
+}
+
+// ─── REVIEWS ────────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  serviceId String   @map("service_id")
+  rating    Int
+  comment   String?
+  isVisible Boolean  @default(true) @map("is_visible")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, serviceId])
+  @@index([serviceId])
+  @@index([rating])
+  @@map("reviews")
+}
+
+// ─── BLOG ───────────────────────────────────────────────
+
+model BlogPost {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  content       String
+  excerpt       String?
+  coverImage    String?  @map("cover_image")
+  metaTitle     String?  @map("meta_title")
+  metaDesc      String?  @map("meta_desc")
+  tags          Json     @default("[]")
+  isPublished   Boolean  @default(false) @map("is_published")
+  publishedAt   DateTime? @map("published_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([isPublished])
+  @@map("blog_posts")
+}

@@ -1,0 +1,12 @@
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+.title { font-size: 2rem; font-weight: 800; margin-bottom: 16px; }
+.desc { color: var(--color-text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 32px; }
+.info { display: flex; flex-direction: column; gap: 24px; }
+.infoItem { display: flex; align-items: center; gap: 16px; }
+.infoIcon { font-size: 1.5rem; color: var(--color-primary); }
+.infoLabel { display: block; font-size: 0.8rem; color: var(--color-text-muted); }
+.infoValue { display: block; font-weight: 500; }
+.form { display: flex; flex-direction: column; gap: 20px; padding: 32px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; }
+.emailField { position: relative; }
+.lockBadge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--color-primary); margin-top: 6px; opacity: 0.8; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; gap: 40px; } }

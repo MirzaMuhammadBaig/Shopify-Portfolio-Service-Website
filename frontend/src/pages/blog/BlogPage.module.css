@@ -1,0 +1,14 @@
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.card { padding: 0; overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+.image { width: 100%; height: 200px; object-fit: cover; }
+.body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+.tags { display: flex; gap: 6px; margin-bottom: 10px; }
+.tag { padding: 3px 10px; border-radius: 12px; background: rgba(108, 99, 255, 0.08); border: 1px solid rgba(108, 99, 255, 0.15); font-size: 0.72rem; color: var(--color-primary-light); font-weight: 500; }
+.date { font-size: 0.8rem; color: var(--color-text-muted); margin-top: auto; padding-top: 12px; }
+.title { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+.excerpt { color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.6; flex: 1; }
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 48px; }
+.pageBtn { width: 40px; height: 40px; border-radius: 10px; background: var(--color-surface); color: var(--color-text-secondary); font-weight: 600; border: 1px solid var(--color-border); }
+.pageBtn:hover, .pageBtn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+@media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
