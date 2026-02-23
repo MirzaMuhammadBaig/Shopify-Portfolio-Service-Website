@@ -71,7 +71,7 @@ export default function Footer() {
 
       <div className={styles.bottom}>
         <div className="container">
-          <p>&copy; {new Date().getFullYear()} ShopifyPro Services. All rights reserved.</p>
+          <p>&copy; 2024 - {new Date().getFullYear()} ShopifyPro Services. All rights reserved.</p>
         </div>
       </div>
     </footer>
