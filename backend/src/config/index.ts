@@ -17,14 +17,6 @@ export const config = {
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   },
 
-  whatsapp: {
-    apiUrl: process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v17.0',
-    phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
-    accessToken: process.env.WHATSAPP_ACCESS_TOKEN || '',
-    verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || '',
-    webhookSecret: process.env.WHATSAPP_WEBHOOK_SECRET || '',
-  },
-
   email: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587', 10),
@@ -34,7 +26,7 @@ export const config = {
   },
 
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map((u) => u.trim()),
   },
 
   rateLimit: {

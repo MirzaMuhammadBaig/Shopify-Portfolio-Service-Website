@@ -1,7 +1,9 @@
 import { FaWhatsapp } from 'react-icons/fa';
 import styles from './WhatsAppButton.module.css';
 
-const WHATSAPP_URL = 'https://api.whatsapp.com/send?phone=923209246199';
+const WHATSAPP_API = import.meta.env.VITE_WHATSAPP_API;
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER;
+const WHATSAPP_URL = `${WHATSAPP_API}?phone=${WHATSAPP_NUMBER}`;
 
 export default function WhatsAppButton() {
   return (

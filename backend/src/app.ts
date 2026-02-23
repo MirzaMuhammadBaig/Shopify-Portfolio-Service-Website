@@ -14,7 +14,6 @@ import { chatRoutes } from './modules/chat/chat.routes';
 import { reviewRoutes } from './modules/review/review.routes';
 import { blogRoutes } from './modules/blog/blog.routes';
 import { adminRoutes } from './modules/admin/admin.routes';
-import { whatsappRoutes } from './modules/chat/whatsapp.routes';
 
 const app = express();
 
@@ -49,7 +48,6 @@ app.use(`${api}/chat`, chatRoutes);
 app.use(`${api}/reviews`, reviewRoutes);
 app.use(`${api}/blogs`, blogRoutes);
 app.use(`${api}/admin`, adminRoutes);
-app.use(`${api}/whatsapp`, whatsappRoutes);
 
 // ─── ERROR HANDLING ─────────────────────────────────────
 app.use(notFoundHandler);

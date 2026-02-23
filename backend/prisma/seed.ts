@@ -11,32 +11,52 @@ const SALT_ROUNDS = 12;
 async function main() {
   console.log('Seeding database...');
 
-  // Create admin user
+  // Create admin users
   const adminPassword = await bcrypt.hash('Admin@123', SALT_ROUNDS);
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@shopifypro.com' },
-    update: {},
+
+  const admin1 = await prisma.user.upsert({
+    where: { email: 'webdev.muhammad@gmail.com' },
+    update: { emailVerified: true, role: 'ADMIN' },
     create: {
-      email: 'admin@shopifypro.com',
+      email: 'webdev.muhammad@gmail.com',
       password: adminPassword,
-      firstName: 'Admin',
-      lastName: 'User',
+      firstName: 'Muhammad',
+      lastName: 'Baig',
       role: 'ADMIN',
+      emailVerified: true,
+      provider: 'local',
     },
   });
-  console.log('Admin created:', admin.email);
+  console.log('Admin created:', admin1.email);
+
+  const admin2 = await prisma.user.upsert({
+    where: { email: 'mirzamuhammadbaig328@gmail.com' },
+    update: { emailVerified: true, role: 'ADMIN' },
+    create: {
+      email: 'mirzamuhammadbaig328@gmail.com',
+      password: adminPassword,
+      firstName: 'Muhammad',
+      lastName: 'Baig',
+      role: 'ADMIN',
+      emailVerified: true,
+      provider: 'local',
+    },
+  });
+  console.log('Admin created:', admin2.email);
 
   // Create test user
   const userPassword = await bcrypt.hash('User@123', SALT_ROUNDS);
   const user = await prisma.user.upsert({
     where: { email: 'user@shopifypro.com' },
-    update: {},
+    update: { emailVerified: true },
     create: {
       email: 'user@shopifypro.com',
       password: userPassword,
       firstName: 'John',
       lastName: 'Doe',
       role: 'USER',
+      emailVerified: true,
+      provider: 'local',
     },
   });
   console.log('User created:', user.email);
