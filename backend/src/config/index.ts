@@ -25,6 +25,8 @@ export const config = {
     from: process.env.SMTP_FROM || 'ShopifyPro <webdev.muhammad@gmail.com>',
   },
 
+  frontendUrl: process.env.PRIMARY_FRONTEND_URL || 'https://muhammad-shopify-expert.vercel.app',
+
   cors: {
     origin: (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map((u) => u.trim()),
   },
