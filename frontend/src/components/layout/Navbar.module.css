@@ -199,6 +199,14 @@
   font-weight: 500;
   border-bottom: 1px solid var(--color-border);
   transition: all 0.3s ease;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 100%;
+  text-align: left;
+  font-size: inherit;
+  cursor: pointer;
 }
 
 .mobileLink:hover {

@@ -18,13 +18,14 @@ import { adminRoutes } from './modules/admin/admin.routes';
 const app = express();
 
 // ─── GLOBAL MIDDLEWARE ──────────────────────────────────
-app.use(helmet());
-app.use(cors({
+const corsOptions = {
   origin: config.cors.origin,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+};
+app.use(cors(corsOptions));
+app.use(helmet());
 app.use(compression());
 app.use(morgan(config.nodeEnv === 'development' ? 'dev' : 'combined'));
 app.use(express.json({ limit: '10mb' }));

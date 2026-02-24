@@ -76,7 +76,23 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-            {!user && (
+            {user ? (
+              <>
+                <Link
+                  to={user.role === ROLES.ADMIN ? '/admin' : '/dashboard'}
+                  className={styles.mobileLink}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {user.role === ROLES.ADMIN ? 'Admin' : 'Dashboard'}
+                </Link>
+                <button
+                  className={styles.mobileLink}
+                  onClick={() => { handleLogout(); setIsOpen(false); }}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
               <>
                 <Link to="/login" className={styles.mobileLink} onClick={() => setIsOpen(false)}>Login</Link>
                 <Link to="/register" className={styles.mobileLink} onClick={() => setIsOpen(false)}>Get Started</Link>

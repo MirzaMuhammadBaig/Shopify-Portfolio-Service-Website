@@ -28,7 +28,7 @@ export const config = {
   frontendUrl: process.env.PRIMARY_FRONTEND_URL || 'https://muhammad-shopify-expert.vercel.app',
 
   cors: {
-    origin: (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map((u) => u.trim()),
+    origin: (process.env.FRONTEND_URL || 'http://localhost:5173,https://muhammad-shopify-expert.vercel.app').split(',').map((u) => u.trim()),
   },
 
   rateLimit: {

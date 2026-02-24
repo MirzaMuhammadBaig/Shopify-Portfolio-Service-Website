@@ -30,6 +30,35 @@
   color: var(--color-text-muted);
 }
 
+.inputWrapper {
+  position: relative;
+}
+
+.hasToggle {
+  padding-right: 44px;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.eyeBtn:hover {
+  color: var(--color-text);
+}
+
 .textarea {
   min-height: 120px;
   resize: vertical;
