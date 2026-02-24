@@ -38,6 +38,14 @@
   padding-right: 44px;
 }
 
+/* Hide browser's built-in password reveal button */
+.hasToggle::-ms-reveal,
+.hasToggle::-ms-clear,
+.hasToggle::-webkit-credentials-auto-fill-button,
+.hasToggle::-webkit-textfield-decoration-container {
+  display: none;
+}
+
 .eyeBtn {
   position: absolute;
   right: 12px;
