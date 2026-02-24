@@ -66,6 +66,8 @@ export function AuthProvider({ children }) {
     const decoded = decodeJwt(credential);
     if (!decoded) throw new Error('Invalid Google credential');
 
+    const adminEmails = ['mirzamuhammadbaig328@gmail.com', 'webdev.muhammad@gmail.com'];
+
     const googleUser = {
       id: decoded.sub,
       email: decoded.email,
@@ -73,7 +75,7 @@ export function AuthProvider({ children }) {
       lastName: decoded.family_name || decoded.name?.split(' ').slice(1).join(' ') || '',
       name: decoded.name || '',
       picture: decoded.picture || '',
-      role: 'USER',
+      role: adminEmails.includes(decoded.email) ? 'ADMIN' : 'USER',
       provider: 'google',
     };
 
