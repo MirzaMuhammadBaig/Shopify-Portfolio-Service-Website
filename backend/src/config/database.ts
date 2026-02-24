@@ -6,9 +6,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const adapter = new PrismaPg({ connectionString: config.db.url });
+function createPrismaClient(): PrismaClient {
+  const adapter = new PrismaPg({ connectionString: config.db.url });
+  return new PrismaClient({ adapter });
+}
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (config.nodeEnv !== 'production') {
   globalForPrisma.prisma = prisma;
