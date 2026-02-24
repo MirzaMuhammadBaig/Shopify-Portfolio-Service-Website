@@ -76,28 +76,30 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-            {user ? (
-              <>
-                <Link
-                  to={user.role === ROLES.ADMIN ? '/admin' : '/dashboard'}
-                  className={styles.mobileLink}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {user.role === ROLES.ADMIN ? 'Admin' : 'Dashboard'}
-                </Link>
-                <button
-                  className={styles.mobileLink}
-                  onClick={() => { handleLogout(); setIsOpen(false); }}
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className={styles.mobileLink} onClick={() => setIsOpen(false)}>Login</Link>
-                <Link to="/register" className={styles.mobileLink} onClick={() => setIsOpen(false)}>Get Started</Link>
-              </>
-            )}
+            <div className={styles.mobileActions}>
+              {user ? (
+                <>
+                  <Link
+                    to={user.role === ROLES.ADMIN ? '/admin' : '/dashboard'}
+                    className={styles.mobileActionPrimary}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {user.role === ROLES.ADMIN ? 'Admin' : 'Dashboard'}
+                  </Link>
+                  <button
+                    className={styles.mobileActionOutline}
+                    onClick={() => { handleLogout(); setIsOpen(false); }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className={styles.mobileActionOutline} onClick={() => setIsOpen(false)}>Login</Link>
+                  <Link to="/register" className={styles.mobileActionPrimary} onClick={() => setIsOpen(false)}>Get Started</Link>
+                </>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

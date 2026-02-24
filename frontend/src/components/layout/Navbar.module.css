@@ -214,6 +214,54 @@
   padding-left: 8px;
 }
 
+.mobileActions {
+  display: flex;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: 4px;
+}
+
+.mobileActionPrimary {
+  flex: 1;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #6C63FF, #00D9FF);
+  background-size: 200% 200%;
+  animation: logoGlow 4s ease infinite;
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobileActionPrimary:hover {
+  box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.mobileActionOutline {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobileActionOutline:hover {
+  color: var(--color-text);
+  border-color: rgba(108, 99, 255, 0.5);
+  background: rgba(108, 99, 255, 0.08);
+}
+
 @media (max-width: 768px) {
   .desktopNav {
     display: none;
