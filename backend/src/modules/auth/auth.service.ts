@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { authRepository } from './auth.repository';
 import { generateTokenPair, verifyRefreshToken } from '../../utils/jwt';
 import { ApiError } from '../../utils/api-error';
@@ -24,7 +24,7 @@ export const authService = {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
-    const verificationToken = uuidv4();
+    const verificationToken = randomUUID();
 
     const user = await authRepository.create({
       ...data,
