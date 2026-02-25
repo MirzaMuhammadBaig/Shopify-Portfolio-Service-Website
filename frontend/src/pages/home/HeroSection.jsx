@@ -12,29 +12,17 @@ export default function HeroSection() {
   const { user } = useAuth();
   const [showBg, setShowBg] = useState(false);
 
-  // Defer background animations until after the page has fully painted
   useEffect(() => {
     if (typeof requestIdleCallback !== 'undefined') {
       const id = requestIdleCallback(() => setShowBg(true));
       return () => cancelIdleCallback(id);
     }
-    // Fallback: wait for next frame + a short delay
     const timer = setTimeout(() => setShowBg(true), 200);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <section className={styles.hero}>
-      {/* Background animations — scoped to hero, shown after load */}
-      {showBg && (
-        <div className={styles.bgLayer}>
-          <Suspense fallback={null}>
-            <ParticleBackground />
-          </Suspense>
-          <FloatingElements />
-        </div>
-      )}
-
       <div className={`container ${styles.content}`}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -81,6 +69,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className={styles.visual}
         >
+          {/* Code box — sits in the back */}
           <div className={styles.glowOrb} />
           <div className={styles.codeBlock}>
             <div className={styles.codeHeader}>
@@ -97,6 +86,16 @@ export default function HeroSection() {
 }`}
             </pre>
           </div>
+
+          {/* Particles & floating elements — overlay above the box */}
+          {showBg && (
+            <div className={styles.particleOverlay}>
+              <Suspense fallback={null}>
+                <ParticleBackground />
+              </Suspense>
+              <FloatingElements />
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

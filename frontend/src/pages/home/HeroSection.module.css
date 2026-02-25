@@ -7,20 +7,6 @@
   overflow: hidden;
 }
 
-/* Background layer for particles & floating elements */
-.bgLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  animation: fadeInBg 0.8s ease-out both;
-}
-
-@keyframes fadeInBg {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -161,6 +147,7 @@
   margin-top: 4px;
 }
 
+/* ===== Visual area (code box + particles) ===== */
 .visual {
   display: flex;
   justify-content: center;
@@ -177,8 +164,10 @@
   filter: blur(40px);
   animation: orbPulse 4s ease-in-out infinite;
   will-change: transform, opacity;
+  z-index: 0;
 }
 
+/* Code box — background layer */
 .codeBlock {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -224,6 +213,22 @@
   line-height: 1.8;
 }
 
+/* Particles & floating elements — sits ABOVE the code box */
+.particleOverlay {
+  position: absolute;
+  inset: -40px;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 20px;
+  animation: fadeInBg 0.8s ease-out both;
+}
+
+@keyframes fadeInBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* ===== Tablet ===== */
 @media (max-width: 1024px) {
   .content {
@@ -257,10 +262,9 @@
   .actions { flex-direction: column; align-items: center; }
   .stats { gap: 24px; }
 
-  /* Smaller code box on mobile */
+  /* Code box above text, centered */
   .visual {
     order: -1;
-    max-width: 280px;
     margin: 0 auto;
   }
 
@@ -269,8 +273,8 @@
     height: 160px;
   }
 
+  /* Slightly shorter height — tighter padding, compact font */
   .codeBlock {
-    max-width: 280px;
     border-radius: 12px;
   }
 
@@ -284,9 +288,13 @@
   }
 
   .code {
-    padding: 14px;
-    font-size: 0.8rem;
-    line-height: 1.6;
+    padding: 14px 18px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .particleOverlay {
+    inset: -20px;
   }
 }
 
