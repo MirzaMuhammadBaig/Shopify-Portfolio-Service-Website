@@ -54,6 +54,15 @@ export function AuthProvider({ children }) {
     loadUser();
   }, [loadUser]);
 
+  // Listen for session-expired events from the API interceptor
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setUser(null);
+    };
+    window.addEventListener('auth:session-expired', handleSessionExpired);
+    return () => window.removeEventListener('auth:session-expired', handleSessionExpired);
+  }, []);
+
   const login = useCallback(async (credentials) => {
     const { data } = await authService.login(credentials);
     localStorage.setItem('accessToken', data.data.accessToken);

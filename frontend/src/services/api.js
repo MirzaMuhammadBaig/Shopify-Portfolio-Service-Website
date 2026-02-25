@@ -35,7 +35,7 @@ api.interceptors.response.use(
         if (!refreshToken) {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
-          window.location.href = '/login';
+          window.dispatchEvent(new Event('auth:session-expired'));
           return Promise.reject(error);
         }
 
@@ -52,7 +52,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        window.dispatchEvent(new Event('auth:session-expired'));
         return Promise.reject(refreshError);
       }
     }

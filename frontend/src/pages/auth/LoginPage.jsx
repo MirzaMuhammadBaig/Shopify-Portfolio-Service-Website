@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState(null);
   const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,12 +35,15 @@ export default function LoginPage() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setLoading(true);
+    setLoginError(null);
     try {
       await login(form);
       toast.success('Welcome back!');
       navigate(from, { replace: true });
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      const message = err.response?.data?.message || 'Login failed';
+      setLoginError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -84,6 +88,12 @@ export default function LoginPage() {
           <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Enter your password" />
           <Button type="submit" fullWidth loading={loading}>Sign In</Button>
         </form>
+        {loginError && (
+          <div className={styles.errorBox}>
+            <p>{loginError}</p>
+            <p>Not registered yet? <Link to="/register" className={styles.link}>Create an account</Link></p>
+          </div>
+        )}
         <p className={styles.footer}>
           Don't have an account? <Link to="/register" className={styles.link}>Sign Up</Link>
         </p>

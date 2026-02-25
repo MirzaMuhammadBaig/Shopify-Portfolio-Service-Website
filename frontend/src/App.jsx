@@ -11,6 +11,7 @@ const ServiceDetailPage = lazy(() => import('./pages/services/ServiceDetailPage'
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
+const GuestRoute = lazy(() => import('./components/shared/GuestRoute'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
 const BlogDetailPage = lazy(() => import('./pages/blog/BlogDetailPage'));
 const ContactPage = lazy(() => import('./pages/contact/ContactPage'));
@@ -54,8 +55,8 @@ export default function App() {
         <Route element={<Layout><BlogPage /></Layout>} path="/blog" />
         <Route element={<Layout><BlogDetailPage /></Layout>} path="/blog/:slug" />
         <Route element={<Layout><ContactPage /></Layout>} path="/contact" />
-        <Route element={<Layout><LoginPage /></Layout>} path="/login" />
-        <Route element={<Layout><RegisterPage /></Layout>} path="/register" />
+        <Route element={<Layout><GuestRoute><LoginPage /></GuestRoute></Layout>} path="/login" />
+        <Route element={<Layout><GuestRoute><RegisterPage /></GuestRoute></Layout>} path="/register" />
         <Route element={<Layout><VerifyEmailPage /></Layout>} path="/verify-email" />
 
         {/* User Dashboard */}
