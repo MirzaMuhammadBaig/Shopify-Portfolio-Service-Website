@@ -1,9 +1,85 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { HiChat, HiX, HiPaperAirplane } from 'react-icons/hi';
 import { CONVERSATION_TREE } from '../../constants/conversationTree';
 import styles from './ChatbotWidget.module.css';
 
 const BOT_NAME = 'ShopifyPro Bot';
+const WHATSAPP_API = import.meta.env.VITE_WHATSAPP_API || 'https://wa.me';
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '923209246199';
+
+// Turns plain-text bot messages into JSX with clickable links
+function formatBotMessage(text) {
+  const patterns = [
+    {
+      // "contact form on our website" or "contact form"
+      regex: /contact form(?:\s+on\s+our\s+website)?/gi,
+      render: (match, i) => (
+        <Link key={`cf-${i}`} to="/contact" className={styles.inlineLink}>
+          {match}
+        </Link>
+      ),
+    },
+    {
+      // Email addresses
+      regex: /[\w.-]+@[\w.-]+\.\w+/g,
+      render: (match, i) => (
+        <a key={`em-${i}`} href={`mailto:${match}`} className={styles.inlineLink}>
+          {match}
+        </a>
+      ),
+    },
+    {
+      // Phone/WhatsApp: +92 320 9246199
+      regex: /\+92[\s-]*3[\d\s-]{8,}/g,
+      render: (match, i) => {
+        const digits = match.replace(/[\s-]/g, '');
+        return (
+          <a
+            key={`ph-${i}`}
+            href={`${WHATSAPP_API}?phone=${digits}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.inlineLink}
+          >
+            {match.trim()}
+          </a>
+        );
+      },
+    },
+  ];
+
+  const combined = new RegExp(
+    patterns.map((p) => `(${p.regex.source})`).join('|'),
+    'gi'
+  );
+
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = combined.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    const fullMatch = match[0];
+    for (let g = 0; g < patterns.length; g++) {
+      if (match[g + 1] !== undefined) {
+        parts.push(patterns[g].render(fullMatch, match.index));
+        break;
+      }
+    }
+
+    lastIndex = combined.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
 
 function findBestNode(input) {
   const lower = input.toLowerCase();
@@ -129,7 +205,7 @@ export default function ChatbotWidget() {
             {messages.map((msg, i) => (
               <div key={i}>
                 <div className={`${styles.message} ${msg.from === 'bot' ? styles.botMsg : styles.userMsg}`}>
-                  {msg.text}
+                  {msg.from === 'bot' ? formatBotMessage(msg.text) : msg.text}
                 </div>
                 {msg.from === 'bot' && msg.options && i === messages.length - 1 && (
                   <div className={styles.quickReplies}>
