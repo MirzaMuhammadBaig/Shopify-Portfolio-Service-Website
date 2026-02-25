@@ -5,7 +5,7 @@ import { loadSlim } from '@tsparticles/slim';
 const PARTICLE_CONFIG = {
   fullScreen: { enable: false },
   background: { color: { value: 'transparent' } },
-  fpsLimit: 30, // halved from 60 — still smooth, much less CPU
+  fpsLimit: 30,
   particles: {
     color: { value: ['#6C63FF', '#00D9FF', '#FF6B6B'] },
     links: {
@@ -17,13 +17,13 @@ const PARTICLE_CONFIG = {
     },
     move: {
       enable: true,
-      speed: 0.6, // slowed from 1 — subtler and cheaper
+      speed: 0.6,
       direction: 'none',
       random: true,
       straight: false,
       outModes: { default: 'bounce' },
     },
-    number: { density: { enable: true, area: 1200 }, value: 25 }, // 40→25 particles, wider area
+    number: { density: { enable: true, area: 1200 }, value: 25 },
     opacity: { value: { min: 0.1, max: 0.35 } },
     size: { value: { min: 1, max: 2.5 } },
   },
@@ -45,7 +45,7 @@ function ParticleBackground() {
     await loadSlim(engine);
   }, []);
 
-  // Skip particles entirely on mobile
+  // Skip particles on mobile — hero still has floating CSS elements
   if (isMobile) return null;
 
   return (
@@ -54,7 +54,7 @@ function ParticleBackground() {
       init={particlesInit}
       options={PARTICLE_CONFIG}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',

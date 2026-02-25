@@ -32,7 +32,7 @@ function FAQItem({ faq, isOpen, onToggle }) {
   );
 }
 
-const INITIAL_COUNT = 10;
+const INITIAL_COUNT = 6;
 
 export default function FAQSection() {
   const [openId, setOpenId] = useState(null);

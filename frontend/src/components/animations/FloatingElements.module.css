@@ -1,5 +1,5 @@
 .container {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
@@ -148,11 +148,13 @@
   66%      { transform: translate(-8px, 12px) rotate(35deg); opacity: 0.1; }
 }
 
-/* ===== MOBILE: disable all floating elements ===== */
+/* ===== MOBILE: reduce orb sizes for hero-scoped bg ===== */
 @media (max-width: 768px) {
-  .container {
-    display: none;
-  }
+  .orb1 { width: 180px; height: 180px; }
+  .orb2 { width: 140px; height: 140px; }
+  .orb3 { display: none; }
+  .dot3, .dot4 { display: none; }
+  .ring2, .line2 { display: none; }
 }
 
 /* ===== REDUCED MOTION: respect user preference ===== */

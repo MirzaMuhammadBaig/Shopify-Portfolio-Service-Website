@@ -1,13 +1,40 @@
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiArrowRight } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
+import FloatingElements from '../../components/animations/FloatingElements';
 import styles from './HeroSection.module.css';
+
+const ParticleBackground = lazy(() => import('../../components/animations/ParticleBackground'));
 
 export default function HeroSection() {
   const { user } = useAuth();
+  const [showBg, setShowBg] = useState(false);
+
+  // Defer background animations until after the page has fully painted
+  useEffect(() => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      const id = requestIdleCallback(() => setShowBg(true));
+      return () => cancelIdleCallback(id);
+    }
+    // Fallback: wait for next frame + a short delay
+    const timer = setTimeout(() => setShowBg(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className={styles.hero}>
+      {/* Background animations — scoped to hero, shown after load */}
+      {showBg && (
+        <div className={styles.bgLayer}>
+          <Suspense fallback={null}>
+            <ParticleBackground />
+          </Suspense>
+          <FloatingElements />
+        </div>
+      )}
+
       <div className={`container ${styles.content}`}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}

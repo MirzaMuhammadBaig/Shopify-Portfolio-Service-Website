@@ -7,11 +7,27 @@
   overflow: hidden;
 }
 
+/* Background layer for particles & floating elements */
+.bgLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  animation: fadeInBg 0.8s ease-out both;
+}
+
+@keyframes fadeInBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 64px;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .badge {
@@ -208,10 +224,11 @@
   line-height: 1.8;
 }
 
+/* ===== Tablet ===== */
 @media (max-width: 1024px) {
   .content {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 32px;
     text-align: center;
   }
 
@@ -219,13 +236,58 @@
   .subtitle { margin: 0 auto 32px; }
   .actions { justify-content: center; }
   .stats { justify-content: center; }
+
+  /* Show code box above text */
   .visual { order: -1; }
 }
 
+/* ===== Mobile ===== */
 @media (max-width: 640px) {
+  .hero {
+    min-height: auto;
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+
+  .content {
+    gap: 24px;
+  }
+
   .title { font-size: 2rem; }
   .actions { flex-direction: column; align-items: center; }
   .stats { gap: 24px; }
+
+  /* Smaller code box on mobile */
+  .visual {
+    order: -1;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .glowOrb {
+    width: 160px;
+    height: 160px;
+  }
+
+  .codeBlock {
+    max-width: 280px;
+    border-radius: 12px;
+  }
+
+  .codeHeader {
+    padding: 10px 14px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  .code {
+    padding: 14px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
 }
 
 @keyframes heroGradient {
