@@ -1,11 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect, memo } from 'react';
 import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 
 const PARTICLE_CONFIG = {
   fullScreen: { enable: false },
   background: { color: { value: 'transparent' } },
-  fpsLimit: 60,
+  fpsLimit: 30, // halved from 60 — still smooth, much less CPU
   particles: {
     color: { value: ['#6C63FF', '#00D9FF', '#FF6B6B'] },
     links: {
@@ -17,23 +17,36 @@ const PARTICLE_CONFIG = {
     },
     move: {
       enable: true,
-      speed: 1,
+      speed: 0.6, // slowed from 1 — subtler and cheaper
       direction: 'none',
       random: true,
       straight: false,
       outModes: { default: 'bounce' },
     },
-    number: { density: { enable: true, area: 900 }, value: 40 },
-    opacity: { value: { min: 0.1, max: 0.4 } },
-    size: { value: { min: 1, max: 3 } },
+    number: { density: { enable: true, area: 1200 }, value: 25 }, // 40→25 particles, wider area
+    opacity: { value: { min: 0.1, max: 0.35 } },
+    size: { value: { min: 1, max: 2.5 } },
   },
   detectRetina: true,
 };
 
-export default function ParticleBackground() {
+function ParticleBackground() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    setIsMobile(mq.matches);
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);
+
+  // Skip particles entirely on mobile
+  if (isMobile) return null;
 
   return (
     <Particles
@@ -52,3 +65,5 @@ export default function ParticleBackground() {
     />
   );
 }
+
+export default memo(ParticleBackground);

@@ -160,6 +160,7 @@
   background: radial-gradient(circle, rgba(108, 99, 255, 0.25), transparent 70%);
   filter: blur(40px);
   animation: orbPulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .codeBlock {

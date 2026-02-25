@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+/* Fonts loaded via <link> in index.html (non-render-blocking) */
 
 *, *::before, *::after {
   margin: 0;
@@ -173,4 +173,20 @@ h1, h2, h3, h4, h5, h6 {
   33% { color: #00D9FF; }
   66% { color: #8B85FF; }
   100% { color: #6C63FF; }
+}
+
+/* ===== Performance: skip rendering off-screen sections ===== */
+.section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* ===== Reduced motion: disable ALL animations globally ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

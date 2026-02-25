@@ -1,83 +1,95 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ROLES } from './constants';
 import Layout from './components/layout/Layout';
-import DashboardLayout from './components/layout/DashboardLayout';
-import ProtectedRoute from './components/shared/ProtectedRoute';
+import LoadingSpinner from './components/ui/LoadingSpinner';
 
-// Pages
-import HomePage from './pages/home/HomePage';
-import ServicesPage from './pages/services/ServicesPage';
-import ServiceDetailPage from './pages/services/ServiceDetailPage';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import VerifyEmailPage from './pages/auth/VerifyEmailPage';
-import BlogPage from './pages/blog/BlogPage';
-import BlogDetailPage from './pages/blog/BlogDetailPage';
-import ContactPage from './pages/contact/ContactPage';
+// Lazy-loaded pages — each becomes its own chunk
+const HomePage = lazy(() => import('./pages/home/HomePage'));
+const ServicesPage = lazy(() => import('./pages/services/ServicesPage'));
+const ServiceDetailPage = lazy(() => import('./pages/services/ServiceDetailPage'));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
+const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
+const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
+const BlogDetailPage = lazy(() => import('./pages/blog/BlogDetailPage'));
+const ContactPage = lazy(() => import('./pages/contact/ContactPage'));
 
-// Dashboard Pages
-import DashboardOverview from './pages/dashboard/DashboardOverview';
-import DashboardOrders from './pages/dashboard/DashboardOrders';
-import DashboardChat from './pages/dashboard/DashboardChat';
-import DashboardReviews from './pages/dashboard/DashboardReviews';
-import DashboardProfile from './pages/dashboard/DashboardProfile';
+// Dashboard (rarely visited by most users)
+const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout'));
+const ProtectedRoute = lazy(() => import('./components/shared/ProtectedRoute'));
+const DashboardOverview = lazy(() => import('./pages/dashboard/DashboardOverview'));
+const DashboardOrders = lazy(() => import('./pages/dashboard/DashboardOrders'));
+const DashboardChat = lazy(() => import('./pages/dashboard/DashboardChat'));
+const DashboardReviews = lazy(() => import('./pages/dashboard/DashboardReviews'));
+const DashboardProfile = lazy(() => import('./pages/dashboard/DashboardProfile'));
 
-// Admin Pages
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminServices from './pages/admin/AdminServices';
-import AdminOrders from './pages/admin/AdminOrders';
-import AdminChat from './pages/admin/AdminChat';
-import AdminBlogs from './pages/admin/AdminBlogs';
-import AdminReviews from './pages/admin/AdminReviews';
+// Admin (only admin users)
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminServices = lazy(() => import('./pages/admin/AdminServices'));
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
+const AdminChat = lazy(() => import('./pages/admin/AdminChat'));
+const AdminBlogs = lazy(() => import('./pages/admin/AdminBlogs'));
+const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
+
+function PageFallback() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <LoadingSpinner />
+    </div>
+  );
+}
 
 export default function App() {
   return (
-    <Routes>
-      {/* Public routes with main layout */}
-      <Route element={<Layout><HomePage /></Layout>} path="/" />
-      <Route element={<Layout><ServicesPage /></Layout>} path="/services" />
-      <Route element={<Layout><ServiceDetailPage /></Layout>} path="/services/:slug" />
-      <Route element={<Layout><BlogPage /></Layout>} path="/blog" />
-      <Route element={<Layout><BlogDetailPage /></Layout>} path="/blog/:slug" />
-      <Route element={<Layout><ContactPage /></Layout>} path="/contact" />
-      <Route element={<Layout><LoginPage /></Layout>} path="/login" />
-      <Route element={<Layout><RegisterPage /></Layout>} path="/register" />
-      <Route element={<Layout><VerifyEmailPage /></Layout>} path="/verify-email" />
+    <Suspense fallback={<PageFallback />}>
+      <Routes>
+        {/* Public routes with main layout */}
+        <Route element={<Layout><HomePage /></Layout>} path="/" />
+        <Route element={<Layout><ServicesPage /></Layout>} path="/services" />
+        <Route element={<Layout><ServiceDetailPage /></Layout>} path="/services/:slug" />
+        <Route element={<Layout><BlogPage /></Layout>} path="/blog" />
+        <Route element={<Layout><BlogDetailPage /></Layout>} path="/blog/:slug" />
+        <Route element={<Layout><ContactPage /></Layout>} path="/contact" />
+        <Route element={<Layout><LoginPage /></Layout>} path="/login" />
+        <Route element={<Layout><RegisterPage /></Layout>} path="/register" />
+        <Route element={<Layout><VerifyEmailPage /></Layout>} path="/verify-email" />
 
-      {/* User Dashboard */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<DashboardOverview />} />
-        <Route path="orders" element={<DashboardOrders />} />
-        <Route path="chat" element={<DashboardChat />} />
-        <Route path="reviews" element={<DashboardReviews />} />
-        <Route path="profile" element={<DashboardProfile />} />
-      </Route>
+        {/* User Dashboard */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DashboardOverview />} />
+          <Route path="orders" element={<DashboardOrders />} />
+          <Route path="chat" element={<DashboardChat />} />
+          <Route path="reviews" element={<DashboardReviews />} />
+          <Route path="profile" element={<DashboardProfile />} />
+        </Route>
 
-      {/* Admin Panel */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute roles={[ROLES.ADMIN]}>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="services" element={<AdminServices />} />
-        <Route path="orders" element={<AdminOrders />} />
-        <Route path="chat" element={<AdminChat />} />
-        <Route path="blogs" element={<AdminBlogs />} />
-        <Route path="reviews" element={<AdminReviews />} />
-      </Route>
-    </Routes>
+        {/* Admin Panel */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute roles={[ROLES.ADMIN]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="services" element={<AdminServices />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="chat" element={<AdminChat />} />
+          <Route path="blogs" element={<AdminBlogs />} />
+          <Route path="reviews" element={<AdminReviews />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }

@@ -1,15 +1,20 @@
+import { lazy, Suspense } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import ParticleBackground from '../animations/ParticleBackground';
 import FloatingElements from '../animations/FloatingElements';
 import WhatsAppButton from '../shared/WhatsAppButton';
-import ChatbotWidget from '../shared/ChatbotWidget';
+
+// Heavy components — lazy load so they don't block initial render
+const ParticleBackground = lazy(() => import('../animations/ParticleBackground'));
+const ChatbotWidget = lazy(() => import('../shared/ChatbotWidget'));
 
 export default function Layout({ children }) {
   return (
     <>
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <ParticleBackground />
+        <Suspense fallback={null}>
+          <ParticleBackground />
+        </Suspense>
         <FloatingElements />
       </div>
       <Navbar />
@@ -18,7 +23,9 @@ export default function Layout({ children }) {
       </main>
       <Footer />
       <WhatsAppButton />
-      <ChatbotWidget />
+      <Suspense fallback={null}>
+        <ChatbotWidget />
+      </Suspense>
     </>
   );
 }

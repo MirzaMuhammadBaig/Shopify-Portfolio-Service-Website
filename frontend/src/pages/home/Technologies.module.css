@@ -35,7 +35,7 @@
   align-items: center;
   gap: 10px;
   opacity: 0.4;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   flex-shrink: 0;
   min-width: 80px;
   cursor: default;
@@ -43,6 +43,7 @@
 
 .techItem:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 .techIcon {
