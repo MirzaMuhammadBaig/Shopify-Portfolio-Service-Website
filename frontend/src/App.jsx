@@ -31,6 +31,8 @@ const AdminServices = lazy(() => import('./pages/admin/AdminServices'));
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
 const AdminChat = lazy(() => import('./pages/admin/AdminChat'));
 const AdminBlogs = lazy(() => import('./pages/admin/AdminBlogs'));
+const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
+const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
 const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 
 function PageFallback() {
@@ -84,9 +86,11 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="services" element={<AdminServices />} />
+          <Route path="projects" element={<AdminProjects />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="chat" element={<AdminChat />} />
           <Route path="blogs" element={<AdminBlogs />} />
+          <Route path="faqs" element={<AdminFaqs />} />
           <Route path="reviews" element={<AdminReviews />} />
         </Route>
       </Routes>

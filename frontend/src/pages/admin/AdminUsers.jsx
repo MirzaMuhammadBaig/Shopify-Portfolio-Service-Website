@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { userService } from '../../services/user.service';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import styles from './AdminTable.module.css';
 
 export default function AdminUsers() {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'users', page],
@@ -22,6 +23,7 @@ export default function AdminUsers() {
     if (!window.confirm('Delete this user?')) return;
     try {
       await userService.delete(id);
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       toast.success('User deleted');
     } catch {
       toast.error('Failed to delete');

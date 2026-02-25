@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import SectionHeader from '../../components/ui/SectionHeader';
 import ScrollReveal from '../../components/animations/ScrollReveal';
+import { useFaqs } from '../../hooks/useFaqs';
 import { FAQ_DATA } from '../../constants/static-data';
 import styles from './FAQSection.module.css';
 
@@ -37,8 +38,13 @@ const INITIAL_COUNT = 6;
 export default function FAQSection() {
   const [openId, setOpenId] = useState(null);
   const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? FAQ_DATA : FAQ_DATA.slice(0, INITIAL_COUNT);
-  const hasMore = FAQ_DATA.length > INITIAL_COUNT;
+
+  // Fetch from API, fall back to static data
+  const { data } = useFaqs({ limit: 100, active: 'true' });
+  const faqs = data?.data?.length ? data.data : FAQ_DATA;
+
+  const visible = showAll ? faqs : faqs.slice(0, INITIAL_COUNT);
+  const hasMore = faqs.length > INITIAL_COUNT;
 
   return (
     <section className="section">
@@ -62,7 +68,7 @@ export default function FAQSection() {
         {hasMore && (
           <div className={styles.viewMore}>
             <button onClick={() => setShowAll(!showAll)} className={styles.viewMoreBtn}>
-              {showAll ? 'Show Less' : `View More FAQs (${FAQ_DATA.length - INITIAL_COUNT} more)`}
+              {showAll ? 'Show Less' : `View More FAQs (${faqs.length - INITIAL_COUNT} more)`}
             </button>
           </div>
         )}

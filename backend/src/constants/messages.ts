@@ -50,6 +50,30 @@ export const REVIEW_MESSAGES = {
   ALREADY_REVIEWED: 'You have already reviewed this service',
 } as const;
 
+export const PROJECT_MESSAGES = {
+  CREATED: 'Project created successfully',
+  UPDATED: 'Project updated successfully',
+  DELETED: 'Project deleted successfully',
+  NOT_FOUND: 'Project not found',
+  FETCHED: 'Projects fetched successfully',
+} as const;
+
+export const FAQ_MESSAGES = {
+  CREATED: 'FAQ created successfully',
+  UPDATED: 'FAQ updated successfully',
+  DELETED: 'FAQ deleted successfully',
+  NOT_FOUND: 'FAQ not found',
+  FETCHED: 'FAQs fetched successfully',
+} as const;
+
+export const TESTIMONIAL_MESSAGES = {
+  CREATED: 'Testimonial created successfully',
+  UPDATED: 'Testimonial updated successfully',
+  DELETED: 'Testimonial deleted successfully',
+  NOT_FOUND: 'Testimonial not found',
+  FETCHED: 'Testimonials fetched successfully',
+} as const;
+
 export const BLOG_MESSAGES = {
   CREATED: 'Blog post created successfully',
   UPDATED: 'Blog post updated successfully',

@@ -42,6 +42,20 @@ export const API_ENDPOINTS = {
     BY_SLUG: (slug) => `/blogs/${slug}`,
     BY_ID: (id) => `/blogs/${id}`,
   },
+  PROJECTS: {
+    BASE: '/projects',
+    FEATURED: '/projects/featured',
+    BY_SLUG: (slug) => `/projects/${slug}`,
+    BY_ID: (id) => `/projects/${id}`,
+  },
+  FAQS: {
+    BASE: '/faqs',
+    BY_ID: (id) => `/faqs/${id}`,
+  },
+  TESTIMONIALS: {
+    BASE: '/testimonials',
+    BY_ID: (id) => `/testimonials/${id}`,
+  },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
   },

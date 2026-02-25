@@ -49,7 +49,7 @@ export default function HeroSection() {
           </div>
           <div className={styles.stats}>
             <div className={styles.stat}>
-              <span className={styles.statValue}>200+</span>
+              <span className={styles.statValue}>100+</span>
               <span className={styles.statLabel}>Projects Done</span>
             </div>
             <div className={styles.stat}>
@@ -57,7 +57,7 @@ export default function HeroSection() {
               <span className={styles.statLabel}>Happy Clients</span>
             </div>
             <div className={styles.stat}>
-              <span className={styles.statValue}>99%</span>
+              <span className={styles.statValue}>90%</span>
               <span className={styles.statLabel}>Satisfaction</span>
             </div>
           </div>
@@ -69,9 +69,18 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className={styles.visual}
         >
-          {/* Code box — sits in the back */}
-          <div className={styles.glowOrb} />
           <div className={styles.codeBlock}>
+            {/* Glow + particles confined inside the card */}
+            <div className={styles.glowOrb} />
+            {showBg && (
+              <div className={styles.particleOverlay}>
+                <Suspense fallback={null}>
+                  <ParticleBackground />
+                </Suspense>
+                <FloatingElements />
+              </div>
+            )}
+
             <div className={styles.codeHeader}>
               <span className={styles.dot} style={{ background: '#FF5F57' }} />
               <span className={styles.dot} style={{ background: '#FEBC2E' }} />
@@ -86,16 +95,6 @@ export default function HeroSection() {
 }`}
             </pre>
           </div>
-
-          {/* Particles & floating elements — overlay above the box */}
-          {showBg && (
-            <div className={styles.particleOverlay}>
-              <Suspense fallback={null}>
-                <ParticleBackground />
-              </Suspense>
-              <FloatingElements />
-            </div>
-          )}
         </motion.div>
       </div>
     </section>

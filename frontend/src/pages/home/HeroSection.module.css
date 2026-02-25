@@ -155,19 +155,7 @@
   position: relative;
 }
 
-.glowOrb {
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(108, 99, 255, 0.25), transparent 70%);
-  filter: blur(40px);
-  animation: orbPulse 4s ease-in-out infinite;
-  will-change: transform, opacity;
-  z-index: 0;
-}
-
-/* Code box — background layer */
+/* Code box — everything (glow, particles, code) is inside */
 .codeBlock {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -181,6 +169,22 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* Glow orb — sits inside the card, clipped by overflow:hidden */
+.glowOrb {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108, 99, 255, 0.25), transparent 70%);
+  filter: blur(40px);
+  animation: orbPulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .codeBlock:hover {
   transform: translateY(-6px) rotate(-1deg);
   box-shadow: 0 12px 40px rgba(108, 99, 255, 0.2), 0 0 60px rgba(0, 217, 255, 0.08);
@@ -192,6 +196,8 @@
   gap: 8px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--color-border);
+  position: relative;
+  z-index: 2;
 }
 
 .dot {
@@ -211,16 +217,16 @@
   font-family: 'Fira Code', monospace;
   font-size: 0.95rem;
   line-height: 1.8;
+  position: relative;
+  z-index: 2;
 }
 
-/* Particles & floating elements — sits ABOVE the code box */
+/* Particles & floating elements — confined inside the card */
 .particleOverlay {
   position: absolute;
-  inset: -40px;
-  z-index: 2;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
-  overflow: hidden;
-  border-radius: 20px;
   animation: fadeInBg 0.8s ease-out both;
 }
 
@@ -273,7 +279,6 @@
     height: 160px;
   }
 
-  /* Slightly shorter height — tighter padding, compact font */
   .codeBlock {
     border-radius: 12px;
   }
@@ -293,9 +298,6 @@
     line-height: 1.5;
   }
 
-  .particleOverlay {
-    inset: -20px;
-  }
 }
 
 @keyframes heroGradient {
@@ -310,6 +312,6 @@
 }
 
 @keyframes orbPulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.15); opacity: 1; }
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
 }

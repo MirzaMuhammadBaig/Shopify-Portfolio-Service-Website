@@ -219,6 +219,61 @@ model Review {
   @@map("reviews")
 }
 
+// ─── PROJECTS ──────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  category    String
+  description String
+  image       String?
+  tags        Json     @default("[]")
+  liveUrl     String?  @map("live_url")
+  results     Json     @default("[]")
+  isActive    Boolean  @default(true) @map("is_active")
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([isActive, isFeatured])
+  @@map("projects")
+}
+
+// ─── FAQS ──────────────────────────────────────────────
+
+model Faq {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  sortOrder Int      @default(0) @map("sort_order")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("faqs")
+}
+
+// ─── TESTIMONIALS ──────────────────────────────────────
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  name      String
+  role      String?
+  rating    Int      @default(5)
+  comment   String
+  isActive  Boolean  @default(true) @map("is_active")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("testimonials")
+}
+
 // ─── BLOG ───────────────────────────────────────────────
 
 model BlogPost {

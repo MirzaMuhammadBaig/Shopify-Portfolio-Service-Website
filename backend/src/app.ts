@@ -13,6 +13,9 @@ import { orderRoutes } from './modules/order/order.routes';
 import { chatRoutes } from './modules/chat/chat.routes';
 import { reviewRoutes } from './modules/review/review.routes';
 import { blogRoutes } from './modules/blog/blog.routes';
+import { projectRoutes } from './modules/project/project.routes';
+import { faqRoutes } from './modules/faq/faq.routes';
+import { testimonialRoutes } from './modules/testimonial/testimonial.routes';
 import { adminRoutes } from './modules/admin/admin.routes';
 
 const app = express();
@@ -48,6 +51,9 @@ app.use(`${api}/orders`, orderRoutes);
 app.use(`${api}/chat`, chatRoutes);
 app.use(`${api}/reviews`, reviewRoutes);
 app.use(`${api}/blogs`, blogRoutes);
+app.use(`${api}/projects`, projectRoutes);
+app.use(`${api}/faqs`, faqRoutes);
+app.use(`${api}/testimonials`, testimonialRoutes);
 app.use(`${api}/admin`, adminRoutes);
 
 // ─── ERROR HANDLING ─────────────────────────────────────
