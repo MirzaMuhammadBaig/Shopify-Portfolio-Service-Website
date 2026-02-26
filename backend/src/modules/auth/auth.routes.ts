@@ -8,7 +8,10 @@ const router = Router();
 
 router.post('/register', authLimiter, validate(authValidation.register), authController.register);
 router.post('/login', authLimiter, validate(authValidation.login), authController.login);
+router.post('/google', authLimiter, validate(authValidation.googleAuth), authController.googleAuth);
 router.get('/verify-email', authController.verifyEmail);
+router.post('/forgot-password', authLimiter, validate(authValidation.forgotPassword), authController.forgotPassword);
+router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 router.post('/contact', authLimiter, authController.contact);
 router.post('/refresh', validate(authValidation.refreshToken), authController.refreshToken);
 router.post('/logout', authenticate, authController.logout);

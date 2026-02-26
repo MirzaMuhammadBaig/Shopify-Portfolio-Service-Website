@@ -11,6 +11,8 @@ const ServiceDetailPage = lazy(() => import('./pages/services/ServiceDetailPage'
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 const GuestRoute = lazy(() => import('./components/shared/GuestRoute'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
 const BlogDetailPage = lazy(() => import('./pages/blog/BlogDetailPage'));
@@ -58,6 +60,8 @@ export default function App() {
         <Route element={<Layout><GuestRoute><LoginPage /></GuestRoute></Layout>} path="/login" />
         <Route element={<Layout><GuestRoute><RegisterPage /></GuestRoute></Layout>} path="/register" />
         <Route element={<Layout><VerifyEmailPage /></Layout>} path="/verify-email" />
+        <Route element={<Layout><GuestRoute><ForgotPasswordPage /></GuestRoute></Layout>} path="/forgot-password" />
+        <Route element={<Layout><ResetPasswordPage /></Layout>} path="/reset-password" />
 
         {/* User Dashboard */}
         <Route

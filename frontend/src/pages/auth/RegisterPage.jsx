@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { HiMail } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../../components/ui/Input';
@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
   const [emailSent, setEmailSent] = useState(false);
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,10 +22,24 @@ export default function RegisterPage() {
 
   const validate = () => {
     const errs = {};
-    if (!form.firstName) errs.firstName = 'First name is required';
-    if (!form.lastName) errs.lastName = 'Last name is required';
-    if (!form.email) errs.email = 'Email is required';
-    if (!form.password || form.password.length < 8) errs.password = 'Password must be at least 8 characters';
+    if (!form.firstName.trim()) errs.firstName = 'First name is required';
+    if (!form.lastName.trim()) errs.lastName = 'Last name is required';
+    if (!form.email) {
+      errs.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errs.email = 'Please enter a valid email address';
+    }
+    if (!form.password) {
+      errs.password = 'Password is required';
+    } else if (form.password.length < 8) {
+      errs.password = 'Password must be at least 8 characters';
+    } else if (!/(?=.*[a-z])/.test(form.password)) {
+      errs.password = 'Password must contain at least one lowercase letter';
+    } else if (!/(?=.*[A-Z])/.test(form.password)) {
+      errs.password = 'Password must contain at least one uppercase letter';
+    } else if (!/(?=.*\d)/.test(form.password)) {
+      errs.password = 'Password must contain at least one number';
+    }
     return errs;
   };
 
@@ -38,7 +53,24 @@ export default function RegisterPage() {
       await register(form);
       setEmailSent(true);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      const status = err.response?.status;
+      const message = err.response?.data?.message || 'Registration failed';
+
+      if (status === 409) {
+        // Email already registered
+        toast.error('This email is already registered. Please log in instead.');
+        setTimeout(() => navigate('/login'), 1500);
+      } else if (err.response?.data?.errors) {
+        // Validation errors from backend (field + message format)
+        const backendErrors = {};
+        err.response.data.errors.forEach((e) => {
+          if (e.field) backendErrors[e.field] = e.message;
+        });
+        setErrors(backendErrors);
+        toast.error('Please fix the errors below');
+      } else {
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -78,7 +110,7 @@ export default function RegisterPage() {
           </div>
           <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
           <Input label="Phone (optional)" name="phone" value={form.phone} onChange={handleChange} placeholder="+92 3XX XXXXXXX" />
-          <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Min 8 characters" />
+          <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Min 8 chars, uppercase, lowercase, number" />
           <Button type="submit" fullWidth loading={loading}>Create Account</Button>
         </form>
         <p className={styles.footer}>

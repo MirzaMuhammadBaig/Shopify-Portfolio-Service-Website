@@ -81,6 +81,25 @@
   white-space: nowrap;
 }
 
+.forgotLink {
+  text-align: right;
+  margin-top: -12px;
+  font-size: 0.85rem;
+}
+
+.successBox {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(0, 200, 83, 0.08);
+  border: 1px solid rgba(0, 200, 83, 0.2);
+  text-align: center;
+  font-size: 0.85rem;
+  color: #00C853;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
 .errorBox {
   margin-top: 16px;
   padding: 12px 16px;

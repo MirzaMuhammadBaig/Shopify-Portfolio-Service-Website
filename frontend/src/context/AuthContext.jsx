@@ -22,17 +22,6 @@ export function AuthProvider({ children }) {
 
   const loadUser = useCallback(async () => {
     const token = localStorage.getItem('accessToken');
-    const googleUser = localStorage.getItem('googleUser');
-
-    if (googleUser) {
-      try {
-        setUser(JSON.parse(googleUser));
-      } catch {
-        localStorage.removeItem('googleUser');
-      }
-      setLoading(false);
-      return;
-    }
 
     if (!token) {
       setLoading(false);
@@ -71,26 +60,22 @@ export function AuthProvider({ children }) {
     return data.data;
   }, []);
 
-  const googleLogin = useCallback((credential) => {
+  const googleLogin = useCallback(async (credential) => {
     const decoded = decodeJwt(credential);
     if (!decoded) throw new Error('Invalid Google credential');
 
-    const adminEmails = ['mirzamuhammadbaig328@gmail.com', 'webdev.muhammad@gmail.com'];
-
-    const googleUser = {
-      id: decoded.sub,
+    const googleUserData = {
       email: decoded.email,
       firstName: decoded.given_name || decoded.name?.split(' ')[0] || '',
       lastName: decoded.family_name || decoded.name?.split(' ').slice(1).join(' ') || '',
-      name: decoded.name || '',
-      picture: decoded.picture || '',
-      role: adminEmails.includes(decoded.email) ? 'ADMIN' : 'USER',
-      provider: 'google',
+      avatar: decoded.picture || '',
     };
 
-    localStorage.setItem('googleUser', JSON.stringify(googleUser));
-    setUser(googleUser);
-    return googleUser;
+    const { data } = await authService.googleAuth(googleUserData);
+    localStorage.setItem('accessToken', data.data.accessToken);
+    localStorage.setItem('refreshToken', data.data.refreshToken);
+    setUser(data.data.user);
+    return data.data;
   }, []);
 
   const register = useCallback(async (userData) => {
@@ -99,13 +84,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(async () => {
-    const isGoogle = localStorage.getItem('googleUser');
-    if (isGoogle) {
-      localStorage.removeItem('googleUser');
-      setUser(null);
-      return;
-    }
-
     try {
       await authService.logout();
     } catch {

@@ -43,4 +43,55 @@ export const authRepository = {
         createdAt: true,
       },
     }),
+
+  findByPasswordResetToken: (token: string) =>
+    prisma.user.findFirst({
+      where: {
+        passwordResetToken: token,
+        passwordResetExpires: { gt: new Date() },
+      },
+    }),
+
+  setPasswordResetToken: (userId: string, token: string, expires: Date) =>
+    prisma.user.update({
+      where: { id: userId },
+      data: { passwordResetToken: token, passwordResetExpires: expires },
+    }),
+
+  updatePassword: (userId: string, password: string) =>
+    prisma.user.update({
+      where: { id: userId },
+      data: {
+        password,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      },
+    }),
+
+  findOrCreateGoogleUser: async (data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+  }) => {
+    const existing = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    return prisma.user.create({
+      data: {
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        avatar: data.avatar || null,
+        password: '',
+        provider: 'google',
+        emailVerified: true,
+      },
+    });
+  },
 };

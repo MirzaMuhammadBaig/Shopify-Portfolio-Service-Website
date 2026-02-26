@@ -54,6 +54,40 @@ export const authController = {
     });
   }),
 
+  googleAuth: asyncHandler(async (req: Request, res: Response) => {
+    const { email, firstName, lastName, avatar } = req.body;
+    const result = await authService.googleAuth({ email, firstName, lastName, avatar });
+
+    sendResponse({
+      res,
+      statusCode: HTTP_STATUS.OK,
+      message: AUTH_MESSAGES.LOGIN_SUCCESS,
+      data: result,
+    });
+  }),
+
+  forgotPassword: asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const result = await authService.forgotPassword(email);
+
+    sendResponse({
+      res,
+      statusCode: HTTP_STATUS.OK,
+      message: result.message,
+    });
+  }),
+
+  resetPassword: asyncHandler(async (req: Request, res: Response) => {
+    const { token, password } = req.body;
+    const result = await authService.resetPassword(token, password);
+
+    sendResponse({
+      res,
+      statusCode: HTTP_STATUS.OK,
+      message: result.message,
+    });
+  }),
+
   refreshToken: asyncHandler(async (req: Request, res: Response) => {
     const { refreshToken } = req.body;
     const tokens = await authService.refreshToken(refreshToken);

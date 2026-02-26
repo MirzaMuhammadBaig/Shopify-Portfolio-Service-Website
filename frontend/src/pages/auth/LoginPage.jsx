@@ -20,6 +20,7 @@ export default function LoginPage() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: '' });
+    if (loginError) setLoginError(null);
   };
 
   const validate = () => {
@@ -41,21 +42,35 @@ export default function LoginPage() {
       toast.success('Welcome back!');
       navigate(from, { replace: true });
     } catch (err) {
+      const status = err.response?.status;
       const message = err.response?.data?.message || 'Login failed';
-      setLoginError(message);
-      toast.error(message);
+
+      if (status === 404) {
+        // Email not registered
+        toast.error('You are not registered. Please create an account first.');
+        setTimeout(() => navigate('/register'), 1500);
+      } else if (status === 409) {
+        // Email already registered (shouldn't happen on login, but handle)
+        toast.error(message);
+      } else {
+        setLoginError(message);
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
     try {
-      googleLogin(credentialResponse.credential);
+      await googleLogin(credentialResponse.credential);
       toast.success('Welcome! Signed in with Google.');
       navigate(from, { replace: true });
     } catch {
       toast.error('Google sign-in failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,12 +101,14 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className={styles.form}>
           <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" />
           <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Enter your password" />
+          <div className={styles.forgotLink}>
+            <Link to="/forgot-password" className={styles.link}>Forgot password?</Link>
+          </div>
           <Button type="submit" fullWidth loading={loading}>Sign In</Button>
         </form>
         {loginError && (
           <div className={styles.errorBox}>
             <p>{loginError}</p>
-            <p>Not registered yet? <Link to="/register" className={styles.link}>Create an account</Link></p>
           </div>
         )}
         <p className={styles.footer}>

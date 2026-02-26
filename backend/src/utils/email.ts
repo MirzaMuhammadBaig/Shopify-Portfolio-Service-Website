@@ -47,6 +47,42 @@ export const sendVerificationEmail = async (to: string, token: string, firstName
   });
 };
 
+export const sendPasswordResetEmail = async (to: string, token: string, firstName: string) => {
+  const resetUrl = `${config.frontendUrl}/reset-password?token=${token}`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to,
+    subject: 'Reset Your Password - ShopifyPro',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">Hi ${firstName},</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+          We received a request to reset your password. Click the button below to set a new password. This link will expire in 1 hour.
+        </p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${resetUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px;">
+            Reset Password
+          </a>
+        </div>
+        <p style="color: #B0B0C0; font-size: 14px; line-height: 1.6;">
+          If the button doesn't work, copy and paste this link into your browser:<br/>
+          <a href="${resetUrl}" style="color: #6C63FF; word-break: break-all;">${resetUrl}</a>
+        </p>
+        <hr style="border: none; border-top: 1px solid #2A2A4A; margin: 32px 0;" />
+        <p style="color: #666; font-size: 12px; text-align: center;">
+          If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+        </p>
+      </div>
+    `,
+  });
+};
+
 export const sendContactEmail = async (data: {
   name: string;
   email: string;
