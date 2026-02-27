@@ -10,7 +10,7 @@ export const authValidation = {
       .withMessage('Password must contain uppercase, lowercase, and number'),
     body('firstName').trim().notEmpty().withMessage('First name is required'),
     body('lastName').trim().notEmpty().withMessage('Last name is required'),
-    body('phone').optional().isMobilePhone('any').withMessage('Valid phone number required'),
+    body('phone').optional({ values: 'falsy' }).isMobilePhone('any').withMessage('Valid phone number required'),
   ],
 
   login: [
