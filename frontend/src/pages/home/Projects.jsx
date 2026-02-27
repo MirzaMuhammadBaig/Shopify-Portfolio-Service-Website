@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiArrowRight } from 'react-icons/hi';
+import { HiArrowRight, HiGlobeAlt } from 'react-icons/hi';
 import SectionHeader from '../../components/ui/SectionHeader';
 import Card from '../../components/ui/Card';
 import ScrollReveal from '../../components/animations/ScrollReveal';
@@ -10,13 +10,106 @@ import styles from './Projects.module.css';
 
 const INITIAL_COUNT = 6;
 
-// Use uploaded image first, then fall back to live screenshot via thum.io
-function getImageUrl(project) {
-  if (project.image) return project.image;
-  if (project.liveUrl && project.liveUrl !== '#') {
-    return `https://image.thum.io/get/width/600/crop/400/${project.liveUrl}`;
+// Placeholder shown while loading or when no image available
+function ProjectPlaceholder({ category }) {
+  return (
+    <div className={styles.placeholderBg}>
+      <div className={styles.placeholderContent}>
+        <HiGlobeAlt className={styles.placeholderIcon} />
+        <span className={styles.placeholderCategory}>{category}</span>
+      </div>
+    </div>
+  );
+}
+
+// Build live screenshot URL from project's liveUrl
+function getLiveScreenshotUrl(liveUrl) {
+  if (!liveUrl || liveUrl === '#') return null;
+  return `https://image.thum.io/get/width/600/crop/400/${liveUrl}`;
+}
+
+/**
+ * Validates a screenshot by drawing it on a canvas and sampling pixels.
+ * thum.io error images are mostly white/light with text — real screenshots
+ * have varied colors and darker areas from actual website content.
+ */
+function isValidScreenshot(img) {
+  try {
+    const canvas = document.createElement('canvas');
+    const size = 50;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, size, size);
+    const { data } = ctx.getImageData(0, 0, size, size);
+
+    let lightPixels = 0;
+    const totalPixels = size * size;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      // Count very light / white-ish pixels
+      if (r > 220 && g > 220 && b > 220) lightPixels++;
+    }
+
+    // If more than 85% of pixels are white/light, it's likely the error image
+    return (lightPixels / totalPixels) < 0.85;
+  } catch {
+    // Canvas tainted (CORS) — can't verify, reject to be safe
+    return false;
   }
-  return null;
+}
+
+/**
+ * ProjectImage — comprehensive 3-tier image logic:
+ *   1) Uploaded image → show immediately
+ *   2) No upload → show placeholder, try live URL screenshot in background
+ *      - If screenshot loads AND passes validation → fade it in
+ *      - If screenshot fails OR is a garbage error image → keep placeholder
+ */
+function ProjectImage({ image, liveUrl, title, category }) {
+  const [imageReady, setImageReady] = useState(false);
+  const [readySrc, setReadySrc] = useState(null);
+  const triedRef = useRef(false);
+
+  useEffect(() => {
+    if (triedRef.current) return;
+    triedRef.current = true;
+
+    // Tier 1: uploaded image — load in background, fade in when ready
+    if (image) {
+      const img = new Image();
+      img.src = image;
+      img.onload = () => { setReadySrc(image); setImageReady(true); };
+      return;
+    }
+
+    // Tier 2: live URL screenshot — load + validate, fade in if good
+    const url = getLiveScreenshotUrl(liveUrl);
+    if (!url) return;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = url;
+    img.onload = () => {
+      if (isValidScreenshot(img)) { setReadySrc(url); setImageReady(true); }
+    };
+    // onError → do nothing, placeholder stays
+  }, [image, liveUrl]);
+
+  // Always render placeholder first, fade in image once ready
+  return (
+    <div className={styles.cardImage}>
+      <ProjectPlaceholder category={category} />
+      {imageReady && (
+        <img
+          src={readySrc}
+          alt={`${title} preview`}
+          className={`${styles.previewImg} ${styles.screenshotFadeIn}`}
+        />
+      )}
+    </div>
+  );
 }
 
 export default function Projects() {
@@ -69,26 +162,15 @@ export default function Projects() {
             transition={{ duration: 0.3 }}
             className={styles.grid}
           >
-            {visible.map((project, index) => {
-              const imageUrl = getImageUrl(project);
-
-              return (
+            {visible.map((project, index) => (
                 <ScrollReveal key={project.id} delay={index * 0.08}>
                   <Card glow className={styles.card}>
-                    {/* Preview image — clean, no overlay */}
-                    <div className={styles.cardImage}>
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt={`${project.title} preview`}
-                          className={styles.previewImg}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <div className={styles.placeholderBg} />
-                      )}
-                    </div>
+                    <ProjectImage
+                      image={project.image}
+                      liveUrl={project.liveUrl}
+                      title={project.title}
+                      category={project.category}
+                    />
 
                     <div className={styles.cardBody}>
                       <span className={styles.category}>{project.category}</span>
@@ -117,8 +199,7 @@ export default function Projects() {
                     </div>
                   </Card>
                 </ScrollReveal>
-              );
-            })}
+            ))}
           </motion.div>
         </AnimatePresence>
         {hasMore && (

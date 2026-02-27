@@ -71,11 +71,60 @@
   transform: scale(1.06);
 }
 
-/* Fallback when no preview URL */
+/* Live screenshot fades in over placeholder once validated */
+.screenshotFadeIn {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fallback when no preview URL or image fails to load */
 .placeholderBg {
   width: 100%;
   height: 100%;
-  background: linear-gradient(145deg, var(--color-dark-medium), var(--color-surface));
+  background: linear-gradient(145deg, #1a1a2e, #16213e, #0f3460);
+  position: relative;
+  overflow: hidden;
+}
+
+.placeholderBg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(108, 99, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(0, 217, 255, 0.10) 0%, transparent 50%);
+}
+
+.placeholderContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.placeholderIcon {
+  font-size: 1.6rem;
+  color: rgba(108, 99, 255, 0.5);
+}
+
+.placeholderCategory {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.25);
 }
 
 @keyframes shimmer {
