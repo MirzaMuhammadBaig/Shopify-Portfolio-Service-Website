@@ -1,15 +1,18 @@
 .thumb {
   position: fixed;
-  right: 4px;
-  width: 4px;
-  height: 36px;
-  border-radius: 4px;
+  top: 0;
+  right: 6px;
+  width: 6px;
+  height: 48px;
+  border-radius: 6px;
   background: rgba(108, 99, 255, 0.5);
   z-index: 9999;
   cursor: grab;
   opacity: 0;
-  transition: opacity 0.3s ease, width 0.15s ease, right 0.15s ease, background 0.2s ease;
+  will-change: transform, opacity;
+  transition: opacity 0.3s ease, width 0.15s ease, background 0.2s ease, box-shadow 0.2s ease, right 0.4s ease, left 0.4s ease;
   pointer-events: auto;
+  touch-action: none;
 }
 
 .thumb.visible {
@@ -17,29 +20,42 @@
 }
 
 .thumb:hover {
-  width: 6px;
-  right: 3px;
+  width: 8px;
   background: rgba(108, 99, 255, 0.85);
-  box-shadow: 0 0 10px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 0 12px rgba(108, 99, 255, 0.4);
 }
 
 .thumb.dragging {
   cursor: grabbing;
-  width: 6px;
-  right: 3px;
+  width: 8px;
   background: linear-gradient(180deg, #6C63FF, #00D9FF);
-  box-shadow: 0 0 14px rgba(108, 99, 255, 0.5);
+  box-shadow: 0 0 16px rgba(108, 99, 255, 0.5);
+  opacity: 1;
+}
+
+/* Left side position */
+.thumb.left {
+  right: auto;
+  left: 6px;
+}
+
+.thumb.left:hover {
+  width: 8px;
 }
 
 @media (max-width: 768px) {
   .thumb {
-    width: 3px;
-    height: 28px;
-    right: 2px;
+    width: 5px;
+    height: 40px;
+    right: 4px;
   }
 
   .thumb:hover {
-    width: 4px;
-    right: 2px;
+    width: 6px;
+  }
+
+  .thumb.left {
+    right: auto;
+    left: 4px;
   }
 }
