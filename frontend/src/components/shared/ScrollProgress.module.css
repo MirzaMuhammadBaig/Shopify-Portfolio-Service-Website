@@ -1,56 +1,45 @@
-.track {
+.thumb {
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 6px;
-  height: 100vh;
+  right: 4px;
+  width: 4px;
+  height: 36px;
+  border-radius: 4px;
+  background: rgba(108, 99, 255, 0.5);
   z-index: 9999;
-  cursor: pointer;
+  cursor: grab;
   opacity: 0;
-  transition: opacity 0.3s ease, width 0.2s ease;
+  transition: opacity 0.3s ease, width 0.15s ease, right 0.15s ease, background 0.2s ease;
+  pointer-events: auto;
 }
 
-.track:hover,
-.visible {
+.thumb.visible {
   opacity: 1;
 }
 
-.track:hover {
-  width: 10px;
-}
-
-.fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(180deg, #6C63FF, #00D9FF);
-  border-radius: 0 0 3px 3px;
-  transition: height 0.05s linear;
-}
-
-.thumb {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  min-height: 24px;
-  background: rgba(108, 99, 255, 0.6);
-  border-radius: 3px;
-  backdrop-filter: blur(4px);
-  transition: top 0.05s linear, background 0.2s ease;
-}
-
-.track:hover .thumb {
+.thumb:hover {
+  width: 6px;
+  right: 3px;
   background: rgba(108, 99, 255, 0.85);
-  box-shadow: 0 0 12px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 0 10px rgba(108, 99, 255, 0.4);
+}
+
+.thumb.dragging {
+  cursor: grabbing;
+  width: 6px;
+  right: 3px;
+  background: linear-gradient(180deg, #6C63FF, #00D9FF);
+  box-shadow: 0 0 14px rgba(108, 99, 255, 0.5);
 }
 
 @media (max-width: 768px) {
-  .track {
-    width: 4px;
+  .thumb {
+    width: 3px;
+    height: 28px;
+    right: 2px;
   }
 
-  .track:hover {
-    width: 6px;
+  .thumb:hover {
+    width: 4px;
+    right: 2px;
   }
 }

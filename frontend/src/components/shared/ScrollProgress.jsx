@@ -4,25 +4,34 @@ import styles from './ScrollProgress.module.css';
 export default function ScrollProgress() {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
-  const trackRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
+  const thumbRef = useRef(null);
   const dragging = useRef(false);
   const hideTimer = useRef(null);
 
+  const show = useCallback(() => {
+    setVisible(true);
+    clearTimeout(hideTimer.current);
+  }, []);
+
+  const hideAfterDelay = useCallback(() => {
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => {
+      if (!dragging.current) setVisible(false);
+    }, 1200);
+  }, []);
+
   const updateProgress = useCallback(() => {
-    const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     if (docHeight <= 0) {
       setProgress(0);
       setVisible(false);
       return;
     }
-    setProgress(scrollTop / docHeight);
-    setVisible(true);
-    clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => {
-      if (!dragging.current) setVisible(false);
-    }, 1500);
-  }, []);
+    setProgress(window.scrollY / docHeight);
+    show();
+    hideAfterDelay();
+  }, [show, hideAfterDelay]);
 
   useEffect(() => {
     window.addEventListener('scroll', updateProgress, { passive: true });
@@ -31,49 +40,45 @@ export default function ScrollProgress() {
   }, [updateProgress]);
 
   const scrollToPosition = useCallback((clientY) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const rect = track.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const viewH = window.innerHeight;
+    const ratio = Math.max(0, Math.min(1, (clientY - 40) / (viewH - 80)));
+    const docHeight = document.documentElement.scrollHeight - viewH;
     window.scrollTo({ top: ratio * docHeight });
   }, []);
 
   const handlePointerDown = useCallback((e) => {
     e.preventDefault();
+    e.stopPropagation();
     dragging.current = true;
-    setVisible(true);
-    clearTimeout(hideTimer.current);
-    scrollToPosition(e.clientY);
+    show();
     document.body.style.userSelect = 'none';
 
-    const onMove = (ev) => scrollToPosition(ev.clientY);
+    const onMove = (ev) => {
+      scrollToPosition(ev.clientY);
+    };
     const onUp = () => {
       dragging.current = false;
       document.body.style.userSelect = '';
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
-      hideTimer.current = setTimeout(() => setVisible(false), 1500);
+      hideAfterDelay();
     };
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-  }, [scrollToPosition]);
+  }, [scrollToPosition, show, hideAfterDelay]);
 
-  const thumbHeight = Math.max(24, (window.innerHeight / document.documentElement.scrollHeight) * 100);
-  const thumbTop = progress * (100 - thumbHeight);
+  // Position: thumb moves within viewport with 40px padding top/bottom
+  const thumbTop = 40 + progress * (window.innerHeight - 80 - 36);
 
   return (
     <div
-      ref={trackRef}
-      className={`${styles.track} ${visible ? styles.visible : ''}`}
+      ref={thumbRef}
+      className={`${styles.thumb} ${visible || hovered ? styles.visible : ''} ${dragging.current ? styles.dragging : ''}`}
+      style={{ top: `${thumbTop}px` }}
       onPointerDown={handlePointerDown}
-    >
-      <div className={styles.fill} style={{ height: `${progress * 100}%` }} />
-      <div
-        className={styles.thumb}
-        style={{ top: `${thumbTop}%`, height: `${thumbHeight}%` }}
-      />
-    </div>
+      onPointerEnter={() => { setHovered(true); show(); }}
+      onPointerLeave={() => { setHovered(false); hideAfterDelay(); }}
+    />
   );
 }
