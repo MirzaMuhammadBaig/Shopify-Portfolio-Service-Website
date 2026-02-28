@@ -3,39 +3,25 @@ import { orderRepository } from '../order/order.repository';
 import { ApiError } from '../../utils/api-error';
 import { HTTP_STATUS, PAYMENT_MESSAGES, PAYMENT_METHODS, MANUAL_PAYMENT_METHODS } from '../../constants';
 import { getPagination, getMeta } from '../../utils/pagination';
+import { sendPaymentNotificationEmail } from '../../utils/email';
 import { config } from '../../config';
 
 export const paymentService = {
   getPaymentMethods: () => ({
     methods: [
       {
-        id: PAYMENT_METHODS.NAYAPAY,
-        name: 'NayaPay',
-        type: 'manual',
-        accountTitle: config.payment.nayapay.accountTitle,
-        accountNumber: config.payment.nayapay.accountNumber,
-        instructions: 'Send payment via NayaPay to the account above, then submit your transaction ID.',
-      },
-      {
-        id: PAYMENT_METHODS.SADAPAY,
-        name: 'SadaPay',
-        type: 'manual',
-        accountTitle: config.payment.sadapay.accountTitle,
-        accountNumber: config.payment.sadapay.accountNumber,
-        instructions: 'Send payment via SadaPay to the account above, then submit your transaction ID.',
-      },
-      {
         id: PAYMENT_METHODS.STRIPE,
         name: 'Credit / Debit Card',
         type: 'automated',
-        instructions: 'Pay securely via Stripe. You will be redirected to the Stripe checkout page.',
+        instructions: 'Pay securely with Visa, Mastercard, or any debit/credit card via Stripe.',
       },
       {
         id: PAYMENT_METHODS.PAYONEER,
         name: 'Payoneer',
         type: 'manual',
+        accountName: config.payment.payoneer.name,
         email: config.payment.payoneer.email,
-        instructions: 'Send payment to the Payoneer email above, then submit your transaction reference.',
+        instructions: 'Send payment to the Payoneer account below, then upload the transaction screenshot and enter the transaction reference.',
       },
     ],
   }),
@@ -45,6 +31,8 @@ export const paymentService = {
     userId: string;
     method: string;
     transactionId: string;
+    screenshotBuffer?: Buffer;
+    screenshotFilename?: string;
   }) => {
     if (!(MANUAL_PAYMENT_METHODS as readonly string[]).includes(data.method)) {
       throw new ApiError(HTTP_STATUS.BAD_REQUEST, PAYMENT_MESSAGES.INVALID_METHOD);
@@ -58,6 +46,19 @@ export const paymentService = {
     if (existing && existing.status === 'PAID') {
       throw new ApiError(HTTP_STATUS.CONFLICT, PAYMENT_MESSAGES.ALREADY_PAID);
     }
+
+    // Send payment details + screenshot to admin email
+    sendPaymentNotificationEmail({
+      orderNumber: order.orderNumber,
+      serviceTitle: order.service?.title || 'Custom Order',
+      amount: Number(order.totalAmount),
+      method: data.method,
+      transactionId: data.transactionId,
+      customerName: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim(),
+      customerEmail: order.user?.email || '',
+      screenshotBuffer: data.screenshotBuffer,
+      screenshotFilename: data.screenshotFilename,
+    }).catch((err) => console.error('Failed to send payment notification email:', err));
 
     if (existing) {
       return paymentRepository.updateStatus(existing.id, {

@@ -83,6 +83,57 @@ export const sendPasswordResetEmail = async (to: string, token: string, firstNam
   });
 };
 
+export const sendPaymentNotificationEmail = async (data: {
+  orderNumber: string;
+  serviceTitle: string;
+  amount: number;
+  method: string;
+  transactionId: string;
+  customerName: string;
+  customerEmail: string;
+  screenshotBuffer?: Buffer;
+  screenshotFilename?: string;
+}) => {
+  const attachments: any[] = [];
+  if (data.screenshotBuffer) {
+    attachments.push({
+      filename: data.screenshotFilename || 'transaction-screenshot.png',
+      content: data.screenshotBuffer,
+    });
+  }
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: 'webdev.muhammad@gmail.com',
+    subject: `New Payment Received - Order #${data.orderNumber}`,
+    attachments,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: #B0B0C0; margin-top: 8px;">New Payment Submission</p>
+        </div>
+        <div style="background: #1E1E3F; border: 1px solid #2A2A4A; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Service:</strong> ${data.serviceTitle}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Amount:</strong> $${data.amount.toFixed(2)}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Method:</strong> ${data.method}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Transaction ID:</strong> <span style="color: #00D9FF;">${data.transactionId}</span></p>
+          <hr style="border: none; border-top: 1px solid #2A2A4A; margin: 16px 0;" />
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Customer:</strong> ${data.customerName}</p>
+          <p style="margin: 0;"><strong style="color: #6C63FF;">Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00D9FF;">${data.customerEmail}</a></p>
+        </div>
+        ${data.screenshotBuffer ? '<p style="color: #B0B0C0; font-size: 14px; text-align: center;">Transaction screenshot attached to this email.</p>' : ''}
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          Please verify this payment in the admin panel.
+        </p>
+      </div>
+    `,
+  });
+};
+
 export const sendContactEmail = async (data: {
   name: string;
   email: string;

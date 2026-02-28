@@ -47,15 +47,8 @@ export const config = {
       secretKey: process.env.STRIPE_SECRET_KEY || '',
       webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
     },
-    nayapay: {
-      accountTitle: process.env.NAYAPAY_ACCOUNT_TITLE || '',
-      accountNumber: process.env.NAYAPAY_ACCOUNT_NUMBER || '',
-    },
-    sadapay: {
-      accountTitle: process.env.SADAPAY_ACCOUNT_TITLE || '',
-      accountNumber: process.env.SADAPAY_ACCOUNT_NUMBER || '',
-    },
     payoneer: {
+      name: process.env.PAYONEER_NAME || '',
       email: process.env.PAYONEER_EMAIL || '',
     },
   },

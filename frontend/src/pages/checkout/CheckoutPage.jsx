@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { HiArrowLeft, HiClipboardCopy, HiCheckCircle } from 'react-icons/hi';
+import { HiArrowLeft, HiClipboardCopy, HiCheckCircle, HiPhotograph, HiX } from 'react-icons/hi';
 import { useOrderById } from '../../hooks/useOrders';
 import {
   usePaymentMethods,
@@ -25,9 +25,12 @@ export default function CheckoutPage() {
   const { data: paymentData } = usePaymentByOrder(orderId);
   const createManual = useCreateManualPayment();
   const createStripe = useCreateStripeSession();
+  const fileInputRef = useRef(null);
 
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [transactionId, setTransactionId] = useState('');
+  const [screenshot, setScreenshot] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [copied, setCopied] = useState('');
 
   const order = orderData?.data;
@@ -40,10 +43,32 @@ export default function CheckoutPage() {
     setTimeout(() => setCopied(''), 2000);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Screenshot must be under 5MB');
+      return;
+    }
+    setScreenshot(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const removeScreenshot = () => {
+    setScreenshot(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleManualSubmit = async (e) => {
     e.preventDefault();
     if (!transactionId.trim()) {
       toast.error('Please enter the transaction ID');
+      return;
+    }
+    if (!screenshot) {
+      toast.error('Please upload a transaction screenshot');
       return;
     }
     try {
@@ -51,6 +76,7 @@ export default function CheckoutPage() {
         orderId,
         method: selectedMethod,
         transactionId: transactionId.trim(),
+        screenshot,
       });
       toast.success('Payment submitted! We will verify it shortly.');
       navigate('/dashboard/orders');
@@ -132,24 +158,13 @@ export default function CheckoutPage() {
                 <h4 className={styles.detailsTitle}>Payment Details</h4>
                 <p className={styles.instructions}>{selectedMethodData.instructions}</p>
 
-                {selectedMethodData.accountTitle && (
+                {selectedMethodData.accountName && (
                   <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Account Title</span>
+                    <span className={styles.detailLabel}>Account Name</span>
                     <div className={styles.detailValue}>
-                      <span>{selectedMethodData.accountTitle}</span>
-                      <button className={styles.copyBtn} onClick={() => handleCopy(selectedMethodData.accountTitle, 'title')}>
-                        {copied === 'title' ? <HiCheckCircle /> : <HiClipboardCopy />}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {selectedMethodData.accountNumber && (
-                  <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Account Number</span>
-                    <div className={styles.detailValue}>
-                      <span>{selectedMethodData.accountNumber}</span>
-                      <button className={styles.copyBtn} onClick={() => handleCopy(selectedMethodData.accountNumber, 'number')}>
-                        {copied === 'number' ? <HiCheckCircle /> : <HiClipboardCopy />}
+                      <span>{selectedMethodData.accountName}</span>
+                      <button className={styles.copyBtn} onClick={() => handleCopy(selectedMethodData.accountName, 'name')}>
+                        {copied === 'name' ? <HiCheckCircle /> : <HiClipboardCopy />}
                       </button>
                     </div>
                   </div>
@@ -169,11 +184,38 @@ export default function CheckoutPage() {
                 <form onSubmit={handleManualSubmit} className={styles.form}>
                   <Input
                     label="Transaction ID / Reference"
-                    placeholder="Enter the transaction ID from your payment app"
+                    placeholder="Enter the transaction ID from your payment"
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
                     required
                   />
+
+                  <div className={styles.uploadGroup}>
+                    <label className={styles.uploadLabel}>Transaction Screenshot</label>
+                    {previewUrl ? (
+                      <div className={styles.previewWrap}>
+                        <img src={previewUrl} alt="Screenshot" className={styles.preview} />
+                        <button type="button" className={styles.removeBtn} onClick={removeScreenshot}>
+                          <HiX />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className={styles.uploadArea} htmlFor="screenshot-input">
+                        <HiPhotograph className={styles.uploadIcon} />
+                        <span>Click to upload screenshot</span>
+                        <span className={styles.uploadHint}>JPEG, PNG or WebP (max 5MB)</span>
+                      </label>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      id="screenshot-input"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleFileChange}
+                      className={styles.fileInput}
+                    />
+                  </div>
+
                   <Button type="submit" fullWidth loading={createManual.isPending}>
                     Submit Payment
                   </Button>

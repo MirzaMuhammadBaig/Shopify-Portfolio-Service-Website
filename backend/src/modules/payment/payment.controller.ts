@@ -15,6 +15,8 @@ export const paymentController = {
     const payment = await paymentService.createManualPayment({
       ...req.body,
       userId: req.user!.userId,
+      screenshotBuffer: req.file?.buffer,
+      screenshotFilename: req.file?.originalname,
     });
     sendResponse({ res, statusCode: HTTP_STATUS.CREATED, message: PAYMENT_MESSAGES.CREATED, data: payment });
   }),

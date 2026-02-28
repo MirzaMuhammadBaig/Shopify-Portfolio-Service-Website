@@ -40,6 +40,7 @@ export const paymentRepository = {
     amount: number;
     method: string;
     transactionId?: string;
+    screenshotUrl?: string;
   }) => prisma.payment.create({
     data,
     include: { order: true },
@@ -48,6 +49,7 @@ export const paymentRepository = {
   updateStatus: (id: string, data: {
     status: string;
     transactionId?: string;
+    screenshotUrl?: string;
     paidAt?: Date;
   }) => prisma.payment.update({
     where: { id },

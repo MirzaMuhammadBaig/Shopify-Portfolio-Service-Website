@@ -4,7 +4,7 @@ export const paymentValidation = {
   createManual: [
     body('orderId').isUUID().withMessage('Valid order ID required'),
     body('method')
-      .isIn(['NAYAPAY', 'SADAPAY', 'PAYONEER'])
+      .isIn(['PAYONEER'])
       .withMessage('Invalid payment method'),
     body('transactionId')
       .isString()
