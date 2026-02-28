@@ -82,21 +82,14 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
+/* Hide native scrollbar — replaced by custom ScrollProgress component */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-dark);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-surface-light);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
+html {
+  scrollbar-width: none; /* Firefox */
 }
 
 ::selection {
