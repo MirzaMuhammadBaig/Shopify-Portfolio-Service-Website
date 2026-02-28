@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiArrowRight } from 'react-icons/hi';
@@ -7,6 +7,41 @@ import FloatingElements from '../../components/animations/FloatingElements';
 import styles from './HeroSection.module.css';
 
 const ParticleBackground = lazy(() => import('../../components/animations/ParticleBackground'));
+
+function CountUp({ end, suffix = '', duration = 2000 }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const hasAnimated = useRef(false);
+
+  const animate = useCallback(() => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    const start = performance.now();
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      // easeOutQuart for a satisfying deceleration
+      const eased = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.round(eased * end));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [end, duration]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) animate(); },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [animate]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+}
 
 export default function HeroSection() {
   const { user } = useAuth();
@@ -49,15 +84,21 @@ export default function HeroSection() {
           </div>
           <div className={styles.stats}>
             <div className={styles.stat}>
-              <span className={styles.statValue}>100+</span>
+              <span className={styles.statValue}>
+                <CountUp end={100} suffix="+" />
+              </span>
               <span className={styles.statLabel}>Projects Done</span>
             </div>
             <div className={styles.stat}>
-              <span className={styles.statValue}>50+</span>
+              <span className={styles.statValue}>
+                <CountUp end={50} suffix="+" duration={1800} />
+              </span>
               <span className={styles.statLabel}>Happy Clients</span>
             </div>
             <div className={styles.stat}>
-              <span className={styles.statValue}>90%</span>
+              <span className={styles.statValue}>
+                <CountUp end={90} suffix="%" duration={1600} />
+              </span>
               <span className={styles.statLabel}>Satisfaction</span>
             </div>
           </div>
