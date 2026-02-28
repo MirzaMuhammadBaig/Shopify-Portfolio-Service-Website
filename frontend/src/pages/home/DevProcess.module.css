@@ -6,7 +6,7 @@
 
 .card {
   position: relative;
-  background: var(--color-surface);
+  background: linear-gradient(145deg, var(--color-surface), var(--color-surface-light));
   border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 32px 28px;
@@ -21,15 +21,15 @@
   left: -1px;
   right: -1px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #9ACD32, #6C63FF, transparent);
+  background: linear-gradient(90deg, transparent, #6C63FF, #00D9FF, transparent);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
 
 .card:hover {
-  border-color: rgba(154, 205, 50, 0.4);
+  border-color: rgba(108, 99, 255, 0.35);
   transform: translateY(-6px);
-  box-shadow: 0 12px 32px rgba(154, 205, 50, 0.08), 0 0 40px rgba(154, 205, 50, 0.04);
+  box-shadow: 0 12px 32px rgba(108, 99, 255, 0.1), 0 0 40px rgba(0, 217, 255, 0.05);
 }
 
 .card:hover::before {
@@ -51,28 +51,29 @@
 }
 
 .card:hover .number {
-  color: rgba(154, 205, 50, 0.06);
+  color: rgba(108, 99, 255, 0.07);
 }
 
 .iconWrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(154, 205, 50, 0.1);
-  border: 1px solid rgba(154, 205, 50, 0.2);
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(108, 99, 255, 0.1);
+  border: 1px solid rgba(108, 99, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  color: var(--color-primary-light);
   margin-bottom: 20px;
   transition: all 0.4s ease;
 }
 
 .card:hover .iconWrap {
-  background: rgba(154, 205, 50, 0.15);
-  border-color: rgba(154, 205, 50, 0.35);
-  box-shadow: 0 0 20px rgba(154, 205, 50, 0.15);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 217, 255, 0.15));
+  border-color: rgba(108, 99, 255, 0.4);
+  box-shadow: 0 0 20px rgba(108, 99, 255, 0.2);
+  transform: scale(1.08);
 }
 
 .title {
@@ -80,11 +81,14 @@
   font-weight: 700;
   margin-bottom: 10px;
   color: var(--color-text);
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .card:hover .title {
-  color: #9ACD32;
+  background: linear-gradient(135deg, #8B85FF, #00D9FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .description {

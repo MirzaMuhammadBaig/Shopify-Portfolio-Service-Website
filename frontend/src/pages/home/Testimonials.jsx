@@ -24,7 +24,7 @@ export default function Testimonials() {
         <div className={styles.grid}>
           {testimonials.map((review, index) => (
             <ScrollReveal key={review.id || index} delay={index * 0.1}>
-              <Card className={styles.card}>
+              <Card glow className={styles.card}>
                 <div className={styles.stars}>
                   {Array.from({ length: 5 }, (_, i) => (
                     <HiStar key={i} className={i < review.rating ? styles.starFilled : styles.starEmpty} />

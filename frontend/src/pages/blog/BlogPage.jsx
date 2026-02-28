@@ -26,7 +26,11 @@ export default function BlogPage() {
                 <ScrollReveal key={post.id || i} delay={i * 0.05}>
                   <Link to={`/blog/${post.slug}`}>
                     <Card glow className={styles.card}>
-                      {post.coverImage && <img src={post.coverImage} alt={post.title} className={styles.image} />}
+                      {post.coverImage && (
+                        <div className={styles.imageWrap}>
+                          <img src={post.coverImage} alt={post.title} className={styles.image} />
+                        </div>
+                      )}
                       <div className={styles.body}>
                         <div className={styles.tags}>
                           {(post.tags || []).slice(0, 2).map((tag, idx) => (
