@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ROLES } from './constants';
 import Layout from './components/layout/Layout';
+import ScrollToTop from './components/shared/ScrollToTop';
 import PageLoader from './components/ui/PageLoader';
 
 // Lazy-loaded pages — each becomes its own chunk
@@ -40,6 +41,8 @@ const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 
 export default function App() {
   return (
+    <>
+    <ScrollToTop />
     <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Public routes with main layout */}
@@ -92,5 +95,6 @@ export default function App() {
         </Route>
       </Routes>
     </Suspense>
+    </>
   );
 }
