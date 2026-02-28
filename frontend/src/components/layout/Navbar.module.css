@@ -283,6 +283,15 @@
   .mobileNav {
     display: flex;
   }
+
+  /* Stop infinite background-position animation on mobile — triggers repaint */
+  .logoIcon,
+  .registerBtn,
+  .dashboardBtn,
+  .mobileActionPrimary {
+    animation: none;
+    background-size: 100% 100%;
+  }
 }
 
 @keyframes logoGlow {

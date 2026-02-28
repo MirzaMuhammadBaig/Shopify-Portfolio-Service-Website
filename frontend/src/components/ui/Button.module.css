@@ -119,3 +119,12 @@
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* Stop background-position repaint on mobile */
+@media (max-width: 768px) {
+  .primary,
+  .danger {
+    animation: none;
+    background-size: 100% 100%;
+  }
+}

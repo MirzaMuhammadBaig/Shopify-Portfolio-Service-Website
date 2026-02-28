@@ -69,6 +69,20 @@
 @media (max-width: 768px) {
   .title {
     font-size: 1.75rem;
+    /* Stop background-position repaint on mobile */
+    animation: none;
+    background-size: 100% 100%;
+  }
+
+  .title::after {
+    animation: none;
+    background-size: 100% 100%;
+  }
+
+  /* Stop box-shadow repaint on mobile */
+  .tag {
+    animation: none;
+    box-shadow: 0 0 8px rgba(108, 99, 255, 0.2);
   }
 
   .description {

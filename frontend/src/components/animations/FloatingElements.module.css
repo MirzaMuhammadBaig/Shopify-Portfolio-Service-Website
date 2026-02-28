@@ -148,13 +148,14 @@
   66%      { transform: translate(-8px, 12px) rotate(35deg); opacity: 0.1; }
 }
 
-/* ===== MOBILE: reduce orb sizes for hero-scoped bg ===== */
+/* ===== MOBILE: aggressively reduce for performance ===== */
 @media (max-width: 768px) {
-  .orb1 { width: 180px; height: 180px; }
-  .orb2 { width: 140px; height: 140px; }
-  .orb3 { display: none; }
-  .dot3, .dot4 { display: none; }
-  .ring2, .line2 { display: none; }
+  /* Blurred orbs are the biggest GPU drain — hide all on mobile */
+  .orb1, .orb2, .orb3 { display: none; }
+  /* Keep only 2 lightweight dots, hide everything else */
+  .dot3, .dot4, .dot5 { display: none; }
+  .ring1, .ring2 { display: none; }
+  .line1, .line2 { display: none; }
 }
 
 /* ===== REDUCED MOTION: respect user preference ===== */

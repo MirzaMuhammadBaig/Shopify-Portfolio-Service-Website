@@ -47,12 +47,9 @@ export default function HeroSection() {
   const { user } = useAuth();
   const [showBg, setShowBg] = useState(false);
 
+  // Delay heavy particle + floating background to keep initial load smooth
   useEffect(() => {
-    if (typeof requestIdleCallback !== 'undefined') {
-      const id = requestIdleCallback(() => setShowBg(true));
-      return () => cancelIdleCallback(id);
-    }
-    const timer = setTimeout(() => setShowBg(true), 200);
+    const timer = setTimeout(() => setShowBg(true), 10000);
     return () => clearTimeout(timer);
   }, []);
 
