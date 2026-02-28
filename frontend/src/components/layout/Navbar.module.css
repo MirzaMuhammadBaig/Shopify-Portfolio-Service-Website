@@ -93,6 +93,16 @@
   box-shadow: 0 0 8px rgba(108, 99, 255, 0.5);
 }
 
+.navLink.active {
+  color: var(--color-text);
+  text-shadow: 0 0 12px rgba(108, 99, 255, 0.4);
+}
+
+.navLink.active::after {
+  width: 100%;
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.5);
+}
+
 .actions {
   display: flex;
   align-items: center;
@@ -212,6 +222,25 @@
 .mobileLink:hover {
   color: var(--color-primary);
   padding-left: 8px;
+}
+
+.mobileLink.mobileActive {
+  color: var(--color-primary-light, #6C63FF);
+  padding-left: 8px;
+  border-bottom-color: rgba(108, 99, 255, 0.3);
+  position: relative;
+}
+
+.mobileLink.mobileActive::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #6C63FF, #00D9FF);
 }
 
 .mobileActions {

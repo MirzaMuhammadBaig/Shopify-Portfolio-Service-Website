@@ -17,6 +17,9 @@ export default function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
+  const isActive = (path) =>
+    path === '/' ? pathname === '/' : pathname.startsWith(path);
+
   const handleLogout = async () => {
     await logout();
     navigate('/');
@@ -32,7 +35,7 @@ export default function Navbar() {
 
         <div className={styles.desktopNav}>
           {NAV_ITEMS.map((item) => (
-            <Link key={item.path} to={item.path} className={styles.navLink}>
+            <Link key={item.path} to={item.path} className={`${styles.navLink} ${isActive(item.path) ? styles.active : ''}`}>
               {item.label}
             </Link>
           ))}
@@ -77,7 +80,7 @@ export default function Navbar() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={styles.mobileLink}
+                className={`${styles.mobileLink} ${isActive(item.path) ? styles.mobileActive : ''}`}
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
