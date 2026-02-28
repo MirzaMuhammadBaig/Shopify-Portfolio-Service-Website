@@ -59,6 +59,14 @@ export const API_ENDPOINTS = {
     BASE: '/testimonials',
     BY_ID: (id) => `/testimonials/${id}`,
   },
+  PAYMENTS: {
+    METHODS: '/payments/methods',
+    MANUAL: '/payments/manual',
+    STRIPE_SESSION: '/payments/stripe-session',
+    BY_ORDER: (orderId) => `/payments/order/${orderId}`,
+    BASE: '/payments',
+    VERIFY: (id) => `/payments/${id}/verify`,
+  },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
   },

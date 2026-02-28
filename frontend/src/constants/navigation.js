@@ -19,6 +19,7 @@ export const ADMIN_NAV_ITEMS = [
   { label: 'Services', path: '/admin/services' },
   { label: 'Projects', path: '/admin/projects' },
   { label: 'Orders', path: '/admin/orders' },
+  { label: 'Payments', path: '/admin/payments' },
   { label: 'Chat', path: '/admin/chat' },
   { label: 'Blogs', path: '/admin/blogs' },
   { label: 'FAQs', path: '/admin/faqs' },

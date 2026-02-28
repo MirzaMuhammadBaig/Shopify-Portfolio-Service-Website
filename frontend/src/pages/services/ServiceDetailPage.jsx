@@ -1,12 +1,14 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { HiCheckCircle, HiArrowLeft } from 'react-icons/hi';
 import { useServiceBySlug } from '../../hooks/useServices';
 import { useServiceReviews } from '../../hooks/useReviews';
+import { useCreateOrder } from '../../hooks/useOrders';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { formatCurrency } from '../../utils/formatters';
 import { HiStar } from 'react-icons/hi';
+import toast from 'react-hot-toast';
 import styles from './ServiceDetailPage.module.css';
 
 export default function ServiceDetailPage() {
@@ -16,6 +18,24 @@ export default function ServiceDetailPage() {
   const { data: reviewsData } = useServiceReviews(service?.id);
   const reviews = reviewsData?.data || [];
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const createOrder = useCreateOrder();
+
+  const handleOrderNow = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    try {
+      const result = await createOrder.mutateAsync({
+        serviceId: service.id,
+        totalAmount: Number(service.price),
+      });
+      navigate(`/checkout/${result.data.id}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create order');
+    }
+  };
 
   if (isLoading) return <LoadingSpinner />;
   if (!service) return <div className="container section"><p>Service not found</p></div>;
@@ -55,9 +75,9 @@ export default function ServiceDetailPage() {
             <div className={styles.priceCard}>
               <span className={styles.priceLabel}>Starting at</span>
               <span className={styles.price}>{formatCurrency(service.price)}</span>
-              <Link to={user ? '/dashboard/orders' : '/login'}>
-                <Button fullWidth>Order Now</Button>
-              </Link>
+              <Button fullWidth onClick={handleOrderNow} loading={createOrder.isPending}>
+                Order Now
+              </Button>
               <Link to={user ? '/contact' : '/login'}><Button variant="outline" fullWidth>Get Custom Quote</Button></Link>
             </div>
           </div>

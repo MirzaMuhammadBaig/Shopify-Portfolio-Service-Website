@@ -16,6 +16,7 @@ import { blogRoutes } from './modules/blog/blog.routes';
 import { projectRoutes } from './modules/project/project.routes';
 import { faqRoutes } from './modules/faq/faq.routes';
 import { testimonialRoutes } from './modules/testimonial/testimonial.routes';
+import { paymentRoutes } from './modules/payment/payment.routes';
 import { adminRoutes } from './modules/admin/admin.routes';
 
 const app = express();
@@ -54,6 +55,7 @@ app.use(`${api}/blogs`, blogRoutes);
 app.use(`${api}/projects`, projectRoutes);
 app.use(`${api}/faqs`, faqRoutes);
 app.use(`${api}/testimonials`, testimonialRoutes);
+app.use(`${api}/payments`, paymentRoutes);
 app.use(`${api}/admin`, adminRoutes);
 
 // ─── ERROR HANDLING ─────────────────────────────────────

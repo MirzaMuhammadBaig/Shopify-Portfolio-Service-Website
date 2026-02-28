@@ -18,6 +18,7 @@ const GuestRoute = lazy(() => import('./components/shared/GuestRoute'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
 const BlogDetailPage = lazy(() => import('./pages/blog/BlogDetailPage'));
 const ContactPage = lazy(() => import('./pages/contact/ContactPage'));
+const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
 
 // Dashboard (rarely visited by most users)
 const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout'));
@@ -38,6 +39,7 @@ const AdminBlogs = lazy(() => import('./pages/admin/AdminBlogs'));
 const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
 const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
 const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
+const AdminPayments = lazy(() => import('./pages/admin/AdminPayments'));
 
 export default function App() {
   return (
@@ -57,6 +59,9 @@ export default function App() {
         <Route element={<Layout><VerifyEmailPage /></Layout>} path="/verify-email" />
         <Route element={<Layout><GuestRoute><ForgotPasswordPage /></GuestRoute></Layout>} path="/forgot-password" />
         <Route element={<Layout><ResetPasswordPage /></Layout>} path="/reset-password" />
+
+        {/* Checkout (authenticated) */}
+        <Route element={<ProtectedRoute><Layout><CheckoutPage /></Layout></ProtectedRoute>} path="/checkout/:orderId" />
 
         {/* User Dashboard */}
         <Route
@@ -92,6 +97,7 @@ export default function App() {
           <Route path="blogs" element={<AdminBlogs />} />
           <Route path="faqs" element={<AdminFaqs />} />
           <Route path="reviews" element={<AdminReviews />} />
+          <Route path="payments" element={<AdminPayments />} />
         </Route>
       </Routes>
     </Suspense>

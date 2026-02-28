@@ -82,6 +82,17 @@ export const BLOG_MESSAGES = {
   FETCHED: 'Blog posts fetched successfully',
 } as const;
 
+export const PAYMENT_MESSAGES = {
+  CREATED: 'Payment submitted successfully',
+  UPDATED: 'Payment updated successfully',
+  NOT_FOUND: 'Payment not found',
+  FETCHED: 'Payments fetched successfully',
+  VERIFIED: 'Payment verified successfully',
+  ALREADY_PAID: 'This order has already been paid',
+  INVALID_METHOD: 'Invalid payment method',
+  STRIPE_SESSION_CREATED: 'Stripe checkout session created',
+} as const;
+
 export const GENERAL_MESSAGES = {
   SERVER_ERROR: 'Internal server error',
   VALIDATION_ERROR: 'Validation error',

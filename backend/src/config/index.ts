@@ -41,4 +41,22 @@ export const config = {
     apiKey: process.env.CLOUDINARY_API_KEY || '',
     apiSecret: process.env.CLOUDINARY_API_SECRET || '',
   },
+
+  payment: {
+    stripe: {
+      secretKey: process.env.STRIPE_SECRET_KEY || '',
+      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+    },
+    nayapay: {
+      accountTitle: process.env.NAYAPAY_ACCOUNT_TITLE || '',
+      accountNumber: process.env.NAYAPAY_ACCOUNT_NUMBER || '',
+    },
+    sadapay: {
+      accountTitle: process.env.SADAPAY_ACCOUNT_TITLE || '',
+      accountNumber: process.env.SADAPAY_ACCOUNT_NUMBER || '',
+    },
+    payoneer: {
+      email: process.env.PAYONEER_EMAIL || '',
+    },
+  },
 } as const;
