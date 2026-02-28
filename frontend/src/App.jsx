@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ROLES } from './constants';
 import Layout from './components/layout/Layout';
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import PageLoader from './components/ui/PageLoader';
 
 // Lazy-loaded pages — each becomes its own chunk
 const HomePage = lazy(() => import('./pages/home/HomePage'));
@@ -38,17 +38,9 @@ const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
 const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
 const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 
-function PageFallback() {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-      <LoadingSpinner />
-    </div>
-  );
-}
-
 export default function App() {
   return (
-    <Suspense fallback={<PageFallback />}>
+    <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Public routes with main layout */}
         <Route element={<Layout><HomePage /></Layout>} path="/" />

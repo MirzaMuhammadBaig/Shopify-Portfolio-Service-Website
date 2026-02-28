@@ -1,0 +1,165 @@
+/* ===== Page Loader — Full-screen variant ===== */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-dark);
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Scene Container ---------- */
+.scene {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove wrapper padding when LoadingSpinner is inside PageLoader */
+.noPadding {
+  padding: 0;
+}
+
+/* ---------- Progress Bar + Text ---------- */
+.progressWrap {
+  position: absolute;
+  bottom: -48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.progressBar {
+  width: 120px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-surface-light);
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #6C63FF, #00D9FF);
+  animation: progressSlide 1.8s ease-in-out infinite;
+}
+
+@keyframes progressSlide {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}
+
+/* ---------- Loading Text ---------- */
+.loadingText {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  display: flex;
+  gap: 1px;
+}
+
+.loadingText span {
+  animation: textFade 1.8s ease-in-out infinite;
+}
+
+.loadingText span:nth-child(1) { animation-delay: 0s; }
+.loadingText span:nth-child(2) { animation-delay: 0.07s; }
+.loadingText span:nth-child(3) { animation-delay: 0.14s; }
+.loadingText span:nth-child(4) { animation-delay: 0.21s; }
+.loadingText span:nth-child(5) { animation-delay: 0.28s; }
+.loadingText span:nth-child(6) { animation-delay: 0.35s; }
+.loadingText span:nth-child(7) { animation-delay: 0.42s; }
+
+@keyframes textFade {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+}
+
+/* ---------- Corner Accents ---------- */
+.cornerAccent {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  animation: cornerPulse 3s ease-in-out infinite;
+}
+
+.cornerAccent::before,
+.cornerAccent::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(135deg, #6C63FF, #00D9FF);
+  border-radius: 1px;
+}
+
+.topLeft { top: 0; left: 0; }
+.topLeft::before { width: 24px; height: 2px; top: 0; left: 0; }
+.topLeft::after { width: 2px; height: 24px; top: 0; left: 0; }
+
+.topRight { top: 0; right: 0; animation-delay: 1.5s; }
+.topRight::before { width: 24px; height: 2px; top: 0; right: 0; }
+.topRight::after { width: 2px; height: 24px; top: 0; right: 0; }
+
+.bottomLeft { bottom: 0; left: 0; animation-delay: 1.5s; }
+.bottomLeft::before { width: 24px; height: 2px; bottom: 0; left: 0; }
+.bottomLeft::after { width: 2px; height: 24px; bottom: 0; left: 0; }
+
+.bottomRight { bottom: 0; right: 0; }
+.bottomRight::before { width: 24px; height: 2px; bottom: 0; right: 0; }
+.bottomRight::after { width: 2px; height: 24px; bottom: 0; right: 0; }
+
+@keyframes cornerPulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+/* ---------- Particle Sparkles ---------- */
+.sparkles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.sparkle1 { top: 15%; left: 10%; animation: sparkleAnim 2.5s ease-in-out infinite; }
+.sparkle2 { top: 80%; right: 15%; animation: sparkleAnim 3s ease-in-out 0.5s infinite; }
+.sparkle3 { top: 25%; right: 8%; animation: sparkleAnim 2.8s ease-in-out 1s infinite; }
+.sparkle4 { bottom: 20%; left: 12%; animation: sparkleAnim 3.2s ease-in-out 1.5s infinite; }
+.sparkle5 { top: 50%; left: 3%; animation: sparkleAnim 2.6s ease-in-out 0.8s infinite; }
+.sparkle6 { top: 10%; right: 30%; animation: sparkleAnim 3.5s ease-in-out 0.3s infinite; }
+
+@keyframes sparkleAnim {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 0.8; transform: scale(1); box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .scene { width: 180px; height: 180px; }
+  .progressBar { width: 100px; }
+}
