@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatService } from '../services/chat.service';
 
-const QUERY_KEYS = {
+export const CHAT_QUERY_KEYS = {
   conversations: ['conversations'],
   conversation: (id) => ['conversations', id],
   unread: ['unread-count'],
 };
+
+const QUERY_KEYS = CHAT_QUERY_KEYS;
 
 export function useConversations(params) {
   return useQuery({
@@ -70,7 +72,7 @@ export function useUnreadCount(options = {}) {
   return useQuery({
     queryKey: QUERY_KEYS.unread,
     queryFn: () => chatService.getUnreadCount().then((res) => res.data),
-    refetchInterval: 30000,
+    refetchInterval: 10000,
     enabled: options.enabled !== false,
   });
 }

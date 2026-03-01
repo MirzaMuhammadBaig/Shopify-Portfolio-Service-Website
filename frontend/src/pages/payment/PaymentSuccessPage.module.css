@@ -87,13 +87,46 @@
   color: var(--color-primary);
 }
 
-.chatNote {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  padding: 10px 20px;
-  background: rgba(0, 217, 255, 0.06);
-  border-radius: 10px;
-  border: 1px solid rgba(0, 217, 255, 0.15);
+.chatBanner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.12), rgba(0, 217, 255, 0.08));
+  border: 1px solid rgba(108, 99, 255, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text);
+  transition: all 0.2s;
+  animation: bannerPulse 2s ease-in-out infinite;
+}
+
+.chatBanner:hover {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 217, 255, 0.14));
+  border-color: rgba(108, 99, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.chatBanner strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
+.chatBanner span { display: block; font-size: 0.82rem; color: var(--color-text-secondary); }
+
+.chatBannerIcon {
+  font-size: 2rem;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  animation: iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes bannerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(108, 99, 255, 0); }
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 }
 
 .actions {

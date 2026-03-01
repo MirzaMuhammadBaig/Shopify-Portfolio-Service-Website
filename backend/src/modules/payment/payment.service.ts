@@ -16,7 +16,8 @@ const safepay = new Safepay({
   webhookSecret: config.payment.safepay.webhookSecret,
 } as any);
 
-/** Shared logic: auto-start order + send emails + chat message after payment confirmed */
+/** Shared logic: auto-start order + send emails + chat message after payment confirmed.
+ *  IMPORTANT: This must be awaited — Vercel terminates serverless functions after response is sent. */
 const handlePaymentConfirmed = async (order: any) => {
   const serviceTitle = order.service?.title || 'Custom Order';
   const customerName = `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim();
@@ -36,43 +37,50 @@ const handlePaymentConfirmed = async (order: any) => {
     ? new Date(now.getTime() + order.service.deliveryDays * 86400000)
     : undefined;
 
-  // Email to user: payment success
+  // Send all emails concurrently, wait for all to settle (don't fail if one email fails)
+  const emailPromises: Promise<any>[] = [];
+
   if (customerEmail) {
-    sendPaymentSuccessEmail({
-      to: customerEmail,
-      recipientName: order.user?.firstName || 'Customer',
+    emailPromises.push(
+      sendPaymentSuccessEmail({
+        to: customerEmail,
+        recipientName: order.user?.firstName || 'Customer',
+        orderNumber: order.orderNumber,
+        serviceTitle,
+        amount: Number(order.totalAmount),
+        estimatedDelivery,
+        dashboardUrl: `${config.frontendUrl}/dashboard/orders`,
+      }),
+    );
+
+    emailPromises.push(
+      sendOrderStatusEmail({
+        to: customerEmail,
+        recipientName: order.user?.firstName || 'Customer',
+        orderNumber: order.orderNumber,
+        serviceTitle,
+        statusLabel: 'In Progress',
+        customerName,
+        customerEmail,
+        isAdmin: false,
+      }),
+    );
+  }
+
+  emailPromises.push(
+    sendOrderStatusEmail({
+      to: 'webdev.muhammad@gmail.com',
+      recipientName: 'Admin',
       orderNumber: order.orderNumber,
       serviceTitle,
-      amount: Number(order.totalAmount),
-      estimatedDelivery,
-      dashboardUrl: `${config.frontendUrl}/dashboard/orders`,
-    }).catch((err) => console.error('Failed to send payment success email:', err));
-  }
+      statusLabel: 'In Progress',
+      customerName,
+      customerEmail,
+      isAdmin: true,
+    }),
+  );
 
-  // Email to both: order status "In Progress"
-  const emailData = {
-    orderNumber: order.orderNumber,
-    serviceTitle,
-    statusLabel: 'In Progress',
-    customerName,
-    customerEmail,
-  };
-
-  if (customerEmail) {
-    sendOrderStatusEmail({
-      ...emailData,
-      to: customerEmail,
-      recipientName: order.user?.firstName || 'Customer',
-      isAdmin: false,
-    }).catch((err) => console.error('Failed to send status email to customer:', err));
-  }
-
-  sendOrderStatusEmail({
-    ...emailData,
-    to: 'webdev.muhammad@gmail.com',
-    recipientName: 'Admin',
-    isAdmin: true,
-  }).catch((err) => console.error('Failed to send status email to admin:', err));
+  await Promise.allSettled(emailPromises);
 
   // Chat: thank-you message to user
   const deliveryNote = estimatedDelivery
@@ -252,11 +260,11 @@ export const paymentService = {
       paidAt: new Date(),
     });
 
-    // Auto-start order, send emails, and chat message (non-blocking)
+    // Auto-start order, send emails, and chat message (must await on Vercel)
     if (payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {
-        sendPaymentNotificationEmail({
+        await sendPaymentNotificationEmail({
           orderNumber: order.orderNumber,
           serviceTitle: order.service?.title || 'Custom Order',
           amount: Number(order.totalAmount),
@@ -266,9 +274,7 @@ export const paymentService = {
           customerEmail: order.user?.email || '',
         }).catch((err) => console.error('Failed to send Safepay payment notification:', err));
 
-        handlePaymentConfirmed(order).catch((err) =>
-          console.error('Failed to run post-payment actions:', err),
-        );
+        await handlePaymentConfirmed(order);
       }
     }
 
@@ -319,12 +325,11 @@ export const paymentService = {
       paidAt: new Date(),
     });
 
-    // Auto-start order, send emails, and chat message
+    // Auto-start order, send emails, and chat message (must await on Vercel)
     if (payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {
-        // Admin payment notification
-        sendPaymentNotificationEmail({
+        await sendPaymentNotificationEmail({
           orderNumber: order.orderNumber,
           serviceTitle: order.service?.title || 'Custom Order',
           amount: Number(order.totalAmount),
@@ -334,10 +339,7 @@ export const paymentService = {
           customerEmail: order.user?.email || '',
         }).catch((err) => console.error('Failed to send Safepay payment notification:', err));
 
-        // Auto-start + user email + chat message (non-blocking)
-        handlePaymentConfirmed(order).catch((err) =>
-          console.error('Failed to run post-payment actions from webhook:', err),
-        );
+        await handlePaymentConfirmed(order);
       }
     }
 
@@ -355,13 +357,11 @@ export const paymentService = {
 
     const updatedPayment = await paymentRepository.updateStatus(id, updateData);
 
-    // When admin verifies manual payment as PAID, auto-start the order (non-blocking)
+    // When admin verifies manual payment as PAID, auto-start the order
     if (data.status === 'PAID' && payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {
-        handlePaymentConfirmed(order).catch((err) =>
-          console.error('Failed to run post-payment actions from verify:', err),
-        );
+        await handlePaymentConfirmed(order);
       }
     }
 

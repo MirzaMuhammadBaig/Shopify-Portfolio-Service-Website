@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { HiCheckCircle, HiClock, HiHome, HiChat } from 'react-icons/hi';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { HiCheckCircle, HiClock, HiChat, HiShoppingCart, HiHome } from 'react-icons/hi';
 import { paymentService } from '../../services/payment.service';
 import { orderService } from '../../services/order.service';
+import { CHAT_QUERY_KEYS } from '../../hooks/useChat';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import Button from '../../components/ui/Button';
 import styles from './PaymentSuccessPage.module.css';
@@ -10,6 +12,8 @@ import styles from './PaymentSuccessPage.module.css';
 export default function PaymentSuccessPage() {
   const { orderId } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState('processing');
   const [order, setOrder] = useState(null);
   const confirmedRef = useRef(false);
@@ -19,7 +23,7 @@ export default function PaymentSuccessPage() {
       const orderRes = await orderService.getById(orderId);
       setOrder(orderRes.data?.data);
     } catch {
-      // Order details are optional for the success page
+      // Order details are optional
     }
   };
 
@@ -34,6 +38,9 @@ export default function PaymentSuccessPage() {
       setStatus('confirmed');
       if (interval) clearInterval(interval);
       fetchOrderDetails();
+      // Invalidate unread count + conversations so sidebar dot appears instantly
+      queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.unread });
+      queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.conversations });
     };
 
     const startPolling = () => {
@@ -48,7 +55,7 @@ export default function PaymentSuccessPage() {
             onConfirmed();
           }
         } catch {
-          // Payment record may not exist yet, keep polling
+          // Keep polling
         }
         attempts++;
         if (attempts >= maxAttempts && interval) {
@@ -64,13 +71,11 @@ export default function PaymentSuccessPage() {
     const sig = searchParams.get('sig');
 
     if (tracker && !confirmedRef.current) {
-      // Primary: verify payment using Safepay redirect params
       confirmedRef.current = true;
       paymentService.confirmSafepay({ tracker, ...(sig && { sig }), orderId })
         .then(() => onConfirmed())
         .catch(() => startPolling());
     } else {
-      // Fallback: poll for webhook-based confirmation
       startPolling();
     }
 
@@ -135,27 +140,27 @@ export default function PaymentSuccessPage() {
           )}
 
           {status === 'confirmed' && (
-            <p className={styles.chatNote}>
-              We've sent you a message with more details — check your chat!
-            </p>
+            <button className={styles.chatBanner} onClick={() => navigate('/dashboard/chat')}>
+              <HiChat className={styles.chatBannerIcon} />
+              <div>
+                <strong>You have a new message!</strong>
+                <span>We sent you order details and next steps in chat</span>
+              </div>
+            </button>
           )}
 
           <div className={styles.actions}>
-            <Link to="/dashboard/orders">
-              <Button>View My Orders</Button>
-            </Link>
+            <Button onClick={() => navigate('/dashboard/orders')}>
+              <HiShoppingCart style={{ marginRight: 6 }} /> View My Orders
+            </Button>
             {status === 'confirmed' && (
-              <Link to="/dashboard/chat">
-                <Button variant="outline">
-                  <HiChat /> View Messages
-                </Button>
-              </Link>
-            )}
-            <Link to="/">
-              <Button variant="outline">
-                <HiHome /> Back to Home
+              <Button variant="outline" onClick={() => navigate('/dashboard/chat')}>
+                <HiChat style={{ marginRight: 6 }} /> View Messages
               </Button>
-            </Link>
+            )}
+            <Button variant="outline" onClick={() => navigate('/')}>
+              <HiHome style={{ marginRight: 6 }} /> Back to Home
+            </Button>
           </div>
         </div>
       </div>
