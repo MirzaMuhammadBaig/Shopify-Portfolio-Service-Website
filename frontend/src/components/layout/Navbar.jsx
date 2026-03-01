@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiMenu, HiX } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import { NAV_ITEMS, ROLES } from '../../constants';
+import ConfirmModal from '../ui/ConfirmModal';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -50,7 +52,7 @@ export default function Navbar() {
               >
                 {user.role === ROLES.ADMIN ? 'Admin' : 'Dashboard'}
               </Link>
-              <button onClick={handleLogout} className={styles.logoutBtn}>
+              <button onClick={() => setShowLogoutModal(true)} className={styles.logoutBtn}>
                 Logout
               </button>
             </div>
@@ -67,6 +69,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {isOpen && <div className={styles.mobileOverlay} onClick={() => setIsOpen(false)} />}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -98,7 +101,7 @@ export default function Navbar() {
                   </Link>
                   <button
                     className={styles.mobileActionOutline}
-                    onClick={() => { handleLogout(); setIsOpen(false); }}
+                    onClick={() => { setShowLogoutModal(true); setIsOpen(false); }}
                   >
                     Logout
                   </button>
@@ -113,6 +116,15 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={() => { setShowLogoutModal(false); handleLogout(); }}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Logout"
+        variant="danger"
+      />
     </nav>
   );
 }

@@ -11,6 +11,11 @@ export const blogController = {
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: BLOG_MESSAGES.FETCHED, data: posts, meta });
   }),
 
+  getTags: asyncHandler(async (_req: Request, res: Response) => {
+    const tags = await blogService.getAllTags();
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: BLOG_MESSAGES.FETCHED, data: tags });
+  }),
+
   getBySlug: asyncHandler(async (req: Request, res: Response) => {
     const post = await blogService.getBySlug(getParam(req, 'slug'));
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: BLOG_MESSAGES.FETCHED, data: post });

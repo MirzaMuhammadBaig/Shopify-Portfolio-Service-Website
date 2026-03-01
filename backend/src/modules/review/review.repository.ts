@@ -1,15 +1,17 @@
 import prisma from '../../config/database';
 
+const REVIEW_INCLUDE = {
+  user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+  service: { select: { id: true, title: true, slug: true } },
+};
+
 export const reviewRepository = {
   findAll: (skip: number, take: number, where: Record<string, any> = {}) =>
     prisma.review.findMany({
       skip,
       take,
       where,
-      include: {
-        user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
-        service: { select: { id: true, title: true, slug: true } },
-      },
+      include: REVIEW_INCLUDE,
       orderBy: { createdAt: 'desc' },
     }),
 
@@ -19,10 +21,7 @@ export const reviewRepository = {
   findById: (id: string) =>
     prisma.review.findUnique({
       where: { id },
-      include: {
-        user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
-        service: { select: { id: true, title: true } },
-      },
+      include: REVIEW_INCLUDE,
     }),
 
   findByUserAndService: (userId: string, serviceId: string) =>
@@ -44,6 +43,28 @@ export const reviewRepository = {
   countByService: (serviceId: string) =>
     prisma.review.count({ where: { serviceId, isVisible: true } }),
 
+  findByUserId: (userId: string, skip: number, take: number) =>
+    prisma.review.findMany({
+      where: { userId },
+      skip,
+      take,
+      include: {
+        service: { select: { id: true, title: true, slug: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+
+  countByUser: (userId: string) =>
+    prisma.review.count({ where: { userId } }),
+
+  countByUserToday: (userId: string) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    return prisma.review.count({
+      where: { userId, createdAt: { gte: startOfDay } },
+    });
+  },
+
   create: (data: {
     userId: string;
     serviceId: string;
@@ -51,18 +72,15 @@ export const reviewRepository = {
     comment?: string;
   }) => prisma.review.create({
     data,
-    include: {
-      user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
-      service: { select: { id: true, title: true } },
-    },
+    include: REVIEW_INCLUDE,
   }),
 
-  update: (id: string, data: { rating?: number; comment?: string }) =>
-    prisma.review.update({ where: { id }, data }),
+  update: (id: string, data: { rating?: number; comment?: string; editCount?: number }) =>
+    prisma.review.update({ where: { id }, data, include: REVIEW_INCLUDE }),
 
   delete: (id: string) =>
     prisma.review.delete({ where: { id } }),
 
   toggleVisibility: (id: string, isVisible: boolean) =>
-    prisma.review.update({ where: { id }, data: { isVisible } }),
+    prisma.review.update({ where: { id }, data: { isVisible }, include: REVIEW_INCLUDE }),
 };

@@ -5,16 +5,36 @@ import { getPagination, getMeta } from '../../utils/pagination';
 import { generateSlug } from '../../utils/slug';
 
 export const blogService = {
-  getAll: async (query: { page?: string; limit?: string; published?: string }) => {
+  getAll: async (query: { page?: string; limit?: string; published?: string; search?: string; tag?: string }) => {
     const { skip, take, page, limit } = getPagination(query);
+    const publishedOnly = query.published === 'true';
+
+    if (query.search) {
+      const [posts, total] = await Promise.all([
+        blogRepository.searchPosts(query.search, skip, take, { tag: query.tag, publishedOnly }),
+        blogRepository.countSearch(query.search, { tag: query.tag, publishedOnly }),
+      ]);
+      return { posts, meta: getMeta(total, page, limit) };
+    }
+
     const where: Record<string, any> = {};
-    if (query.published === 'true') where.isPublished = true;
+    if (publishedOnly) where.isPublished = true;
+    if (query.tag) where.tags = { array_contains: query.tag };
 
     const [posts, total] = await Promise.all([
       blogRepository.findAll(skip, take, where),
       blogRepository.count(where),
     ]);
     return { posts, meta: getMeta(total, page, limit) };
+  },
+
+  getAllTags: async () => {
+    const posts = await blogRepository.findAllTags();
+    const tagSet = new Set<string>();
+    posts.forEach((p: any) => {
+      if (Array.isArray(p.tags)) p.tags.forEach((t: string) => tagSet.add(t));
+    });
+    return Array.from(tagSet).sort();
   },
 
   getBySlug: async (slug: string) => {

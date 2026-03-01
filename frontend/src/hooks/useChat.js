@@ -7,10 +7,10 @@ const QUERY_KEYS = {
   unread: ['unread-count'],
 };
 
-export function useConversations() {
+export function useConversations(params) {
   return useQuery({
-    queryKey: QUERY_KEYS.conversations,
-    queryFn: () => chatService.getConversations().then((res) => res.data),
+    queryKey: [...QUERY_KEYS.conversations, params],
+    queryFn: () => chatService.getConversations(params).then((res) => res.data),
   });
 }
 

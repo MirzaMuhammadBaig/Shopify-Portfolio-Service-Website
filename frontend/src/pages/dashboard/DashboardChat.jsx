@@ -6,10 +6,19 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { formatDateTime } from '../../utils/formatters';
 import styles from './DashboardChat.module.css';
 
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Most Recent' },
+  { value: 'oldest', label: 'Oldest' },
+  { value: 'most-messages', label: 'Most Messages' },
+  { value: 'a-z', label: 'A-Z' },
+  { value: 'z-a', label: 'Z-A' },
+];
+
 export default function DashboardChat() {
   const [activeId, setActiveId] = useState(null);
   const [message, setMessage] = useState('');
-  const { data: convData, isLoading } = useConversations();
+  const [sort, setSort] = useState('recent');
+  const { data: convData, isLoading } = useConversations({ sort });
   const { data: activeConv } = useConversation(activeId);
   const sendMessage = useSendMessage();
   const createConversation = useCreateConversation();
@@ -37,11 +46,19 @@ export default function DashboardChat() {
           <h2 className={styles.title}>Messages</h2>
           <Button size="sm" onClick={handleNewConversation}>New</Button>
         </div>
+        <div className={styles.sortBar}>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.sortSelect}>
+            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </div>
         <div className={styles.convList}>
           {conversations.map((c) => (
             <button key={c.id} onClick={() => setActiveId(c.id)} className={`${styles.convItem} ${activeId === c.id ? styles.active : ''}`}>
               <span className={styles.convSubject}>{c.subject || 'Conversation'}</span>
-              <span className={styles.convDate}>{formatDateTime(c.updatedAt)}</span>
+              <div className={styles.convMeta}>
+                <span className={styles.convDate}>{formatDateTime(c.updatedAt)}</span>
+                {c._count?.messages > 0 && <span className={styles.convCount}>{c._count.messages} msgs</span>}
+              </div>
             </button>
           ))}
         </div>

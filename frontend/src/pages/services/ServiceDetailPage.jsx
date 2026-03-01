@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { HiCheckCircle, HiArrowLeft } from 'react-icons/hi';
 import { useServiceBySlug } from '../../hooks/useServices';
@@ -5,6 +6,7 @@ import { useServiceReviews } from '../../hooks/useReviews';
 import { useCreateOrder } from '../../hooks/useOrders';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
+import OrderModal from '../../components/ui/OrderModal';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { formatCurrency } from '../../utils/formatters';
 import { HiStar } from 'react-icons/hi';
@@ -20,17 +22,23 @@ export default function ServiceDetailPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const createOrder = useCreateOrder();
+  const [showOrderModal, setShowOrderModal] = useState(false);
 
-  const handleOrderNow = async () => {
+  const handleOrderClick = () => {
     if (!user) {
       navigate('/login');
       return;
     }
+    setShowOrderModal(true);
+  };
+
+  const handleModalOrderNow = async () => {
     try {
       const result = await createOrder.mutateAsync({
         serviceId: service.id,
         totalAmount: Number(service.price),
       });
+      setShowOrderModal(false);
       navigate(`/checkout/${result.data.id}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create order');
@@ -75,7 +83,7 @@ export default function ServiceDetailPage() {
             <div className={styles.priceCard}>
               <span className={styles.priceLabel}>Starting at</span>
               <span className={styles.price}>{formatCurrency(service.price)}</span>
-              <Button fullWidth onClick={handleOrderNow} loading={createOrder.isPending}>
+              <Button fullWidth onClick={handleOrderClick} loading={createOrder.isPending}>
                 Order Now
               </Button>
               <Link to={user ? '/contact' : '/login'}><Button variant="outline" fullWidth>Get Custom Quote</Button></Link>
@@ -83,6 +91,13 @@ export default function ServiceDetailPage() {
           </div>
         </div>
       </div>
+      <OrderModal
+        isOpen={showOrderModal}
+        onClose={() => setShowOrderModal(false)}
+        onOrderNow={handleModalOrderNow}
+        onGetQuote={() => { setShowOrderModal(false); navigate('/contact'); }}
+        loading={createOrder.isPending}
+      />
     </section>
   );
 }

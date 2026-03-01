@@ -29,9 +29,9 @@ export const orderRepository = {
       },
     }),
 
-  findByUserId: (userId: string, skip: number, take: number) =>
+  findByUserId: (userId: string, skip: number, take: number, extraWhere: Record<string, any> = {}) =>
     prisma.order.findMany({
-      where: { userId },
+      where: { userId, ...extraWhere },
       skip,
       take,
       include: {
@@ -41,8 +41,8 @@ export const orderRepository = {
       orderBy: { createdAt: 'desc' },
     }),
 
-  countByUser: (userId: string) =>
-    prisma.order.count({ where: { userId } }),
+  countByUser: (userId: string, extraWhere: Record<string, any> = {}) =>
+    prisma.order.count({ where: { userId, ...extraWhere } }),
 
   create: (data: {
     orderNumber: string;

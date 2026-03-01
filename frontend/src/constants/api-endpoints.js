@@ -37,11 +37,16 @@ export const API_ENDPOINTS = {
   },
   REVIEWS: {
     BASE: '/reviews',
+    MY: '/reviews/my',
     BY_SERVICE: (serviceId) => `/reviews/service/${serviceId}`,
     BY_ID: (id) => `/reviews/${id}`,
+    ADMIN: '/reviews/admin',
+    ADMIN_BY_ID: (id) => `/reviews/admin/${id}`,
+    VISIBILITY: (id) => `/reviews/${id}/visibility`,
   },
   BLOGS: {
     BASE: '/blogs',
+    TAGS: '/blogs/tags',
     BY_SLUG: (slug) => `/blogs/${slug}`,
     BY_ID: (id) => `/blogs/${id}`,
   },

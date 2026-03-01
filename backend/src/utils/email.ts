@@ -165,3 +165,111 @@ export const sendContactEmail = async (data: {
     `,
   });
 };
+
+export const sendOrderStatusEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  statusLabel: string;
+  customerName: string;
+  customerEmail: string;
+  isAdmin: boolean;
+}) => {
+  const subject = data.isAdmin
+    ? `Order #${data.orderNumber} Status Changed to ${data.statusLabel}`
+    : `Your Order #${data.orderNumber} Has Been Updated`;
+
+  const heading = data.isAdmin ? 'Order Status Update' : `Hi ${data.recipientName},`;
+
+  const mainMessage = data.isAdmin
+    ? `Order #${data.orderNumber} status has been changed.`
+    : `Your order status has been updated to <strong style="color: #00D9FF;">${data.statusLabel}</strong>.`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: #B0B0C0; margin-top: 8px;">Order Status Update</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${mainMessage}</p>
+        <div style="background: #1E1E3F; border: 1px solid #2A2A4A; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Service:</strong> ${data.serviceTitle}</p>
+          <p style="margin: 0;"><strong style="color: #6C63FF;">New Status:</strong> <span style="color: #00D9FF;">${data.statusLabel}</span></p>
+          ${data.isAdmin ? `
+            <hr style="border: none; border-top: 1px solid #2A2A4A; margin: 16px 0;" />
+            <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Customer:</strong> ${data.customerName}</p>
+            <p style="margin: 0;"><strong style="color: #6C63FF;">Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00D9FF;">${data.customerEmail}</a></p>
+          ` : ''}
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          ${data.isAdmin ? 'This is an automated notification from ShopifyPro.' : 'If you have questions, please contact us through the chat feature on our website.'}
+        </p>
+      </div>
+    `,
+  });
+};
+
+export const sendReviewNotificationEmail = async (data: {
+  to: string;
+  recipientName: string;
+  serviceName: string;
+  rating: number;
+  comment: string;
+  reviewerName: string;
+  reviewerEmail: string;
+  isAdmin: boolean;
+}) => {
+  const stars = '★'.repeat(data.rating) + '☆'.repeat(5 - data.rating);
+
+  const subject = data.isAdmin
+    ? `New Review Received — ${data.serviceName} (${data.rating}/5)`
+    : `Thank You for Your Review — ${data.serviceName}`;
+
+  const heading = data.isAdmin
+    ? 'New Review Submitted'
+    : `Thank You, ${data.recipientName}!`;
+
+  const mainMessage = data.isAdmin
+    ? `<strong>${data.reviewerName}</strong> left a new review for <strong style="color: #00D9FF;">${data.serviceName}</strong>.`
+    : `Your feedback for <strong style="color: #00D9FF;">${data.serviceName}</strong> has been submitted successfully. We truly appreciate you taking the time to share your experience — it means a lot to us and helps us improve our services.`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: #B0B0C0; margin-top: 8px;">${data.isAdmin ? 'Review Notification' : 'Review Confirmation'}</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${mainMessage}</p>
+        <div style="background: #1E1E3F; border: 1px solid #2A2A4A; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Service:</strong> ${data.serviceName}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Rating:</strong> <span style="color: #FFB300; font-size: 18px;">${stars}</span> (${data.rating}/5)</p>
+          ${data.comment ? `<p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Comment:</strong></p><p style="color: #B0B0C0; line-height: 1.6; margin: 4px 0 0; white-space: pre-wrap;">${data.comment}</p>` : ''}
+          ${data.isAdmin ? `
+            <hr style="border: none; border-top: 1px solid #2A2A4A; margin: 16px 0;" />
+            <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Reviewer:</strong> ${data.reviewerName}</p>
+            <p style="margin: 0;"><strong style="color: #6C63FF;">Email:</strong> <a href="mailto:${data.reviewerEmail}" style="color: #00D9FF;">${data.reviewerEmail}</a></p>
+          ` : ''}
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          ${data.isAdmin ? 'You can manage this review from the admin panel.' : 'Your review helps other customers make informed decisions. Thank you for being part of the ShopifyPro community!'}
+        </p>
+      </div>
+    `,
+  });
+};

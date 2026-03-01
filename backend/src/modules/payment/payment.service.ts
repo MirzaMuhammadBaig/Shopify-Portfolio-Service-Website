@@ -2,7 +2,7 @@ import { Safepay } from '@sfpy/node-sdk';
 import { paymentRepository } from './payment.repository';
 import { orderRepository } from '../order/order.repository';
 import { ApiError } from '../../utils/api-error';
-import { HTTP_STATUS, PAYMENT_MESSAGES, PAYMENT_METHODS, MANUAL_PAYMENT_METHODS } from '../../constants';
+import { HTTP_STATUS, PAYMENT_MESSAGES, PAYMENT_METHODS, MANUAL_PAYMENT_METHODS, ORDER_STATUS } from '../../constants';
 import { getPagination, getMeta } from '../../utils/pagination';
 import { sendPaymentNotificationEmail } from '../../utils/email';
 import { config } from '../../config';
@@ -158,10 +158,32 @@ export const paymentService = {
       return payment;
     }
 
-    return paymentRepository.updateStatus(payment.id, {
+    const updatedPayment = await paymentRepository.updateStatus(payment.id, {
       status: 'PAID',
       paidAt: new Date(),
     });
+
+    // Auto-confirm order and notify admin
+    if (payment.orderId) {
+      const order = await orderRepository.findById(payment.orderId);
+      if (order) {
+        if (order.status === ORDER_STATUS.PENDING) {
+          await orderRepository.updateStatus(order.id, { status: ORDER_STATUS.CONFIRMED });
+        }
+
+        sendPaymentNotificationEmail({
+          orderNumber: order.orderNumber,
+          serviceTitle: order.service?.title || 'Custom Order',
+          amount: Number(order.totalAmount),
+          method: 'Safepay (Automated)',
+          transactionId: tracker,
+          customerName: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim(),
+          customerEmail: order.user?.email || '',
+        }).catch((err) => console.error('Failed to send Safepay payment notification:', err));
+      }
+    }
+
+    return updatedPayment;
   },
 
   verifyPayment: async (id: string, data: { status: string }) => {

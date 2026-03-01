@@ -193,6 +193,14 @@
   color: var(--color-primary);
 }
 
+.mobileOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
+}
+
 .mobileNav {
   display: none;
   flex-direction: column;
@@ -303,6 +311,10 @@
   .userMenu .dashboardBtn,
   .userMenu .logoutBtn {
     display: none;
+  }
+
+  .mobileOverlay {
+    display: block;
   }
 
   .mobileToggle {

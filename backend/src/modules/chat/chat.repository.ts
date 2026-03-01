@@ -1,7 +1,17 @@
 import prisma from '../../config/database';
 
+const getSortOrder = (sort?: string): any => {
+  switch (sort) {
+    case 'oldest': return { updatedAt: 'asc' as const };
+    case 'most-messages': return { messages: { _count: 'desc' as const } };
+    case 'a-z': return { user: { firstName: 'asc' as const } };
+    case 'z-a': return { user: { firstName: 'desc' as const } };
+    default: return { updatedAt: 'desc' as const };
+  }
+};
+
 export const chatRepository = {
-  findConversations: (userId?: string) =>
+  findConversations: (userId?: string, sort?: string) =>
     prisma.conversation.findMany({
       where: userId ? { userId } : {},
       include: {
@@ -10,8 +20,9 @@ export const chatRepository = {
           take: 1,
           orderBy: { createdAt: 'desc' },
         },
+        _count: { select: { messages: true } },
       },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: getSortOrder(sort),
     }),
 
   findConversationById: (id: string) =>

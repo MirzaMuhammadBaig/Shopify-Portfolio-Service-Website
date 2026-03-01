@@ -1,4 +1,5 @@
 .title { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; }
+.subtitle { font-size: 1.2rem; font-weight: 700; margin: 32px 0 16px; }
 .card { max-width: 600px; }
 .form { display: flex; flex-direction: column; gap: 20px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
@@ -9,3 +10,10 @@
 .starBtn { background: none; padding: 4px; font-size: 1.5rem; }
 .starFilled { color: #FFB300; }
 .starEmpty { color: var(--color-surface-light); }
+.reviewList { display: flex; flex-direction: column; gap: 12px; max-width: 600px; }
+.reviewCard { padding: 16px 20px; }
+.reviewHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.reviewService { font-weight: 600; font-size: 0.95rem; }
+.reviewComment { color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px; }
+.reviewFooter { display: flex; justify-content: space-between; align-items: center; }
+.reviewDate { font-size: 0.8rem; color: var(--color-text-muted); }

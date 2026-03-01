@@ -2,7 +2,7 @@ import api from './api';
 import { API_ENDPOINTS } from '../constants';
 
 export const chatService = {
-  getConversations: () => api.get(API_ENDPOINTS.CHAT.CONVERSATIONS),
+  getConversations: (params) => api.get(API_ENDPOINTS.CHAT.CONVERSATIONS, { params }),
   getConversation: (id) => api.get(API_ENDPOINTS.CHAT.CONVERSATION(id)),
   createConversation: (data) => api.post(API_ENDPOINTS.CHAT.CONVERSATIONS, data),
   sendMessage: (conversationId, data) =>

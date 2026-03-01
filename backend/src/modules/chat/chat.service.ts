@@ -18,8 +18,8 @@ const getAutoResponse = (message: string): string | null => {
 };
 
 export const chatService = {
-  getConversations: async (userId?: string) =>
-    chatRepository.findConversations(userId),
+  getConversations: async (userId?: string, sort?: string) =>
+    chatRepository.findConversations(userId, sort),
 
   getConversation: async (id: string) => {
     const conversation = await chatRepository.findConversationById(id);

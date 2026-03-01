@@ -7,6 +7,7 @@ import { ROLES } from '../../constants';
 const router = Router();
 
 router.get('/', blogController.getAll);
+router.get('/tags', blogController.getTags);
 router.get('/:slug', blogController.getBySlug);
 router.post('/', authenticate, authorize(ROLES.ADMIN), validate(blogValidation.create), blogController.create);
 router.put('/:id', authenticate, authorize(ROLES.ADMIN), validate(blogValidation.update), blogController.update);

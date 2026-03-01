@@ -2,6 +2,16 @@ import { orderRepository } from './order.repository';
 import { ApiError } from '../../utils/api-error';
 import { HTTP_STATUS, ORDER_MESSAGES, ORDER_STATUS } from '../../constants';
 import { getPagination, getMeta } from '../../utils/pagination';
+import { sendOrderStatusEmail } from '../../utils/email';
+
+const STATUS_LABELS: Record<string, string> = {
+  PENDING: 'Pending',
+  CONFIRMED: 'Confirmed',
+  IN_PROGRESS: 'In Progress',
+  COMPLETED: 'Completed',
+  DELIVERED: 'Delivered',
+  CANCELLED: 'Cancelled',
+};
 
 const generateOrderNumber = async (): Promise<string> => {
   const last = await orderRepository.getLastOrderNumber();
@@ -14,10 +24,11 @@ const generateOrderNumber = async (): Promise<string> => {
 };
 
 export const orderService = {
-  getAll: async (query: { page?: string; limit?: string; status?: string }) => {
+  getAll: async (query: { page?: string; limit?: string; status?: string; email?: string }) => {
     const { skip, take, page, limit } = getPagination(query);
     const where: Record<string, any> = {};
     if (query.status) where.status = query.status;
+    if (query.email) where.user = { email: { contains: query.email, mode: 'insensitive' } };
 
     const [orders, total] = await Promise.all([
       orderRepository.findAll(skip, take, where),
@@ -26,11 +37,14 @@ export const orderService = {
     return { orders, meta: getMeta(total, page, limit) };
   },
 
-  getByUser: async (userId: string, query: { page?: string; limit?: string }) => {
+  getByUser: async (userId: string, query: { page?: string; limit?: string; status?: string }) => {
     const { skip, take, page, limit } = getPagination(query);
+    const extraWhere: Record<string, any> = {};
+    if (query.status) extraWhere.status = query.status;
+
     const [orders, total] = await Promise.all([
-      orderRepository.findByUserId(userId, skip, take),
-      orderRepository.countByUser(userId),
+      orderRepository.findByUserId(userId, skip, take, extraWhere),
+      orderRepository.countByUser(userId, extraWhere),
     ]);
     return { orders, meta: getMeta(total, page, limit) };
   },
@@ -71,6 +85,33 @@ export const orderService = {
       updateData.deliveredAt = new Date();
     }
 
-    return orderRepository.updateStatus(id, updateData);
+    const updatedOrder = await orderRepository.updateStatus(id, updateData);
+
+    // Send status change emails to customer and admin
+    const emailData = {
+      orderNumber: order.orderNumber,
+      serviceTitle: order.service?.title || 'Custom Order',
+      statusLabel: STATUS_LABELS[data.status] || data.status,
+      customerName: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim(),
+      customerEmail: order.user?.email || '',
+    };
+
+    if (order.user?.email) {
+      sendOrderStatusEmail({
+        ...emailData,
+        to: order.user.email,
+        recipientName: order.user.firstName || 'Customer',
+        isAdmin: false,
+      }).catch((err) => console.error('Failed to send status email to customer:', err));
+    }
+
+    sendOrderStatusEmail({
+      ...emailData,
+      to: 'webdev.muhammad@gmail.com',
+      recipientName: 'Admin',
+      isAdmin: true,
+    }).catch((err) => console.error('Failed to send status email to admin:', err));
+
+    return updatedOrder;
   },
 };

@@ -1,4 +1,9 @@
 .title { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; }
+.filters { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; -ms-overflow-style: none; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filterBtn { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; white-space: nowrap; background: var(--color-surface); color: var(--color-text-secondary); border: 1px solid var(--color-border); cursor: pointer; transition: all 0.2s ease; }
+.filterBtn:hover { color: var(--color-text); border-color: rgba(108, 99, 255, 0.5); }
+.filterBtn.filterActive { background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; border-color: transparent; }
 .list { display: flex; flex-direction: column; gap: 12px; }
 .card { padding: 20px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }

@@ -8,7 +8,8 @@ import { HTTP_STATUS, CHAT_MESSAGES, ROLES } from '../../constants';
 export const chatController = {
   getConversations: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.role === ROLES.ADMIN ? undefined : req.user!.userId;
-    const conversations = await chatService.getConversations(userId);
+    const sort = req.query.sort as string | undefined;
+    const conversations = await chatService.getConversations(userId, sort);
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: CHAT_MESSAGES.FETCHED, data: conversations });
   }),
 

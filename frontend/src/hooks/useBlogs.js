@@ -3,6 +3,7 @@ import { blogService } from '../services/blog.service';
 
 const QUERY_KEYS = {
   blogs: ['blogs'],
+  tags: ['blogs', 'tags'],
   detail: (slug) => ['blogs', slug],
 };
 
@@ -10,6 +11,13 @@ export function useBlogs(params) {
   return useQuery({
     queryKey: [...QUERY_KEYS.blogs, params],
     queryFn: () => blogService.getAll(params).then((res) => res.data),
+  });
+}
+
+export function useBlogTags() {
+  return useQuery({
+    queryKey: QUERY_KEYS.tags,
+    queryFn: () => blogService.getTags().then((res) => res.data),
   });
 }
 
