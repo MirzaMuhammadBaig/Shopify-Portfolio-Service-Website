@@ -14,6 +14,7 @@ export const paymentService = {
     });
   },
   createSafepaySession: (data) => api.post(API_ENDPOINTS.PAYMENTS.SAFEPAY_SESSION, data),
+  confirmSafepay: (data) => api.post(API_ENDPOINTS.PAYMENTS.SAFEPAY_CONFIRM, data),
   getByOrderId: (orderId) => api.get(API_ENDPOINTS.PAYMENTS.BY_ORDER(orderId)),
   getAll: (params) => api.get(API_ENDPOINTS.PAYMENTS.BASE, { params }),
   verify: (id, data) => api.patch(API_ENDPOINTS.PAYMENTS.VERIFY(id), data),

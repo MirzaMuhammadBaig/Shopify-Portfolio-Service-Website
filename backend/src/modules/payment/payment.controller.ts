@@ -29,6 +29,11 @@ export const paymentController = {
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: PAYMENT_MESSAGES.SAFEPAY_SESSION_CREATED, data: result });
   }),
 
+  safepayConfirm: asyncHandler(async (req: Request, res: Response) => {
+    const payment = await paymentService.confirmSafepayRedirect(req.body);
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: PAYMENT_MESSAGES.VERIFIED, data: payment });
+  }),
+
   safepayWebhook: asyncHandler(async (req: Request, res: Response) => {
     const payment = await paymentService.handleSafepayWebhook({
       body: req.body,

@@ -9,6 +9,7 @@ const router = Router();
 router.get('/methods', paymentController.getMethods);
 router.post('/manual', authenticate, uploadImage, validate(paymentValidation.createManual), paymentController.createManualPayment);
 router.post('/safepay-session', authenticate, validate(paymentValidation.createSafepaySession), paymentController.createSafepaySession);
+router.post('/safepay-confirm', authenticate, validate(paymentValidation.safepayConfirm), paymentController.safepayConfirm);
 router.post('/webhook/safepay', paymentController.safepayWebhook);
 router.get('/order/:orderId', authenticate, paymentController.getByOrderId);
 router.get('/', authenticate, authorize(ROLES.ADMIN), paymentController.getAll);

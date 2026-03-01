@@ -69,6 +69,7 @@ export const API_ENDPOINTS = {
     METHODS: '/payments/methods',
     MANUAL: '/payments/manual',
     SAFEPAY_SESSION: '/payments/safepay-session',
+    SAFEPAY_CONFIRM: '/payments/safepay-confirm',
     BY_ORDER: (orderId) => `/payments/order/${orderId}`,
     BASE: '/payments',
     VERIFY: (id) => `/payments/${id}/verify`,

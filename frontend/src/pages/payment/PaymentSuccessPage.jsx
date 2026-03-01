@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { HiCheckCircle, HiClock, HiHome, HiChat } from 'react-icons/hi';
 import { paymentService } from '../../services/payment.service';
 import { orderService } from '../../services/order.service';
@@ -9,45 +9,75 @@ import styles from './PaymentSuccessPage.module.css';
 
 export default function PaymentSuccessPage() {
   const { orderId } = useParams();
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('processing');
   const [order, setOrder] = useState(null);
+  const confirmedRef = useRef(false);
+
+  const fetchOrderDetails = async () => {
+    try {
+      const orderRes = await orderService.getById(orderId);
+      setOrder(orderRes.data?.data);
+    } catch {
+      // Order details are optional for the success page
+    }
+  };
 
   useEffect(() => {
     if (!orderId) return;
 
     let interval;
-    let attempts = 0;
-    const maxAttempts = 20;
+    let cancelled = false;
 
-    const checkStatus = async () => {
-      try {
-        const res = await paymentService.getByOrderId(orderId);
-        const payment = res.data?.data;
-        if (payment?.status === 'PAID') {
-          setStatus('confirmed');
-          clearInterval(interval);
-
-          // Fetch order details for display
-          try {
-            const orderRes = await orderService.getById(orderId);
-            setOrder(orderRes.data?.data);
-          } catch {
-            // Order details are optional for the success page
-          }
-        }
-      } catch {
-        // Payment record may not exist yet, keep polling
-      }
-      attempts++;
-      if (attempts >= maxAttempts) {
-        clearInterval(interval);
-      }
+    const onConfirmed = () => {
+      if (cancelled) return;
+      setStatus('confirmed');
+      if (interval) clearInterval(interval);
+      fetchOrderDetails();
     };
 
-    checkStatus();
-    interval = setInterval(checkStatus, 3000);
+    const startPolling = () => {
+      let attempts = 0;
+      const maxAttempts = 20;
 
-    return () => clearInterval(interval);
+      const checkStatus = async () => {
+        if (cancelled) return;
+        try {
+          const res = await paymentService.getByOrderId(orderId);
+          if (res.data?.data?.status === 'PAID') {
+            onConfirmed();
+          }
+        } catch {
+          // Payment record may not exist yet, keep polling
+        }
+        attempts++;
+        if (attempts >= maxAttempts && interval) {
+          clearInterval(interval);
+        }
+      };
+
+      checkStatus();
+      interval = setInterval(checkStatus, 3000);
+    };
+
+    const tracker = searchParams.get('tracker');
+    const sig = searchParams.get('sig');
+
+    if (tracker && !confirmedRef.current) {
+      // Primary: verify payment using Safepay redirect params
+      confirmedRef.current = true;
+      paymentService.confirmSafepay({ tracker, ...(sig && { sig }), orderId })
+        .then(() => onConfirmed())
+        .catch(() => startPolling());
+    } else {
+      // Fallback: poll for webhook-based confirmation
+      startPolling();
+    }
+
+    return () => {
+      cancelled = true;
+      if (interval) clearInterval(interval);
+    };
   }, [orderId]);
 
   return (

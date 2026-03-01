@@ -22,4 +22,10 @@ export const paymentValidation = {
       .isIn(['PAID', 'FAILED', 'REFUNDED'])
       .withMessage('Invalid payment status'),
   ],
+
+  safepayConfirm: [
+    body('tracker').isString().trim().notEmpty().withMessage('Tracker token is required'),
+    body('sig').optional().isString().trim(),
+    body('orderId').isUUID().withMessage('Valid order ID required'),
+  ],
 };

@@ -224,23 +224,90 @@ export const paymentService = {
     };
   },
 
+  confirmSafepayRedirect: async (data: { tracker: string; sig?: string; orderId: string }) => {
+    // Verify signature if provided
+    if (data.sig) {
+      const isValid = safepay.verify.signature({ body: { tracker: data.tracker, sig: data.sig } } as any);
+      if (!isValid) {
+        throw new ApiError(HTTP_STATUS.UNAUTHORIZED, 'Invalid payment signature');
+      }
+    }
+
+    // Find the payment by tracker token AND verify it belongs to this order
+    const payments = await paymentRepository.findAll(0, 1, { transactionId: data.tracker });
+    const payment = payments[0];
+
+    if (!payment || payment.orderId !== data.orderId) {
+      throw new ApiError(HTTP_STATUS.NOT_FOUND, 'Payment not found for this tracker');
+    }
+
+    // Already paid — just return
+    if (payment.status === 'PAID') {
+      return payment;
+    }
+
+    // Mark as PAID
+    const updatedPayment = await paymentRepository.updateStatus(payment.id, {
+      status: 'PAID',
+      paidAt: new Date(),
+    });
+
+    // Auto-start order, send emails, and chat message (non-blocking)
+    if (payment.orderId) {
+      const order = await orderRepository.findById(payment.orderId);
+      if (order) {
+        sendPaymentNotificationEmail({
+          orderNumber: order.orderNumber,
+          serviceTitle: order.service?.title || 'Custom Order',
+          amount: Number(order.totalAmount),
+          method: 'Safepay (Automated)',
+          transactionId: data.tracker,
+          customerName: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim(),
+          customerEmail: order.user?.email || '',
+        }).catch((err) => console.error('Failed to send Safepay payment notification:', err));
+
+        handlePaymentConfirmed(order).catch((err) =>
+          console.error('Failed to run post-payment actions:', err),
+        );
+      }
+    }
+
+    return updatedPayment;
+  },
+
   handleSafepayWebhook: async (req: { body?: any; headers?: any }) => {
     const isValid = safepay.verify.webhook(req);
     if (!isValid) {
       throw new ApiError(HTTP_STATUS.UNAUTHORIZED, 'Invalid webhook signature');
     }
 
-    const tracker = req.body?.data?.tracker;
-    if (!tracker) {
-      throw new ApiError(HTTP_STATUS.BAD_REQUEST, 'Missing tracker token');
+    const webhookData = req.body?.data || {};
+
+    // Try to find payment by tracker token first, then by order number from metadata
+    let payment: any = null;
+    const tracker = webhookData.tracker || webhookData.token;
+
+    if (tracker) {
+      const payments = await paymentRepository.findAll(0, 1, { transactionId: tracker });
+      payment = payments[0];
     }
 
-    // Find the payment by the tracker token we stored as transactionId
-    const payments = await paymentRepository.findAll(0, 1, { transactionId: tracker });
-    const payment = payments[0];
+    // Fallback: find by order number from payment_metadata
+    if (!payment && Array.isArray(webhookData.payment_metadata)) {
+      const orderMeta = webhookData.payment_metadata.find(
+        (m: any) => m.meta_key === 'order_id',
+      );
+      if (orderMeta?.meta_value) {
+        const order = await orderRepository.findAll(0, 1, { orderNumber: orderMeta.meta_value });
+        if (order[0]) {
+          const foundPayment = await paymentRepository.findByOrderId(order[0].id);
+          if (foundPayment) payment = foundPayment;
+        }
+      }
+    }
 
     if (!payment) {
-      throw new ApiError(HTTP_STATUS.NOT_FOUND, 'Payment not found for this tracker');
+      throw new ApiError(HTTP_STATUS.NOT_FOUND, 'Payment not found for this webhook');
     }
 
     if (payment.status === 'PAID') {
@@ -262,13 +329,15 @@ export const paymentService = {
           serviceTitle: order.service?.title || 'Custom Order',
           amount: Number(order.totalAmount),
           method: 'Safepay (Automated)',
-          transactionId: tracker,
+          transactionId: tracker || payment.transactionId || 'N/A',
           customerName: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim(),
           customerEmail: order.user?.email || '',
         }).catch((err) => console.error('Failed to send Safepay payment notification:', err));
 
-        // Auto-start + user email + chat message
-        await handlePaymentConfirmed(order);
+        // Auto-start + user email + chat message (non-blocking)
+        handlePaymentConfirmed(order).catch((err) =>
+          console.error('Failed to run post-payment actions from webhook:', err),
+        );
       }
     }
 
@@ -286,11 +355,13 @@ export const paymentService = {
 
     const updatedPayment = await paymentRepository.updateStatus(id, updateData);
 
-    // When admin verifies manual payment as PAID, auto-start the order
+    // When admin verifies manual payment as PAID, auto-start the order (non-blocking)
     if (data.status === 'PAID' && payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {
-        await handlePaymentConfirmed(order);
+        handlePaymentConfirmed(order).catch((err) =>
+          console.error('Failed to run post-payment actions from verify:', err),
+        );
       }
     }
 
