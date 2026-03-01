@@ -273,3 +273,55 @@ export const sendReviewNotificationEmail = async (data: {
     `,
   });
 };
+
+export const sendChatMessageNotificationEmail = async (data: {
+  to: string;
+  recipientName: string;
+  senderName: string;
+  conversationSubject: string;
+  messagePreview: string;
+  chatUrl: string;
+  isAdmin: boolean;
+}) => {
+  const subject = data.isAdmin
+    ? `New Message from ${data.senderName} — ${data.conversationSubject}`
+    : `New Reply — ${data.conversationSubject}`;
+
+  const heading = data.isAdmin ? 'New Customer Message' : `Hi ${data.recipientName},`;
+
+  const mainMessage = data.isAdmin
+    ? `<strong>${data.senderName}</strong> sent a new message in conversation <strong style="color: #00D9FF;">${data.conversationSubject}</strong>.`
+    : `You have a new reply in your conversation <strong style="color: #00D9FF;">${data.conversationSubject}</strong>.`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: #B0B0C0; margin-top: 8px;">Message Notification</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${mainMessage}</p>
+        <div style="background: #1E1E3F; border: 1px solid #2A2A4A; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">From:</strong> ${data.senderName}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Subject:</strong> ${data.conversationSubject}</p>
+          <p style="margin: 0;"><strong style="color: #6C63FF;">Message:</strong></p>
+          <p style="color: #B0B0C0; line-height: 1.6; margin: 8px 0 0; white-space: pre-wrap;">${data.messagePreview}</p>
+        </div>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.chatUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px;">
+            View Conversation
+          </a>
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          This is an automated notification from ShopifyPro.
+        </p>
+      </div>
+    `,
+  });
+};

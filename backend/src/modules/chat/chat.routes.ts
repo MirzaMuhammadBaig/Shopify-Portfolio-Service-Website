@@ -9,6 +9,7 @@ router.get('/conversations', authenticate, chatController.getConversations);
 router.get('/conversations/:id', authenticate, chatController.getConversation);
 router.post('/conversations', authenticate, validate(chatValidation.createConversation), chatController.createConversation);
 router.post('/conversations/:id/messages', authenticate, validate(chatValidation.sendMessage), chatController.sendMessage);
+router.patch('/conversations/:id/subject', authenticate, validate(chatValidation.updateSubject), chatController.updateSubject);
 router.patch('/conversations/:id/read', authenticate, chatController.markAsRead);
 router.get('/unread', authenticate, chatController.getUnreadCount);
 

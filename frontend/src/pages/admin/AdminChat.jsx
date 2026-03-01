@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useConversations, useConversation, useSendMessage } from '../../hooks/useChat';
+import { useState, useRef, useEffect } from 'react';
+import { useConversations, useConversation, useSendMessage, useMarkAsRead } from '../../hooks/useChat';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { formatDateTime } from '../../utils/formatters';
+import { HiMenuAlt2, HiX, HiSearch } from 'react-icons/hi';
 import styles from './AdminChat.module.css';
 
 const SORT_OPTIONS = [
@@ -18,11 +19,33 @@ export default function AdminChat() {
   const [activeId, setActiveId] = useState(null);
   const [message, setMessage] = useState('');
   const [sort, setSort] = useState('recent');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const stored = localStorage.getItem('adminChatSidebarVisible');
+    return stored !== null ? stored === 'true' : true;
+  });
+  const messagesEndRef = useRef(null);
+
   const { data, isLoading } = useConversations({ sort });
   const { data: activeConv } = useConversation(activeId);
   const sendMessage = useSendMessage();
+  const markAsRead = useMarkAsRead();
   const conversations = data?.data || [];
   const messages = activeConv?.data?.messages || [];
+  const activeConvData = activeConv?.data;
+
+  const filteredConversations = searchTerm
+    ? conversations.filter((c) => {
+        const name = `${c.user.firstName} ${c.user.lastName}`.toLowerCase();
+        const subject = (c.subject || '').toLowerCase();
+        const term = searchTerm.toLowerCase();
+        return name.includes(term) || subject.includes(term);
+      })
+    : conversations;
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length]);
 
   const handleSend = () => {
     if (!message.trim() || !activeId) return;
@@ -30,33 +53,81 @@ export default function AdminChat() {
     setMessage('');
   };
 
+  const handleSelectConversation = (id) => {
+    setActiveId(id);
+    markAsRead.mutate(id);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => {
+      localStorage.setItem('adminChatSidebarVisible', String(!prev));
+      return !prev;
+    });
+  };
+
   if (isLoading) return <LoadingSpinner />;
 
   return (
     <div>
-      <h1 className={styles.title}>Chat Management</h1>
+      <h1 className={styles.pageTitle}>Chat Management</h1>
       <div className={styles.wrapper}>
-        <div className={styles.sidebar}>
-          <div className={styles.sidebarHeader}>
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.sortSelect}>
-              {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-          <div className={styles.convList}>
-            {conversations.map((c) => (
-              <button key={c.id} onClick={() => setActiveId(c.id)} className={`${styles.convItem} ${activeId === c.id ? styles.active : ''}`}>
-                <span className={styles.convName}>{c.user.firstName} {c.user.lastName}</span>
-                <div className={styles.convMeta}>
-                  <span className={styles.convDate}>{formatDateTime(c.updatedAt)}</span>
-                  {c._count?.messages > 0 && <span className={styles.convCount}>{c._count.messages} msgs</span>}
-                </div>
+        {sidebarOpen && (
+          <div className={styles.sidebar}>
+            <div className={styles.sidebarHeader}>
+              <span className={styles.sidebarTitle}>Conversations</span>
+              <button className={styles.toggleBtn} onClick={toggleSidebar} title="Hide sidebar">
+                <HiX size={16} />
               </button>
-            ))}
+            </div>
+            <div className={styles.searchBar}>
+              <div className={styles.searchWrap}>
+                <HiSearch className={styles.searchIcon} />
+                <input
+                  type="text"
+                  placeholder="Search by name or subject..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+              </div>
+            </div>
+            <div className={styles.sortBar}>
+              <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.sortSelect}>
+                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div className={styles.convList}>
+              {filteredConversations.map((c) => (
+                <button key={c.id} onClick={() => handleSelectConversation(c.id)} className={`${styles.convItem} ${activeId === c.id ? styles.active : ''}`}>
+                  <span className={styles.convName}>{c.user.firstName} {c.user.lastName}</span>
+                  {c.subject && <span className={styles.convSubject}>{c.subject}</span>}
+                  <div className={styles.convMeta}>
+                    <span className={styles.convDate}>{formatDateTime(c.updatedAt)}</span>
+                    {c._count?.messages > 0 && <span className={styles.convCount}>{c._count.messages} msgs</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         <div className={styles.chatArea}>
+          {!sidebarOpen && (
+            <button className={styles.showSidebarBtn} onClick={toggleSidebar} title="Show sidebar">
+              <HiMenuAlt2 size={18} />
+            </button>
+          )}
           {activeId ? (
             <>
+              <div className={styles.chatHeader}>
+                <div>
+                  <span className={styles.chatUserName}>
+                    {activeConvData?.user?.firstName} {activeConvData?.user?.lastName}
+                  </span>
+                  {activeConvData?.subject && (
+                    <span className={styles.chatSubject}> — {activeConvData.subject}</span>
+                  )}
+                </div>
+              </div>
               <div className={styles.messages}>
                 {messages.map((m) => (
                   <div key={m.id} className={`${styles.msg} ${m.sender === 'ADMIN' ? styles.sent : styles.received}`}>
@@ -65,6 +136,7 @@ export default function AdminChat() {
                     <span className={styles.time}>{formatDateTime(m.createdAt)}</span>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
               <div className={styles.inputArea}>
                 <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Reply as admin..." onKeyDown={(e) => e.key === 'Enter' && handleSend()} />

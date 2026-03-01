@@ -39,6 +39,7 @@ export const CHAT_MESSAGES = {
   MESSAGE_SENT: 'Message sent successfully',
   FETCHED: 'Messages fetched successfully',
   CONVERSATION_NOT_FOUND: 'Conversation not found',
+  SUBJECT_UPDATED: 'Conversation subject updated',
 } as const;
 
 export const REVIEW_MESSAGES = {

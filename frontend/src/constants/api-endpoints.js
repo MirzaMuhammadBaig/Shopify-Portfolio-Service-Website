@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
     CONVERSATION: (id) => `/chat/conversations/${id}`,
     MESSAGES: (id) => `/chat/conversations/${id}/messages`,
     MARK_READ: (id) => `/chat/conversations/${id}/read`,
+    UPDATE_SUBJECT: (id) => `/chat/conversations/${id}/subject`,
     UNREAD: '/chat/unread',
   },
   REVIEWS: {

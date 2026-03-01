@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiMenu, HiX } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
+import { useUnreadCount } from '../../hooks/useChat';
 import { NAV_ITEMS, ROLES } from '../../constants';
 import ConfirmModal from '../ui/ConfirmModal';
 import styles from './Navbar.module.css';
@@ -13,6 +14,8 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { data: unreadData } = useUnreadCount({ enabled: !!user });
+  const unreadCount = user ? (unreadData?.data?.count || 0) : 0;
 
   // Close mobile menu on route change (back/forward navigation)
   useEffect(() => {
@@ -51,6 +54,11 @@ export default function Navbar() {
                 className={styles.dashboardBtn}
               >
                 {user.role === ROLES.ADMIN ? 'Admin' : 'Dashboard'}
+                {unreadCount > 0 && (
+                  <span className={styles.unreadBadge}>
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </Link>
               <button onClick={() => setShowLogoutModal(true)} className={styles.logoutBtn}>
                 Logout
@@ -98,6 +106,11 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                   >
                     {user.role === ROLES.ADMIN ? 'Admin' : 'Dashboard'}
+                    {unreadCount > 0 && (
+                      <span className={styles.mobileUnreadBadge}>
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
                   </Link>
                   <button
                     className={styles.mobileActionOutline}

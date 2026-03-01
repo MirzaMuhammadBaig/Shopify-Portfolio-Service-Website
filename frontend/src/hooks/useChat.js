@@ -43,10 +43,33 @@ export function useSendMessage() {
   });
 }
 
-export function useUnreadCount() {
+export function useUpdateSubject() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ conversationId, data }) =>
+      chatService.updateSubject(conversationId, data).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.conversations });
+    },
+  });
+}
+
+export function useMarkAsRead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (conversationId) =>
+      chatService.markAsRead(conversationId).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.unread });
+    },
+  });
+}
+
+export function useUnreadCount(options = {}) {
   return useQuery({
     queryKey: QUERY_KEYS.unread,
     queryFn: () => chatService.getUnreadCount().then((res) => res.data),
     refetchInterval: 30000,
+    enabled: options.enabled !== false,
   });
 }

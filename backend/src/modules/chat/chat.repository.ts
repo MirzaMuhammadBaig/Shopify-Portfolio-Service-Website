@@ -70,4 +70,15 @@ export const chatRepository = {
           : { sender: 'USER' }),
       },
     }),
+
+  updateConversationSubject: (id: string, subject: string) =>
+    prisma.conversation.update({
+      where: { id },
+      data: { subject },
+    }),
+
+  countUnreadBySender: (conversationId: string, sender: 'USER' | 'ADMIN' | 'SYSTEM') =>
+    prisma.message.count({
+      where: { conversationId, sender, isRead: false },
+    }),
 };

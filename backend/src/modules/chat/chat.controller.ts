@@ -34,6 +34,11 @@ export const chatController = {
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: 'Messages marked as read' });
   }),
 
+  updateSubject: asyncHandler(async (req: Request, res: Response) => {
+    await chatService.updateSubject(getParam(req, 'id'), req.body.subject);
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: CHAT_MESSAGES.SUBJECT_UPDATED });
+  }),
+
   getUnreadCount: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.role === ROLES.ADMIN ? undefined : req.user!.userId;
     const count = await chatService.getUnreadCount(userId);
