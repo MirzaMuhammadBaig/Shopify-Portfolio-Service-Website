@@ -11,19 +11,24 @@ const getSortOrder = (sort?: string): any => {
 };
 
 export const chatRepository = {
-  findConversations: (userId?: string, sort?: string) =>
-    prisma.conversation.findMany({
+  findConversations: (userId?: string, sort?: string) => {
+    const unreadWhere = userId
+      ? { isRead: false, sender: { not: 'USER' as const } }
+      : { isRead: false, sender: 'USER' as const };
+
+    return prisma.conversation.findMany({
       where: userId ? { userId } : {},
       include: {
         user: { select: { id: true, firstName: true, lastName: true, email: true } },
         messages: {
           take: 1,
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'desc' as const },
         },
-        _count: { select: { messages: true } },
+        _count: { select: { messages: { where: unreadWhere } } },
       },
       orderBy: getSortOrder(sort),
-    }),
+    });
+  },
 
   findConversationById: (id: string) =>
     prisma.conversation.findUnique({

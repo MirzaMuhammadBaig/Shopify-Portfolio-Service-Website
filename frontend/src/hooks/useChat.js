@@ -61,6 +61,7 @@ export function useMarkAsRead() {
       chatService.markAsRead(conversationId).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.unread });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.conversations });
     },
   });
 }

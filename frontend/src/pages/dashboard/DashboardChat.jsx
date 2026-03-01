@@ -126,15 +126,18 @@ export default function DashboardChat() {
             </select>
           </div>
           <div className={styles.convList}>
-            {filteredConversations.map((c) => (
-              <button key={c.id} onClick={() => handleSelectConversation(c.id)} className={`${styles.convItem} ${activeId === c.id ? styles.active : ''}`}>
-                <span className={styles.convSubject}>{c.subject || 'New conversation'}</span>
-                <div className={styles.convMeta}>
+            {filteredConversations.map((c) => {
+              const unread = c._count?.messages || 0;
+              return (
+                <button key={c.id} onClick={() => handleSelectConversation(c.id)} className={`${styles.convItem} ${activeId === c.id ? styles.active : ''} ${unread > 0 ? styles.convUnread : ''}`}>
+                  <div className={styles.convTop}>
+                    <span className={styles.convSubject}>{c.subject || 'New conversation'}</span>
+                    {unread > 0 && <span className={styles.unreadBadge}>{unread}</span>}
+                  </div>
                   <span className={styles.convDate}>{formatDateTime(c.updatedAt)}</span>
-                  {c._count?.messages > 0 && <span className={styles.convCount}>{c._count.messages} msgs</span>}
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

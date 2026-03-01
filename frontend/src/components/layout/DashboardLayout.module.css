@@ -26,13 +26,36 @@
 }
 
 .sidebarLink {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 12px 16px;
   border-radius: 8px;
   color: var(--color-text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
   transition: all var(--transition-fast);
+}
+
+.notifDot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #FF3D00;
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 10px;
+  line-height: 1;
+  animation: notifPulse 2s ease-in-out infinite;
+}
+
+@keyframes notifPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 61, 0, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 61, 0, 0); }
 }
 
 .sidebarLink:hover {
