@@ -1,5 +1,5 @@
 export const PAYMENT_METHODS = {
-  STRIPE: 'STRIPE',
+  SAFEPAY: 'SAFEPAY',
   PAYONEER: 'PAYONEER',
 } as const;
 

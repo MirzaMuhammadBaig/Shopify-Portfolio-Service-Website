@@ -90,7 +90,7 @@ export const PAYMENT_MESSAGES = {
   VERIFIED: 'Payment verified successfully',
   ALREADY_PAID: 'This order has already been paid',
   INVALID_METHOD: 'Invalid payment method',
-  STRIPE_SESSION_CREATED: 'Stripe checkout session created',
+  SAFEPAY_SESSION_CREATED: 'Safepay checkout session created',
 } as const;
 
 export const GENERAL_MESSAGES = {

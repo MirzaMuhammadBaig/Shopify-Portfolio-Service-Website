@@ -5,7 +5,7 @@ import { useOrderById } from '../../hooks/useOrders';
 import {
   usePaymentMethods,
   useCreateManualPayment,
-  useCreateStripeSession,
+  useCreateSafepaySession,
   usePaymentByOrder,
 } from '../../hooks/usePayments';
 import Button from '../../components/ui/Button';
@@ -24,7 +24,7 @@ export default function CheckoutPage() {
   const { data: methodsData, isLoading: methodsLoading } = usePaymentMethods();
   const { data: paymentData } = usePaymentByOrder(orderId);
   const createManual = useCreateManualPayment();
-  const createStripe = useCreateStripeSession();
+  const createSafepay = useCreateSafepaySession();
   const fileInputRef = useRef(null);
 
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -85,13 +85,13 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleStripePayment = async () => {
+  const handleSafepayPayment = async () => {
     try {
-      const result = await createStripe.mutateAsync({ orderId });
+      const result = await createSafepay.mutateAsync({ orderId });
       if (result.data?.url) {
         window.location.href = result.data.url;
       } else {
-        toast.error(result.data?.message || 'Stripe is not configured yet');
+        toast.error('Failed to create payment session');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create payment session');
@@ -225,9 +225,9 @@ export default function CheckoutPage() {
 
             {selectedMethodData && selectedMethodData.type === 'automated' && (
               <Card hover={false} className={styles.detailsCard}>
-                <h4 className={styles.detailsTitle}>Card Payment via Stripe</h4>
+                <h4 className={styles.detailsTitle}>Pay with Card / Wallet via Safepay</h4>
                 <p className={styles.instructions}>{selectedMethodData.instructions}</p>
-                <Button fullWidth onClick={handleStripePayment} loading={createStripe.isPending}>
+                <Button fullWidth onClick={handleSafepayPayment} loading={createSafepay.isPending}>
                   Pay {formatCurrency(order.totalAmount)}
                 </Button>
               </Card>

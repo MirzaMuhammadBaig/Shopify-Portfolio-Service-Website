@@ -34,9 +34,9 @@ export function useCreateManualPayment() {
   });
 }
 
-export function useCreateStripeSession() {
+export function useCreateSafepaySession() {
   return useMutation({
-    mutationFn: (data) => paymentService.createStripeSession(data).then((res) => res.data),
+    mutationFn: (data) => paymentService.createSafepaySession(data).then((res) => res.data),
   });
 }
 

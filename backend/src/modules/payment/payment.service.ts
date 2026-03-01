@@ -1,3 +1,4 @@
+import { Safepay } from '@sfpy/node-sdk';
 import { paymentRepository } from './payment.repository';
 import { orderRepository } from '../order/order.repository';
 import { ApiError } from '../../utils/api-error';
@@ -6,14 +7,21 @@ import { getPagination, getMeta } from '../../utils/pagination';
 import { sendPaymentNotificationEmail } from '../../utils/email';
 import { config } from '../../config';
 
+const safepay = new Safepay({
+  environment: config.payment.safepay.environment as 'sandbox' | 'production',
+  apiKey: config.payment.safepay.apiKey,
+  v1Secret: config.payment.safepay.v1Secret,
+  webhookSecret: config.payment.safepay.webhookSecret,
+} as any);
+
 export const paymentService = {
   getPaymentMethods: () => ({
     methods: [
       {
-        id: PAYMENT_METHODS.STRIPE,
-        name: 'Credit / Debit Card',
+        id: PAYMENT_METHODS.SAFEPAY,
+        name: 'Credit / Debit Card / Wallet',
         type: 'automated',
-        instructions: 'Pay securely with Visa, Mastercard, or any debit/credit card via Stripe.',
+        instructions: 'Pay securely with Visa, Mastercard, JazzCash, EasyPaisa or bank transfer via Safepay.',
       },
       {
         id: PAYMENT_METHODS.PAYONEER,
@@ -76,7 +84,7 @@ export const paymentService = {
     });
   },
 
-  createStripeSession: async (data: {
+  createSafepaySession: async (data: {
     orderId: string;
     userId: string;
   }) => {
@@ -97,20 +105,63 @@ export const paymentService = {
         orderId: data.orderId,
         userId: data.userId,
         amount: Number(order.totalAmount),
-        method: PAYMENT_METHODS.STRIPE,
+        method: PAYMENT_METHODS.SAFEPAY,
       });
     }
 
-    // Stripe Checkout integration placeholder
-    // When STRIPE_SECRET_KEY is configured, implement:
-    // const stripe = new Stripe(config.payment.stripe.secretKey);
-    // const session = await stripe.checkout.sessions.create({ ... });
-    // return { sessionId: session.id, url: session.url, paymentId: payment.id };
+    const { token } = await safepay.payments.create({
+      amount: Number(order.totalAmount),
+      currency: 'PKR',
+    });
+
+    // Store the tracker token so we can match it on webhook callback
+    await paymentRepository.updateStatus(payment.id, {
+      status: 'PENDING',
+      transactionId: token,
+    });
+
+    const checkoutUrl = safepay.checkout.create({
+      token,
+      orderId: order.orderNumber,
+      cancelUrl: `${config.frontendUrl}/checkout/${data.orderId}`,
+      redirectUrl: `${config.frontendUrl}/payment/success/${data.orderId}`,
+      source: 'custom',
+      webhooks: true,
+    });
 
     return {
       paymentId: payment.id,
-      message: 'Stripe is not configured yet. Please use an alternative payment method.',
+      url: checkoutUrl,
     };
+  },
+
+  handleSafepayWebhook: async (req: { body?: any; headers?: any }) => {
+    const isValid = safepay.verify.webhook(req);
+    if (!isValid) {
+      throw new ApiError(HTTP_STATUS.UNAUTHORIZED, 'Invalid webhook signature');
+    }
+
+    const tracker = req.body?.data?.tracker;
+    if (!tracker) {
+      throw new ApiError(HTTP_STATUS.BAD_REQUEST, 'Missing tracker token');
+    }
+
+    // Find the payment by the tracker token we stored as transactionId
+    const payments = await paymentRepository.findAll(0, 1, { transactionId: tracker });
+    const payment = payments[0];
+
+    if (!payment) {
+      throw new ApiError(HTTP_STATUS.NOT_FOUND, 'Payment not found for this tracker');
+    }
+
+    if (payment.status === 'PAID') {
+      return payment;
+    }
+
+    return paymentRepository.updateStatus(payment.id, {
+      status: 'PAID',
+      paidAt: new Date(),
+    });
   },
 
   verifyPayment: async (id: string, data: { status: string }) => {

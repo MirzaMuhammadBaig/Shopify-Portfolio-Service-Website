@@ -13,7 +13,7 @@ export const paymentValidation = {
       .withMessage('Transaction ID is required'),
   ],
 
-  createStripeSession: [
+  createSafepaySession: [
     body('orderId').isUUID().withMessage('Valid order ID required'),
   ],
 

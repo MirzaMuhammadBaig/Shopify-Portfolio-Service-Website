@@ -21,12 +21,20 @@ export const paymentController = {
     sendResponse({ res, statusCode: HTTP_STATUS.CREATED, message: PAYMENT_MESSAGES.CREATED, data: payment });
   }),
 
-  createStripeSession: asyncHandler(async (req: Request, res: Response) => {
-    const result = await paymentService.createStripeSession({
+  createSafepaySession: asyncHandler(async (req: Request, res: Response) => {
+    const result = await paymentService.createSafepaySession({
       orderId: req.body.orderId,
       userId: req.user!.userId,
     });
-    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: PAYMENT_MESSAGES.STRIPE_SESSION_CREATED, data: result });
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: PAYMENT_MESSAGES.SAFEPAY_SESSION_CREATED, data: result });
+  }),
+
+  safepayWebhook: asyncHandler(async (req: Request, res: Response) => {
+    const payment = await paymentService.handleSafepayWebhook({
+      body: req.body,
+      headers: req.headers,
+    });
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: PAYMENT_MESSAGES.VERIFIED, data: payment });
   }),
 
   getByOrderId: asyncHandler(async (req: Request, res: Response) => {

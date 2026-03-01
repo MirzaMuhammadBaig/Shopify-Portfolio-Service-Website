@@ -19,6 +19,7 @@ const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
 const BlogDetailPage = lazy(() => import('./pages/blog/BlogDetailPage'));
 const ContactPage = lazy(() => import('./pages/contact/ContactPage'));
 const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
+const PaymentSuccessPage = lazy(() => import('./pages/payment/PaymentSuccessPage'));
 
 // Dashboard (rarely visited by most users)
 const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout'));
@@ -60,7 +61,8 @@ export default function App() {
         <Route element={<Layout><GuestRoute><ForgotPasswordPage /></GuestRoute></Layout>} path="/forgot-password" />
         <Route element={<Layout><ResetPasswordPage /></Layout>} path="/reset-password" />
 
-        {/* Checkout (authenticated) */}
+        {/* Payment */}
+        <Route element={<Layout><PaymentSuccessPage /></Layout>} path="/payment/success/:orderId" />
         <Route element={<ProtectedRoute><Layout><CheckoutPage /></Layout></ProtectedRoute>} path="/checkout/:orderId" />
 
         {/* User Dashboard */}

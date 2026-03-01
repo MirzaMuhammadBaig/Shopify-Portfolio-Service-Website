@@ -43,9 +43,11 @@ export const config = {
   },
 
   payment: {
-    stripe: {
-      secretKey: process.env.STRIPE_SECRET_KEY || '',
-      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+    safepay: {
+      apiKey: process.env.SAFEPAY_API_KEY || '',
+      v1Secret: process.env.SAFEPAY_V1_SECRET || '',
+      webhookSecret: process.env.SAFEPAY_WEBHOOK_SECRET || '',
+      environment: (process.env.SAFEPAY_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production',
     },
     payoneer: {
       name: process.env.PAYONEER_NAME || '',
