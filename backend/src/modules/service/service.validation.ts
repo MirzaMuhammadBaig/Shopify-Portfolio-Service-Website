@@ -10,6 +10,7 @@ export const serviceValidation = {
     body('icon').optional().isString(),
     body('image').optional().isString(),
     body('isFeatured').optional().isBoolean(),
+    body('deliveryDays').optional().isInt({ min: 1 }).withMessage('Delivery days must be at least 1'),
     body('sortOrder').optional().isInt({ min: 0 }),
   ],
 
@@ -23,6 +24,7 @@ export const serviceValidation = {
     body('image').optional().isString(),
     body('isFeatured').optional().isBoolean(),
     body('isActive').optional().isBoolean(),
+    body('deliveryDays').optional().isInt({ min: 1 }).withMessage('Delivery days must be at least 1'),
     body('sortOrder').optional().isInt({ min: 0 }),
   ],
 };

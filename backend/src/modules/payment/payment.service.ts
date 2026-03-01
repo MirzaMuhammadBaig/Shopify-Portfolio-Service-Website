@@ -1,10 +1,12 @@
 import { Safepay } from '@sfpy/node-sdk';
 import { paymentRepository } from './payment.repository';
 import { orderRepository } from '../order/order.repository';
+import { chatRepository } from '../chat/chat.repository';
+import { chatService } from '../chat/chat.service';
 import { ApiError } from '../../utils/api-error';
 import { HTTP_STATUS, PAYMENT_MESSAGES, PAYMENT_METHODS, MANUAL_PAYMENT_METHODS, ORDER_STATUS } from '../../constants';
 import { getPagination, getMeta } from '../../utils/pagination';
-import { sendPaymentNotificationEmail } from '../../utils/email';
+import { sendPaymentNotificationEmail, sendPaymentSuccessEmail, sendOrderStatusEmail } from '../../utils/email';
 import { config } from '../../config';
 
 const safepay = new Safepay({
@@ -13,6 +15,93 @@ const safepay = new Safepay({
   v1Secret: config.payment.safepay.v1Secret,
   webhookSecret: config.payment.safepay.webhookSecret,
 } as any);
+
+/** Shared logic: auto-start order + send emails + chat message after payment confirmed */
+const handlePaymentConfirmed = async (order: any) => {
+  const serviceTitle = order.service?.title || 'Custom Order';
+  const customerName = `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim();
+  const customerEmail = order.user?.email || '';
+  const now = new Date();
+
+  // Auto-start order: set IN_PROGRESS with timeline
+  if (order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.CONFIRMED) {
+    const updateData: any = { status: ORDER_STATUS.IN_PROGRESS, startedAt: now };
+    if (order.service?.deliveryDays) {
+      updateData.estimatedDelivery = new Date(now.getTime() + order.service.deliveryDays * 86400000);
+    }
+    await orderRepository.updateStatus(order.id, updateData);
+  }
+
+  const estimatedDelivery = order.service?.deliveryDays
+    ? new Date(now.getTime() + order.service.deliveryDays * 86400000)
+    : undefined;
+
+  // Email to user: payment success
+  if (customerEmail) {
+    sendPaymentSuccessEmail({
+      to: customerEmail,
+      recipientName: order.user?.firstName || 'Customer',
+      orderNumber: order.orderNumber,
+      serviceTitle,
+      amount: Number(order.totalAmount),
+      estimatedDelivery,
+      dashboardUrl: `${config.frontendUrl}/dashboard/orders`,
+    }).catch((err) => console.error('Failed to send payment success email:', err));
+  }
+
+  // Email to both: order status "In Progress"
+  const emailData = {
+    orderNumber: order.orderNumber,
+    serviceTitle,
+    statusLabel: 'In Progress',
+    customerName,
+    customerEmail,
+  };
+
+  if (customerEmail) {
+    sendOrderStatusEmail({
+      ...emailData,
+      to: customerEmail,
+      recipientName: order.user?.firstName || 'Customer',
+      isAdmin: false,
+    }).catch((err) => console.error('Failed to send status email to customer:', err));
+  }
+
+  sendOrderStatusEmail({
+    ...emailData,
+    to: 'webdev.muhammad@gmail.com',
+    recipientName: 'Admin',
+    isAdmin: true,
+  }).catch((err) => console.error('Failed to send status email to admin:', err));
+
+  // Chat: thank-you message to user
+  const deliveryNote = estimatedDelivery
+    ? ` Your estimated delivery date is ${estimatedDelivery.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.`
+    : '';
+
+  const thankYouMessage = `Thank you for your purchase! Your order #${order.orderNumber} for "${serviceTitle}" has been confirmed and is now in progress. Our team has started working on your project right away!${deliveryNote} We'll keep you updated on the progress. If you have any questions, feel free to message us here!`;
+
+  try {
+    // Find existing conversation or create new one
+    const conversations = await chatRepository.findConversations(order.userId);
+    let conversationId: string;
+
+    if (conversations.length > 0) {
+      conversationId = conversations[0].id;
+    } else {
+      const newConv = await chatRepository.createConversation(
+        order.userId,
+        `Order #${order.orderNumber} — ${serviceTitle}`,
+      );
+      conversationId = newConv.id;
+    }
+
+    // Send as ADMIN — triggers email notification via chat deduplication system
+    await chatService.sendMessage(conversationId, 'ADMIN', thankYouMessage);
+  } catch (err) {
+    console.error('Failed to send thank-you chat message:', err);
+  }
+};
 
 export const paymentService = {
   getPaymentMethods: () => ({
@@ -163,14 +252,11 @@ export const paymentService = {
       paidAt: new Date(),
     });
 
-    // Auto-confirm order and notify admin
+    // Auto-start order, send emails, and chat message
     if (payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {
-        if (order.status === ORDER_STATUS.PENDING) {
-          await orderRepository.updateStatus(order.id, { status: ORDER_STATUS.CONFIRMED });
-        }
-
+        // Admin payment notification
         sendPaymentNotificationEmail({
           orderNumber: order.orderNumber,
           serviceTitle: order.service?.title || 'Custom Order',
@@ -180,6 +266,9 @@ export const paymentService = {
           customerName: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim(),
           customerEmail: order.user?.email || '',
         }).catch((err) => console.error('Failed to send Safepay payment notification:', err));
+
+        // Auto-start + user email + chat message
+        await handlePaymentConfirmed(order);
       }
     }
 
@@ -195,7 +284,17 @@ export const paymentService = {
       updateData.paidAt = new Date();
     }
 
-    return paymentRepository.updateStatus(id, updateData);
+    const updatedPayment = await paymentRepository.updateStatus(id, updateData);
+
+    // When admin verifies manual payment as PAID, auto-start the order
+    if (data.status === 'PAID' && payment.orderId) {
+      const order = await orderRepository.findById(payment.orderId);
+      if (order) {
+        await handlePaymentConfirmed(order);
+      }
+    }
+
+    return updatedPayment;
   },
 
   getByOrderId: async (orderId: string) => {

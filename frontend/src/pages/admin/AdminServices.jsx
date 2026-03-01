@@ -9,7 +9,7 @@ import { formatCurrency } from '../../utils/formatters';
 import toast from 'react-hot-toast';
 import styles from './AdminTable.module.css';
 
-const EMPTY_FORM = { title: '', description: '', shortDesc: '', price: '', features: '' };
+const EMPTY_FORM = { title: '', description: '', shortDesc: '', price: '', features: '', deliveryDays: '' };
 
 export default function AdminServices() {
   const [showForm, setShowForm] = useState(false);
@@ -37,6 +37,7 @@ export default function AdminServices() {
       shortDesc: s.shortDesc || '',
       price: s.price?.toString() || '',
       features: Array.isArray(s.features) ? s.features.join(', ') : '',
+      deliveryDays: s.deliveryDays?.toString() || '',
     });
     setShowForm(true);
   };
@@ -47,6 +48,7 @@ export default function AdminServices() {
       ...form,
       price: parseFloat(form.price),
       features: form.features.split(',').map((f) => f.trim()).filter(Boolean),
+      deliveryDays: form.deliveryDays ? parseInt(form.deliveryDays, 10) : undefined,
     };
     try {
       if (editingId) {
@@ -92,6 +94,7 @@ export default function AdminServices() {
             <Input label="Short Description" name="shortDesc" value={form.shortDesc} onChange={handleChange} required />
             <Input label="Description" name="description" type="textarea" value={form.description} onChange={handleChange} required />
             <Input label="Price" name="price" type="number" value={form.price} onChange={handleChange} required />
+            <Input label="Delivery Days" name="deliveryDays" type="number" value={form.deliveryDays} onChange={handleChange} placeholder="e.g. 7" />
             <Input label="Features (comma-separated)" name="features" value={form.features} onChange={handleChange} />
             <Button type="submit" loading={editingId ? updateService.isPending : createService.isPending}>
               {editingId ? 'Update Service' : 'Create Service'}
@@ -105,7 +108,7 @@ export default function AdminServices() {
           <Card key={s.id} className={styles.row}>
             <div className={styles.rowMain}>
               <span className={styles.rowTitle}>{s.title}</span>
-              <span className={styles.rowMeta}>{formatCurrency(s.price)}</span>
+              <span className={styles.rowMeta}>{formatCurrency(s.price)}{s.deliveryDays ? ` · ${s.deliveryDays} days` : ''}</span>
             </div>
             <div className={styles.rowActions}>
               <Badge variant={s.isActive ? 'success' : 'neutral'}>{s.isActive ? 'Active' : 'Inactive'}</Badge>

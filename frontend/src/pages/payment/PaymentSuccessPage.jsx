@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { HiCheckCircle, HiClock, HiHome } from 'react-icons/hi';
+import { HiCheckCircle, HiClock, HiHome, HiChat } from 'react-icons/hi';
 import { paymentService } from '../../services/payment.service';
+import { orderService } from '../../services/order.service';
+import { formatCurrency, formatDate } from '../../utils/formatters';
 import Button from '../../components/ui/Button';
 import styles from './PaymentSuccessPage.module.css';
 
 export default function PaymentSuccessPage() {
   const { orderId } = useParams();
   const [status, setStatus] = useState('processing');
+  const [order, setOrder] = useState(null);
 
   useEffect(() => {
     if (!orderId) return;
@@ -23,6 +26,14 @@ export default function PaymentSuccessPage() {
         if (payment?.status === 'PAID') {
           setStatus('confirmed');
           clearInterval(interval);
+
+          // Fetch order details for display
+          try {
+            const orderRes = await orderService.getById(orderId);
+            setOrder(orderRes.data?.data);
+          } catch {
+            // Order details are optional for the success page
+          }
         }
       } catch {
         // Payment record may not exist yet, keep polling
@@ -50,13 +61,13 @@ export default function PaymentSuccessPage() {
           )}
 
           <h1 className={styles.title}>
-            {status === 'confirmed' ? 'Payment Confirmed!' : 'Payment Successful!'}
+            {status === 'confirmed' ? 'Payment Successful!' : 'Processing Payment...'}
           </h1>
 
           <p className={styles.text}>
             {status === 'confirmed'
-              ? 'Your payment has been verified. Thank you for your order!'
-              : 'Your payment is being confirmed. This usually takes a few seconds.'}
+              ? 'Your order is confirmed and our team has started working on it right away!'
+              : 'Your payment is being processed. This usually takes a few seconds.'}
           </p>
 
           {status === 'processing' && (
@@ -66,10 +77,50 @@ export default function PaymentSuccessPage() {
             </div>
           )}
 
+          {status === 'confirmed' && order && (
+            <div className={styles.orderInfo}>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Order</span>
+                <span className={styles.infoValue}>{order.orderNumber}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Service</span>
+                <span className={styles.infoValue}>{order.service?.title || 'Custom Order'}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Amount</span>
+                <span className={styles.infoValue}>{formatCurrency(order.totalAmount)}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Status</span>
+                <span className={styles.infoValueHighlight}>In Progress</span>
+              </div>
+              {order.estimatedDelivery && (
+                <div className={styles.infoRow}>
+                  <span className={styles.infoLabel}>Est. Delivery</span>
+                  <span className={styles.infoValueHighlight}>{formatDate(order.estimatedDelivery)}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {status === 'confirmed' && (
+            <p className={styles.chatNote}>
+              We've sent you a message with more details — check your chat!
+            </p>
+          )}
+
           <div className={styles.actions}>
             <Link to="/dashboard/orders">
               <Button>View My Orders</Button>
             </Link>
+            {status === 'confirmed' && (
+              <Link to="/dashboard/chat">
+                <Button variant="outline">
+                  <HiChat /> View Messages
+                </Button>
+              </Link>
+            )}
             <Link to="/">
               <Button variant="outline">
                 <HiHome /> Back to Home

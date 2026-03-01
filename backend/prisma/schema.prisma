@@ -82,6 +82,7 @@ model Service {
   image       String?
   isActive    Boolean  @default(true) @map("is_active")
   isFeatured  Boolean  @default(false) @map("is_featured")
+  deliveryDays Int?    @map("delivery_days")
   sortOrder   Int      @default(0) @map("sort_order")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -107,9 +108,10 @@ model Order {
   requirements   String?
   deliverables   String?
   adminNotes     String?     @map("admin_notes")
-  startedAt      DateTime?   @map("started_at")
-  completedAt    DateTime?   @map("completed_at")
-  deliveredAt    DateTime?   @map("delivered_at")
+  startedAt         DateTime?   @map("started_at")
+  estimatedDelivery DateTime?   @map("estimated_delivery")
+  completedAt       DateTime?   @map("completed_at")
+  deliveredAt       DateTime?   @map("delivered_at")
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
 

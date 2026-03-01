@@ -52,10 +52,56 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+.orderInfo {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infoLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.infoValueHighlight {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.chatNote {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  background: rgba(0, 217, 255, 0.06);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 217, 255, 0.15);
+}
+
 .actions {
   display: flex;
   gap: 12px;
   margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 @keyframes scaleIn {

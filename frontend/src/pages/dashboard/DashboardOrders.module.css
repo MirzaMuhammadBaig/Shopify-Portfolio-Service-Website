@@ -13,3 +13,9 @@
 .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 32px; }
 .pageBtn { width: 36px; height: 36px; border-radius: 8px; background: var(--color-surface); color: var(--color-text-secondary); font-weight: 600; border: 1px solid var(--color-border); }
 .pageBtn:hover, .pageBtn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+.timeline { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-border); }
+.timelineDates { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 6px; }
+.timelineTrack { width: 100%; height: 6px; background: var(--color-border); border-radius: 3px; overflow: hidden; }
+.timelineFill { height: 100%; background: linear-gradient(90deg, #6C63FF, #00D9FF); border-radius: 3px; transition: width 0.3s ease; }
+.timelinePercent { display: block; text-align: right; font-size: 0.72rem; color: var(--color-primary); font-weight: 500; margin-top: 4px; }

@@ -102,6 +102,9 @@ export default function AdminOrders() {
                     <span className={styles.rowTitle}>{order.orderNumber}</span>
                     <p className={styles.rowMeta}>{order.user.firstName} {order.user.lastName} — {order.user.email}</p>
                     <p className={styles.rowMeta}>{order.service?.title || 'Custom'}</p>
+                    {order.estimatedDelivery && (
+                      <p className={styles.rowMeta}>Est. delivery: {formatDate(order.estimatedDelivery)}</p>
+                    )}
                   </div>
                   <span className={styles.rowMeta}>{formatCurrency(order.totalAmount)}</span>
                 </div>

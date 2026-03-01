@@ -274,6 +274,58 @@ export const sendReviewNotificationEmail = async (data: {
   });
 };
 
+export const sendPaymentSuccessEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  amount: number;
+  estimatedDelivery?: Date;
+  dashboardUrl: string;
+}) => {
+  const deliveryLine = data.estimatedDelivery
+    ? `<p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Estimated Delivery:</strong> <span style="color: #00D9FF;">${data.estimatedDelivery.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></p>`
+    : '';
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject: `Payment Successful — Order #${data.orderNumber}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: #B0B0C0; margin-top: 8px;">Payment Confirmation</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">Thank you, ${data.recipientName}!</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+          Your payment has been successfully processed and your order is now <strong style="color: #00D9FF;">in progress</strong>. Our team has started working on your project right away!
+        </p>
+        <div style="background: #1E1E3F; border: 1px solid #2A2A4A; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Service:</strong> ${data.serviceTitle}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Amount Paid:</strong> $${data.amount.toFixed(2)}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Status:</strong> <span style="color: #00D9FF;">In Progress</span></p>
+          ${deliveryLine}
+        </div>
+        <p style="color: #B0B0C0; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+          We've also sent you a message in your chat — check it out for more details about your order!
+        </p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.dashboardUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px;">
+            View Your Orders
+          </a>
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          If you have any questions, please reach out through the chat feature on our website. We're here to help!
+        </p>
+      </div>
+    `,
+  });
+};
+
 export const sendChatMessageNotificationEmail = async (data: {
   to: string;
   recipientName: string;

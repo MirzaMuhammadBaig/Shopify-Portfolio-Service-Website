@@ -76,7 +76,11 @@ export const orderService = {
     const updateData: any = { status: data.status, adminNotes: data.adminNotes };
 
     if (data.status === ORDER_STATUS.IN_PROGRESS && !order.startedAt) {
-      updateData.startedAt = new Date();
+      const now = new Date();
+      updateData.startedAt = now;
+      if (order.service?.deliveryDays && !order.estimatedDelivery) {
+        updateData.estimatedDelivery = new Date(now.getTime() + order.service.deliveryDays * 86400000);
+      }
     }
     if (data.status === ORDER_STATUS.COMPLETED) {
       updateData.completedAt = new Date();

@@ -60,6 +60,7 @@ export const orderRepository = {
     status: string;
     adminNotes?: string;
     startedAt?: Date;
+    estimatedDelivery?: Date;
     completedAt?: Date;
     deliveredAt?: Date;
   }) => prisma.order.update({ where: { id }, data: data as any }),

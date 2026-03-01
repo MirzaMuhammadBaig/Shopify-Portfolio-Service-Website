@@ -18,6 +18,29 @@ const STATUS_BADGE_MAP = {
   CANCELLED: 'error',
 };
 
+function OrderTimeline({ startedAt, estimatedDelivery, status }) {
+  const start = new Date(startedAt).getTime();
+  const end = new Date(estimatedDelivery).getTime();
+  const now = Date.now();
+  const total = end - start;
+  const elapsed = now - start;
+  const isComplete = status === 'COMPLETED' || status === 'DELIVERED';
+  const progress = isComplete ? 100 : total > 0 ? Math.min(100, Math.max(0, Math.round((elapsed / total) * 100))) : 0;
+
+  return (
+    <div className={styles.timeline}>
+      <div className={styles.timelineDates}>
+        <span>Started {formatDate(startedAt)}</span>
+        <span>Est. {formatDate(estimatedDelivery)}</span>
+      </div>
+      <div className={styles.timelineTrack}>
+        <div className={styles.timelineFill} style={{ width: `${progress}%` }} />
+      </div>
+      <span className={styles.timelinePercent}>{progress}% complete</span>
+    </div>
+  );
+}
+
 const FILTER_OPTIONS = [
   { value: null, label: 'All' },
   ...Object.entries(ORDER_STATUS).map(([, v]) => ({ value: v, label: ORDER_STATUS_LABELS[v] })),
@@ -73,6 +96,9 @@ export default function DashboardOrders() {
                   <span>{formatCurrency(order.totalAmount)}</span>
                   <span>{formatDate(order.createdAt)}</span>
                 </div>
+                {order.startedAt && order.estimatedDelivery && (
+                  <OrderTimeline startedAt={order.startedAt} estimatedDelivery={order.estimatedDelivery} status={order.status} />
+                )}
               </Card>
             ))}
           </div>
