@@ -209,6 +209,8 @@
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border);
   overflow: hidden;
+  position: relative;
+  z-index: 1000;
 }
 
 .mobileLink {
