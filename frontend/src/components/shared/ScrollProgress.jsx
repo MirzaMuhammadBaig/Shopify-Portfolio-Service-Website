@@ -2,28 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './ScrollProgress.module.css';
 
 export default function ScrollProgress() {
-  const [visible, setVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [side, setSide] = useState(() => localStorage.getItem('scrollbar-side') || 'right');
   const thumbRef = useRef(null);
   const progressRef = useRef(0);
   const dragging = useRef(false);
-  const hideTimer = useRef(null);
   const rafId = useRef(null);
 
-  const show = useCallback(() => {
-    setVisible(true);
-    clearTimeout(hideTimer.current);
-  }, []);
-
-  const hideAfterDelay = useCallback(() => {
-    clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => {
-      if (!dragging.current) setVisible(false);
-    }, 1500);
-  }, []);
-
-  // Use rAF + direct DOM manipulation for smooth performance
   const updateThumbPosition = useCallback(() => {
     const thumb = thumbRef.current;
     if (!thumb) return;
@@ -39,11 +24,7 @@ export default function ScrollProgress() {
   useEffect(() => {
     const onScroll = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
-      rafId.current = requestAnimationFrame(() => {
-        updateThumbPosition();
-        show();
-        hideAfterDelay();
-      });
+      rafId.current = requestAnimationFrame(updateThumbPosition);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     updateThumbPosition();
@@ -51,7 +32,7 @@ export default function ScrollProgress() {
       window.removeEventListener('scroll', onScroll);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [updateThumbPosition, show, hideAfterDelay]);
+  }, [updateThumbPosition]);
 
   const scrollToPosition = useCallback((clientY) => {
     const viewH = window.innerHeight;
@@ -66,7 +47,6 @@ export default function ScrollProgress() {
     e.stopPropagation();
     dragging.current = true;
     setIsDragging(true);
-    show();
     document.body.style.userSelect = 'none';
     scrollToPosition(e.clientY);
 
@@ -77,12 +57,11 @@ export default function ScrollProgress() {
       document.body.style.userSelect = '';
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
-      hideAfterDelay();
     };
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-  }, [scrollToPosition, show, hideAfterDelay]);
+  }, [scrollToPosition]);
 
   const toggleSide = useCallback(() => {
     setSide((prev) => {
@@ -95,10 +74,8 @@ export default function ScrollProgress() {
   return (
     <div
       ref={thumbRef}
-      className={`${styles.thumb} ${visible ? styles.visible : ''} ${isDragging ? styles.dragging : ''} ${side === 'left' ? styles.left : ''}`}
+      className={`${styles.thumb} ${isDragging ? styles.dragging : ''} ${side === 'left' ? styles.left : ''}`}
       onPointerDown={handlePointerDown}
-      onPointerEnter={() => { show(); }}
-      onPointerLeave={() => { hideAfterDelay(); }}
       onDoubleClick={toggleSide}
     />
   );
