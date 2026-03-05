@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { HiCheckCircle, HiArrowLeft } from 'react-icons/hi';
+import { HiCheckCircle, HiArrowLeft, HiClock } from 'react-icons/hi';
 import { useServiceBySlug } from '../../hooks/useServices';
 import { useServiceReviews } from '../../hooks/useReviews';
 import { useCreateOrder } from '../../hooks/useOrders';
@@ -83,6 +83,9 @@ export default function ServiceDetailPage() {
             <div className={styles.priceCard}>
               <span className={styles.priceLabel}>Starting at</span>
               <span className={styles.price}>{formatCurrency(service.price)}</span>
+              {service.deliveryDays && (
+                <span className={styles.delivery}><HiClock /> {service.deliveryDays} day{service.deliveryDays > 1 ? 's' : ''} delivery</span>
+              )}
               <Button fullWidth onClick={handleOrderClick} loading={createOrder.isPending}>
                 Order Now
               </Button>

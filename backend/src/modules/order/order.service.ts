@@ -74,7 +74,7 @@ export const orderService = {
     const order = await orderRepository.findById(id);
     if (!order) throw new ApiError(HTTP_STATUS.NOT_FOUND, ORDER_MESSAGES.NOT_FOUND);
 
-    const updateData: any = { status: data.status, adminNotes: data.adminNotes };
+    const updateData: any = { status: data.status, adminNotes: data.adminNotes, lastDeadlineReminder: null };
 
     if (data.status === ORDER_STATUS.IN_PROGRESS && !order.startedAt) {
       const now = new Date();

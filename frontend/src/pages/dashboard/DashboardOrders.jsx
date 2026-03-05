@@ -29,18 +29,67 @@ function OrderTimeline({ startedAt, estimatedDelivery, status }) {
   const total = end - start;
   const elapsed = now - start;
   const isComplete = status === 'COMPLETED' || status === 'DELIVERED';
-  const progress = isComplete ? 100 : total > 0 ? Math.min(100, Math.max(0, Math.round((elapsed / total) * 100))) : 0;
+
+  const hoursRemaining = (end - now) / (1000 * 60 * 60);
+  const isOverdue = !isComplete && hoursRemaining <= 0;
+
+  const progress = isComplete || isOverdue
+    ? 100
+    : total > 0
+      ? Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)))
+      : 0;
+
+  let colorVariant = 'normal';
+  if (!isComplete) {
+    if (isOverdue) colorVariant = 'overdue';
+    else if (hoursRemaining <= 12) colorVariant = 'critical';
+    else if (hoursRemaining <= 24) colorVariant = 'urgent';
+    else if (hoursRemaining <= 48) colorVariant = 'warning';
+  }
+
+  const fillColors = {
+    normal: 'linear-gradient(90deg, #6C63FF, #00D9FF)',
+    warning: '#FFB300',
+    urgent: '#FF3D00',
+    critical: '#FF3D00',
+    overdue: '#B71C1C',
+  };
+
+  const percentClasses = {
+    normal: '',
+    warning: styles.timelinePercentWarning,
+    urgent: styles.timelinePercentUrgent,
+    critical: styles.timelinePercentCritical,
+    overdue: styles.timelinePercentOverdue,
+  };
+
+  const getTimeDisplay = () => {
+    if (isComplete) return `${progress}% complete`;
+    if (isOverdue) {
+      const overdueHours = Math.abs(hoursRemaining);
+      if (overdueHours < 1) return `Overdue by ${Math.round(overdueHours * 60)}m`;
+      if (overdueHours < 24) return `Overdue by ${Math.round(overdueHours)}h`;
+      const days = Math.floor(overdueHours / 24);
+      const hrs = Math.round(overdueHours % 24);
+      return `Overdue by ${days}d ${hrs}h`;
+    }
+    return `${progress}% complete`;
+  };
 
   return (
     <div className={styles.timeline}>
       <div className={styles.timelineDates}>
         <span>Started {formatDate(startedAt)}</span>
-        <span>Est. {formatDate(estimatedDelivery)}</span>
+        <span className={colorVariant === 'overdue' ? styles.timelineDateOverdue : ''}>
+          Est. {formatDate(estimatedDelivery)}
+        </span>
       </div>
       <div className={styles.timelineTrack}>
-        <div className={styles.timelineFill} style={{ width: `${progress}%` }} />
+        <div className={styles.timelineFill} style={{ width: `${progress}%`, background: fillColors[colorVariant] }} />
       </div>
-      <span className={styles.timelinePercent}>{progress}% complete</span>
+      <span className={`${styles.timelinePercent} ${percentClasses[colorVariant] || ''}`}>
+        {getTimeDisplay()}
+      </span>
     </div>
   );
 }

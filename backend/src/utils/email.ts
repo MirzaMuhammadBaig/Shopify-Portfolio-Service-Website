@@ -369,3 +369,95 @@ export const sendPaymentSuccessEmail = async (data: {
   });
 };
 
+export const sendDeadlineReminderEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  customerName: string;
+  customerEmail: string;
+  isAdmin: boolean;
+  severity: 'TWO_DAYS' | 'ONE_DAY' | 'TWELVE_HOURS' | 'OVERDUE';
+  timeRemaining: string;
+  estimatedDelivery: Date;
+}) => {
+  const severityConfig = {
+    TWO_DAYS: {
+      color: '#FFB300',
+      label: '2 Days Remaining',
+      bgTint: 'rgba(255, 179, 0, 0.1)',
+      borderColor: 'rgba(255, 179, 0, 0.3)',
+    },
+    ONE_DAY: {
+      color: '#FF3D00',
+      label: '1 Day Remaining',
+      bgTint: 'rgba(255, 61, 0, 0.1)',
+      borderColor: 'rgba(255, 61, 0, 0.3)',
+    },
+    TWELVE_HOURS: {
+      color: '#FF3D00',
+      label: '12 Hours Remaining',
+      bgTint: 'rgba(255, 61, 0, 0.15)',
+      borderColor: 'rgba(255, 61, 0, 0.4)',
+    },
+    OVERDUE: {
+      color: '#B71C1C',
+      label: 'Deadline Passed',
+      bgTint: 'rgba(183, 28, 28, 0.15)',
+      borderColor: 'rgba(183, 28, 28, 0.4)',
+    },
+  };
+
+  const cfg = severityConfig[data.severity];
+
+  const subject = data.isAdmin
+    ? `Deadline Alert: Order #${data.orderNumber} — ${cfg.label}`
+    : `Order #${data.orderNumber} — ${cfg.label}`;
+
+  const heading = data.isAdmin ? 'Deadline Alert' : `Hi ${data.recipientName},`;
+
+  const mainMessage = data.severity === 'OVERDUE'
+    ? (data.isAdmin
+        ? `Order #${data.orderNumber} has passed its estimated delivery deadline.`
+        : `Your order has passed its estimated delivery date. Our team is working to complete it as soon as possible.`)
+    : (data.isAdmin
+        ? `Order #${data.orderNumber} has approximately <strong style="color: ${cfg.color};">${data.timeRemaining}</strong> remaining until its estimated delivery deadline.`
+        : `Your order has approximately <strong style="color: ${cfg.color};">${data.timeRemaining}</strong> remaining until the estimated delivery date.`);
+
+  const deliveryDateStr = data.estimatedDelivery.toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: ${cfg.color}; margin-top: 8px; font-weight: 600;">${cfg.label}</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${mainMessage}</p>
+        <div style="background: ${cfg.bgTint}; border: 1px solid ${cfg.borderColor}; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: ${cfg.color};">Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: ${cfg.color};">Service:</strong> ${data.serviceTitle}</p>
+          <p style="margin: 0 0 12px;"><strong style="color: ${cfg.color};">Estimated Delivery:</strong> ${deliveryDateStr}</p>
+          <p style="margin: 0;"><strong style="color: ${cfg.color};">Time Remaining:</strong> <span style="color: ${cfg.color}; font-weight: 700;">${data.timeRemaining}</span></p>
+          ${data.isAdmin ? `
+            <hr style="border: none; border-top: 1px solid ${cfg.borderColor}; margin: 16px 0;" />
+            <p style="margin: 0 0 12px;"><strong style="color: ${cfg.color};">Customer:</strong> ${data.customerName}</p>
+            <p style="margin: 0;"><strong style="color: ${cfg.color};">Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00D9FF;">${data.customerEmail}</a></p>
+          ` : ''}
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          ${data.isAdmin ? 'Please take action on this order from the admin panel.' : 'If you have questions, please contact us through our website.'}
+        </p>
+      </div>
+    `,
+  });
+};
+

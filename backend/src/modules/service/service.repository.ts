@@ -11,6 +11,7 @@ interface ServiceCreateData {
   image?: string;
   isFeatured?: boolean;
   sortOrder?: number;
+  deliveryDays?: number;
 }
 
 export const serviceRepository = {

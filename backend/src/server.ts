@@ -1,11 +1,19 @@
 import app from './app';
 import { config } from './config';
 import prisma from './config/database';
+import cron from 'node-cron';
+import { checkDeadlineReminders } from './jobs/deadline-reminder';
 
 const startServer = async (): Promise<void> => {
   try {
     await prisma.$connect();
     console.log('Database connected successfully');
+
+    cron.schedule('*/30 * * * *', () => {
+      console.log('[Cron] Running deadline reminder check...');
+      checkDeadlineReminders();
+    });
+    console.log('Deadline reminder cron job scheduled (every 30 minutes)');
 
     app.listen(config.port, () => {
       console.log(`Server running in ${config.nodeEnv} mode on port ${config.port}`);

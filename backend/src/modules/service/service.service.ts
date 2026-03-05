@@ -45,6 +45,7 @@ export const serviceService = {
     image?: string;
     isFeatured?: boolean;
     sortOrder?: number;
+    deliveryDays?: number;
   }) => {
     const allSlugs = await serviceRepository.findAllSlugs();
     const slug = generateSlug(data.title);

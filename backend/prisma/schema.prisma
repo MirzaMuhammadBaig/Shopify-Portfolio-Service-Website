@@ -30,6 +30,13 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum DeadlineReminder {
+  TWO_DAYS
+  ONE_DAY
+  TWELVE_HOURS
+  OVERDUE
+}
+
 
 // ─── USERS ──────────────────────────────────────────────
 
@@ -107,6 +114,7 @@ model Order {
   estimatedDelivery DateTime?   @map("estimated_delivery")
   completedAt       DateTime?   @map("completed_at")
   deliveredAt       DateTime?   @map("delivered_at")
+  lastDeadlineReminder DeadlineReminder? @map("last_deadline_reminder")
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
 
