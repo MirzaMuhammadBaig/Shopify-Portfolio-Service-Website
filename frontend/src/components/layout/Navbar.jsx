@@ -15,10 +15,18 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // Close mobile menu on route change (back/forward navigation)
+  // Close mobile menu on route change
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
+
+  // Close mobile menu on scroll
+  useEffect(() => {
+    if (!isOpen) return;
+    const onScroll = () => setIsOpen(false);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isOpen]);
 
   const isActive = (path) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -70,19 +78,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            key="overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-            className={styles.mobileOverlay}
-            onClick={() => setIsOpen(false)}
-          />
-        )}
-      </AnimatePresence>
+      {isOpen && <div className={styles.mobileOverlay} onClick={() => setIsOpen(false)} />}
       <AnimatePresence>
         {isOpen && (
           <motion.div
