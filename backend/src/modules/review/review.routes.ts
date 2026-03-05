@@ -17,6 +17,7 @@ router.put('/:id', authenticate, validate(reviewValidation.update), reviewContro
 router.delete('/:id', authenticate, reviewController.delete);
 
 // Admin
+router.post('/admin', authenticate, authorize(ROLES.ADMIN), validate(reviewValidation.create), reviewController.adminCreate);
 router.get('/admin', authenticate, authorize(ROLES.ADMIN), reviewController.getAdminAll);
 router.put('/admin/:id', authenticate, authorize(ROLES.ADMIN), validate(reviewValidation.update), reviewController.adminUpdate);
 router.delete('/admin/:id', authenticate, authorize(ROLES.ADMIN), reviewController.adminDelete);

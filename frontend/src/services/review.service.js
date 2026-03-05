@@ -11,6 +11,7 @@ export const reviewService = {
   delete: (id) => api.delete(API_ENDPOINTS.REVIEWS.BY_ID(id)),
 
   // Admin
+  adminCreate: (data) => api.post(API_ENDPOINTS.REVIEWS.ADMIN, data),
   getAdminAll: (params) => api.get(API_ENDPOINTS.REVIEWS.ADMIN, { params }),
   adminUpdate: (id, data) => api.put(API_ENDPOINTS.REVIEWS.ADMIN_BY_ID(id), data),
   adminDelete: (id) => api.delete(API_ENDPOINTS.REVIEWS.ADMIN_BY_ID(id)),

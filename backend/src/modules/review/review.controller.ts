@@ -36,6 +36,11 @@ export const reviewController = {
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: REVIEW_MESSAGES.UPDATED, data: review });
   }),
 
+  adminCreate: asyncHandler(async (req: Request, res: Response) => {
+    const review = await reviewService.adminCreate({ ...req.body, userId: req.user!.userId });
+    sendResponse({ res, statusCode: HTTP_STATUS.CREATED, message: REVIEW_MESSAGES.CREATED, data: review });
+  }),
+
   adminUpdate: asyncHandler(async (req: Request, res: Response) => {
     const review = await reviewService.adminUpdate(getParam(req, 'id'), req.body);
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: REVIEW_MESSAGES.UPDATED, data: review });

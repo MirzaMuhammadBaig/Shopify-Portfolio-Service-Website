@@ -67,6 +67,14 @@ export function useDeleteReview() {
   });
 }
 
+export function useAdminCreateReview() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => reviewService.adminCreate(data).then((res) => res.data),
+    onSuccess: () => invalidateAll(queryClient),
+  });
+}
+
 export function useAdminUpdateReview() {
   const queryClient = useQueryClient();
   return useMutation({

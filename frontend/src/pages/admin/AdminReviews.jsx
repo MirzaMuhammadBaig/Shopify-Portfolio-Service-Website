@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTestimonials, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial } from '../../hooks/useTestimonials';
-import { useAdminReviews, useAdminUpdateReview, useAdminDeleteReview, useToggleReviewVisibility } from '../../hooks/useReviews';
+import { useAdminReviews, useAdminCreateReview, useAdminUpdateReview, useAdminDeleteReview, useToggleReviewVisibility } from '../../hooks/useReviews';
+import { useServices } from '../../hooks/useServices';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -13,6 +14,7 @@ import styles from './AdminTable.module.css';
 
 const EMPTY_FORM = { name: '', role: '', rating: '5', comment: '' };
 const REVIEW_FORM = { rating: '5', comment: '' };
+const NEW_REVIEW_FORM = { serviceId: '', rating: '5', comment: '' };
 
 export default function AdminReviews() {
   const [activeTab, setActiveTab] = useState('reviews');
@@ -31,12 +33,17 @@ export default function AdminReviews() {
   const [reviewPage, setReviewPage] = useState(1);
   const [editingReview, setEditingReview] = useState(null);
   const [reviewForm, setReviewForm] = useState(REVIEW_FORM);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReviewForm, setNewReviewForm] = useState(NEW_REVIEW_FORM);
   const { data: rData, isLoading: rLoading } = useAdminReviews({ page: reviewPage, limit: 20 });
+  const { data: servicesData } = useServices({ active: 'true', limit: 100 });
+  const adminCreate = useAdminCreateReview();
   const adminUpdate = useAdminUpdateReview();
   const adminDelete = useAdminDeleteReview();
   const toggleVisibility = useToggleReviewVisibility();
   const reviews = rData?.data || [];
   const reviewMeta = rData?.meta;
+  const services = servicesData?.data || [];
 
   // Testimonial handlers
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -66,6 +73,17 @@ export default function AdminReviews() {
   };
 
   // Review handlers
+  const handleAdminCreateReview = async (e) => {
+    e.preventDefault();
+    if (!newReviewForm.serviceId) { toast.error('Please select a service'); return; }
+    try {
+      await adminCreate.mutateAsync({ serviceId: newReviewForm.serviceId, rating: parseInt(newReviewForm.rating, 10), comment: newReviewForm.comment });
+      toast.success('Review created!');
+      setNewReviewForm(NEW_REVIEW_FORM);
+      setShowReviewForm(false);
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to create review'); }
+  };
+
   const openReviewEdit = (r) => {
     setEditingReview(r.id);
     setReviewForm({ rating: r.rating?.toString() || '5', comment: r.comment || '' });
@@ -155,6 +173,33 @@ export default function AdminReviews() {
 
       {activeTab === 'reviews' && (
         <>
+          <div style={{ marginBottom: 16 }}>
+            <Button size="sm" onClick={() => showReviewForm ? (setShowReviewForm(false)) : setShowReviewForm(true)}>
+              {showReviewForm ? 'Cancel' : 'Add Review'}
+            </Button>
+          </div>
+          {showReviewForm && (
+            <Card className={styles.formCard}>
+              <form onSubmit={handleAdminCreateReview} className={styles.form}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Service</label>
+                  <select
+                    value={newReviewForm.serviceId}
+                    onChange={(e) => setNewReviewForm({ ...newReviewForm, serviceId: e.target.value })}
+                    style={{ width: '100%', padding: '12px 16px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10, color: 'var(--color-text)', fontSize: '0.95rem', fontFamily: 'inherit' }}
+                  >
+                    <option value="">Select a service</option>
+                    {services.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
+                  </select>
+                </div>
+                <Input label="Rating (1-5)" name="rating" type="number" value={newReviewForm.rating}
+                  onChange={(e) => setNewReviewForm({ ...newReviewForm, rating: e.target.value })} required />
+                <Input label="Comment" name="comment" type="textarea" value={newReviewForm.comment}
+                  onChange={(e) => setNewReviewForm({ ...newReviewForm, comment: e.target.value })} />
+                <Button type="submit" loading={adminCreate.isPending}>Create Review</Button>
+              </form>
+            </Card>
+          )}
           {rLoading ? <LoadingSpinner /> : (
             <div className={styles.list}>
               {reviews.map((r) => (

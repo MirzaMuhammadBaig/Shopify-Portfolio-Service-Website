@@ -103,6 +103,16 @@ export const reviewService = {
     return reviewRepository.update(id, { ...data, editCount: review.editCount + 1 });
   },
 
+  // Admin create — no duplicate check, no daily limit, no emails
+  adminCreate: async (data: {
+    userId: string;
+    serviceId: string;
+    rating: number;
+    comment?: string;
+  }) => {
+    return reviewRepository.create(data);
+  },
+
   // Admin update — no ownership check, no editCount increment, no email
   adminUpdate: async (id: string, data: { rating?: number; comment?: string }) => {
     const review = await reviewRepository.findById(id);
