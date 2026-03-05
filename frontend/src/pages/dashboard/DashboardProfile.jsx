@@ -35,7 +35,7 @@ export default function DashboardProfile() {
 
   return (
     <div>
-      <h1 className={styles.title}>Profile Settings</h1>
+      <h1 className={styles.greeting}>Welcome, {user?.firstName}!</h1>
       <Card className={styles.card}>
         <div className={styles.avatarSection}>
           <div className={styles.avatar}>{getInitials(user?.firstName, user?.lastName)}</div>

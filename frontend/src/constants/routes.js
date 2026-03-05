@@ -8,7 +8,6 @@ export const ROUTES = {
   DASHBOARD_ORDERS: '/dashboard/orders',
 
   DASHBOARD_REVIEWS: '/dashboard/reviews',
-  DASHBOARD_PROFILE: '/dashboard/profile',
   BLOG: '/blog',
   BLOG_DETAIL: '/blog/:slug',
   CONTACT: '/contact',

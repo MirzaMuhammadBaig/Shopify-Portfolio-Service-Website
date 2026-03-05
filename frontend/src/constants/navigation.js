@@ -6,11 +6,9 @@ export const NAV_ITEMS = [
 ];
 
 export const DASHBOARD_NAV_ITEMS = [
-  { label: 'Overview', path: '/dashboard' },
+  { label: 'Profile', path: '/dashboard' },
   { label: 'Orders', path: '/dashboard/orders' },
-
   { label: 'Reviews', path: '/dashboard/reviews' },
-  { label: 'Profile', path: '/dashboard/profile' },
 ];
 
 export const ADMIN_NAV_ITEMS = [
