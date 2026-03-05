@@ -77,14 +77,26 @@ export default function Navbar() {
         </div>
       </div>
 
-      {isOpen && <div className={styles.mobileOverlay} onClick={() => setIsOpen(false)} />}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            key="overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className={styles.mobileOverlay}
+            onClick={() => setIsOpen(false)}
+          />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
             className={styles.mobileNav}
           >
             {NAV_ITEMS.map((item) => (
