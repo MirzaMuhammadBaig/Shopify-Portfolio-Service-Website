@@ -44,6 +44,9 @@ export function useUpdateOrderStatus() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }) => orderService.updateStatus(id, data).then((res) => res.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myOrders });
+    },
   });
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMyOrders } from '../../hooks/useOrders';
 import { useMyReviews, useCreateReview, useUpdateReview } from '../../hooks/useReviews';
 import Card from '../../components/ui/Card';
@@ -23,12 +23,20 @@ const STATUS_BADGE_MAP = {
 };
 
 function OrderTimeline({ startedAt, estimatedDelivery, status }) {
+  const [tick, setTick] = useState(0);
+  const isComplete = status === 'COMPLETED' || status === 'DELIVERED';
+
+  useEffect(() => {
+    if (isComplete) return;
+    const id = setInterval(() => setTick((t) => t + 1), 60000);
+    return () => clearInterval(id);
+  }, [isComplete]);
+
   const start = new Date(startedAt).getTime();
   const end = new Date(estimatedDelivery).getTime();
   const now = Date.now();
   const total = end - start;
   const elapsed = now - start;
-  const isComplete = status === 'COMPLETED' || status === 'DELIVERED';
 
   const hoursRemaining = (end - now) / (1000 * 60 * 60);
   const isOverdue = !isComplete && hoursRemaining <= 0;

@@ -63,7 +63,15 @@ export const orderRepository = {
     estimatedDelivery?: Date;
     completedAt?: Date;
     deliveredAt?: Date;
-  }) => prisma.order.update({ where: { id }, data: data as any }),
+  }) => prisma.order.update({
+    where: { id },
+    data: data as any,
+    include: {
+      service: { select: { id: true, title: true, slug: true } },
+      user: { select: { id: true, email: true, firstName: true, lastName: true } },
+      payment: true,
+    },
+  }),
 
   getLastOrderNumber: () =>
     prisma.order.findFirst({
