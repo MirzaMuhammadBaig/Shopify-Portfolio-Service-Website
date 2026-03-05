@@ -80,10 +80,9 @@ export const orderService = {
 
     if (data.status === ORDER_STATUS.IN_PROGRESS && !order.startedAt) {
       const now = new Date();
+      const deliveryDays = order.service?.deliveryDays || 7;
       updateData.startedAt = now;
-      if (order.service?.deliveryDays && !order.estimatedDelivery) {
-        updateData.estimatedDelivery = new Date(now.getTime() + order.service.deliveryDays * 86400000);
-      }
+      updateData.estimatedDelivery = new Date(now.getTime() + deliveryDays * 86400000);
     }
     if (data.status === ORDER_STATUS.DELIVERED) {
       updateData.deliveredAt = new Date();
@@ -238,9 +237,8 @@ export const orderService = {
       lastDeadlineReminder: null,
       startedAt: now,
     };
-    if (order.service?.deliveryDays) {
-      updateData.estimatedDelivery = new Date(now.getTime() + order.service.deliveryDays * 86400000);
-    }
+    const deliveryDays = order.service?.deliveryDays || 7;
+    updateData.estimatedDelivery = new Date(now.getTime() + deliveryDays * 86400000);
 
     const updatedOrder = await orderRepository.updateOrder(id, updateData);
 

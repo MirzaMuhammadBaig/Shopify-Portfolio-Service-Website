@@ -25,16 +25,17 @@ const handlePaymentConfirmed = async (order: any) => {
 
   // Auto-start order: set IN_PROGRESS with timeline
   if (order.status === ORDER_STATUS.PENDING) {
-    const updateData: any = { status: ORDER_STATUS.IN_PROGRESS, startedAt: now };
-    if (order.service?.deliveryDays) {
-      updateData.estimatedDelivery = new Date(now.getTime() + order.service.deliveryDays * 86400000);
-    }
+    const deliveryDays = order.service?.deliveryDays || 7; // default 7 days if not set
+    const updateData: any = {
+      status: ORDER_STATUS.IN_PROGRESS,
+      startedAt: now,
+      estimatedDelivery: new Date(now.getTime() + deliveryDays * 86400000),
+    };
     await orderRepository.updateStatus(order.id, updateData);
   }
 
-  const estimatedDelivery = order.service?.deliveryDays
-    ? new Date(now.getTime() + order.service.deliveryDays * 86400000)
-    : undefined;
+  const deliveryDaysForEmail = order.service?.deliveryDays || 7;
+  const estimatedDelivery = new Date(now.getTime() + deliveryDaysForEmail * 86400000);
 
   // Send all emails concurrently, wait for all to settle (don't fail if one email fails)
   const emailPromises: Promise<any>[] = [];
