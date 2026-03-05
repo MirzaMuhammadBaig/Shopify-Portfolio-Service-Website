@@ -30,4 +30,30 @@ export const orderController = {
     const order = await orderService.updateStatus(getParam(req, 'id'), req.body);
     sendResponse({ res, statusCode: HTTP_STATUS.OK, message: ORDER_MESSAGES.STATUS_UPDATED, data: order });
   }),
+
+  submitDeliverables: asyncHandler(async (req: Request, res: Response) => {
+    const files = req.files as Express.Multer.File[];
+    const order = await orderService.submitDeliverables(getParam(req, 'id'), files, req.body.githubUrl);
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: 'Deliverables submitted successfully', data: order });
+  }),
+
+  approveOrder: asyncHandler(async (req: Request, res: Response) => {
+    const order = await orderService.approveOrder(getParam(req, 'id'), req.user!.userId);
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: 'Order approved successfully', data: order });
+  }),
+
+  requestRevision: asyncHandler(async (req: Request, res: Response) => {
+    const order = await orderService.requestRevision(getParam(req, 'id'), req.user!.userId);
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: 'Revision requested successfully', data: order });
+  }),
+
+  getMessages: asyncHandler(async (req: Request, res: Response) => {
+    const messages = await orderService.getMessages(getParam(req, 'id'), req.user!.userId, req.user!.role);
+    sendResponse({ res, statusCode: HTTP_STATUS.OK, message: 'Messages fetched', data: messages });
+  }),
+
+  sendMessage: asyncHandler(async (req: Request, res: Response) => {
+    const message = await orderService.sendMessage(getParam(req, 'id'), req.user!.userId, req.body.content, req.user!.role);
+    sendResponse({ res, statusCode: HTTP_STATUS.CREATED, message: 'Message sent', data: message });
+  }),
 };

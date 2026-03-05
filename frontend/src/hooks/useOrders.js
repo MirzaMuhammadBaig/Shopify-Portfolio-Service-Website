@@ -50,3 +50,49 @@ export function useUpdateOrderStatus() {
     },
   });
 }
+
+const invalidateAll = (qc) => {
+  qc.invalidateQueries({ queryKey: QUERY_KEYS.orders });
+  qc.invalidateQueries({ queryKey: QUERY_KEYS.myOrders });
+};
+
+export function useSubmitDeliverables() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }) => orderService.submitDeliverables(id, formData).then((res) => res.data),
+    onSuccess: (_, { id }) => {
+      invalidateAll(queryClient);
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.detail(id) });
+    },
+  });
+}
+
+export function useApproveOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => orderService.approveOrder(id).then((res) => res.data),
+    onSuccess: (_, id) => {
+      invalidateAll(queryClient);
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.detail(id) });
+    },
+  });
+}
+
+export function useRequestRevision() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => orderService.requestRevision(id).then((res) => res.data),
+    onSuccess: (_, id) => {
+      invalidateAll(queryClient);
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.detail(id) });
+    },
+  });
+}
+
+export function useOrderMessages(id) {
+  return useQuery({
+    queryKey: ['orderMessages', id],
+    queryFn: () => orderService.getMessages(id).then((res) => res.data),
+    enabled: !!id,
+  });
+}

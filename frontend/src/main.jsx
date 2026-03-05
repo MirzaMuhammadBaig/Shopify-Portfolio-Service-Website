@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 import App from './App.jsx';
 import './styles/global.css';
 
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <AuthProvider>
+            <SocketProvider>
             <App />
             <Toaster
               position="top-right"
@@ -41,6 +43,7 @@ createRoot(document.getElementById('root')).render(
                 error: { iconTheme: { primary: '#FF3D00', secondary: '#fff' } },
               }}
             />
+          </SocketProvider>
           </AuthProvider>
         </GoogleOAuthProvider>
       </QueryClientProvider>

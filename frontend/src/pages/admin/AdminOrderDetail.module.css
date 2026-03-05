@@ -1,0 +1,59 @@
+.backLink { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--color-primary); text-decoration: none; margin-bottom: 20px; transition: opacity 0.2s; }
+.backLink:hover { opacity: 0.8; }
+
+.layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+.main { display: flex; flex-direction: column; gap: 16px; }
+
+.sidebar { position: sticky; top: 20px; align-self: start; }
+
+.section { padding: 20px; }
+.sectionHeaderRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.sectionTitle { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+.orderNumber { font-size: 1.2rem; font-weight: 700; }
+.serviceName { color: var(--color-text-secondary); font-size: 0.95rem; margin-bottom: 16px; }
+
+/* Details Grid */
+.detailsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.detailItem { display: flex; flex-direction: column; gap: 2px; }
+.detailLabel { font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.detailValue { font-size: 0.9rem; font-weight: 500; }
+@media (max-width: 480px) { .detailsGrid { grid-template-columns: 1fr; } }
+
+/* Delivery Form */
+.deliveryForm { display: flex; flex-direction: column; gap: 16px; }
+.formField { display: flex; flex-direction: column; gap: 6px; }
+.formLabel { font-size: 0.85rem; font-weight: 500; color: var(--color-text-secondary); }
+
+.dropZone { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px; border: 2px dashed var(--color-border); border-radius: 10px; cursor: pointer; transition: border-color 0.2s ease; }
+.dropZone:hover { border-color: var(--color-primary); }
+.dropZoneIcon { font-size: 2rem; color: var(--color-text-muted); margin-bottom: 8px; }
+.dropZoneText { font-size: 0.85rem; color: var(--color-text-muted); }
+.hiddenInput { display: none; }
+
+.fileList { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.fileItem { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--color-surface-light); border-radius: 8px; }
+.filePreview { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+.pdfIcon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #B71C1C; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 4px; }
+.fileName { flex: 1; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.removeFileBtn { background: none; border: none; color: var(--color-text-muted); font-size: 1.1rem; cursor: pointer; padding: 4px; transition: color 0.2s; }
+.removeFileBtn:hover { color: #FF3D00; }
+
+.textInput { padding: 10px 14px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 10px; color: var(--color-text); font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s ease; }
+.textInput::placeholder { color: var(--color-text-muted); }
+.textInput:focus { border-color: var(--color-primary); outline: none; }
+
+/* Deliverables View */
+.githubLink { display: inline-flex; align-items: center; gap: 6px; color: var(--color-primary); font-size: 0.9rem; text-decoration: none; margin-bottom: 12px; transition: opacity 0.2s; }
+.githubLink:hover { opacity: 0.8; }
+
+.deliverablesGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.deliverableItem { border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+.deliverableImage { width: 100%; height: 140px; object-fit: cover; display: block; transition: opacity 0.2s; }
+.deliverableImage:hover { opacity: 0.85; }
+.pdfLink { display: flex; align-items: center; gap: 6px; padding: 14px; color: var(--color-primary); font-size: 0.85rem; text-decoration: none; }
+.pdfLink:hover { opacity: 0.8; }
+
+/* Status banners */
+.deliveredBanner p, .awaitingBanner p { font-size: 0.88rem; color: var(--color-text-secondary); }

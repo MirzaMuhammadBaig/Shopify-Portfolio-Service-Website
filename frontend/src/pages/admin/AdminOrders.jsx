@@ -1,16 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { useOrders, useUpdateOrderStatus } from '../../hooks/useOrders';
+import { useNavigate } from 'react-router-dom';
+import { useOrders } from '../../hooks/useOrders';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { ORDER_STATUS_LABELS, ORDER_STATUS } from '../../constants';
 import { formatCurrency, formatDate } from '../../utils/formatters';
-import toast from 'react-hot-toast';
+import { HiChevronRight } from 'react-icons/hi';
 import styles from './AdminTable.module.css';
 
 const STATUS_BADGE_MAP = {
-  PENDING: 'warning', CONFIRMED: 'info', IN_PROGRESS: 'primary',
-  COMPLETED: 'success', DELIVERED: 'success', CANCELLED: 'error',
+  PENDING: 'warning',
+  IN_PROGRESS: 'primary',
+  PENDING_APPROVAL: 'warning',
+  DELIVERED: 'success',
 };
 
 const STATUS_OPTIONS = Object.entries(ORDER_STATUS).map(([, v]) => v);
@@ -20,15 +23,19 @@ const FILTER_OPTIONS = [
   ...STATUS_OPTIONS.map((v) => ({ value: v, label: ORDER_STATUS_LABELS[v] })),
 ];
 
+const ACTION_HINTS = {
+  IN_PROGRESS: 'Submit Deliverables',
+  PENDING_APPROVAL: 'Awaiting Approval',
+  DELIVERED: 'Completed',
+};
+
 export default function AdminOrders() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [activeStatus, setActiveStatus] = useState(null);
   const [searchEmail, setSearchEmail] = useState('');
   const [debouncedEmail, setDebouncedEmail] = useState('');
-  const [updatingOrderId, setUpdatingOrderId] = useState(null);
   const debounceRef = useRef(null);
-
-  const updateStatus = useUpdateOrderStatus();
 
   useEffect(() => {
     clearTimeout(debounceRef.current);
@@ -52,18 +59,6 @@ export default function AdminOrders() {
   const handleFilterChange = (status) => {
     setActiveStatus(status);
     setPage(1);
-  };
-
-  const handleStatusChange = async (id, status) => {
-    setUpdatingOrderId(id);
-    try {
-      await updateStatus.mutateAsync({ id, data: { status } });
-      toast.success('Status updated');
-    } catch {
-      toast.error('Failed to update');
-    } finally {
-      setUpdatingOrderId(null);
-    }
   };
 
   return (
@@ -96,7 +91,12 @@ export default function AdminOrders() {
         <>
           <div className={styles.list}>
             {orders.map((order) => (
-              <Card key={order.id} className={styles.row}>
+              <Card
+                key={order.id}
+                className={styles.row}
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/admin/orders/${order.id}`)}
+              >
                 <div className={styles.rowMain}>
                   <div>
                     <span className={styles.rowTitle}>{order.orderNumber}</span>
@@ -110,18 +110,10 @@ export default function AdminOrders() {
                 </div>
                 <div className={styles.rowActions}>
                   <Badge variant={STATUS_BADGE_MAP[order.status]}>{ORDER_STATUS_LABELS[order.status]}</Badge>
-                  {updatingOrderId === order.id ? (
-                    <span className={styles.updatingText}>Updating...</span>
-                  ) : (
-                    <select
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                      className={`${styles.select} ${updatingOrderId ? styles.selectDisabled : ''}`}
-                      disabled={!!updatingOrderId}
-                    >
-                      {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>)}
-                    </select>
+                  {ACTION_HINTS[order.status] && (
+                    <span className={styles.rowMeta}>{ACTION_HINTS[order.status]}</span>
                   )}
+                  <HiChevronRight style={{ color: 'var(--color-text-muted)', fontSize: '1.1rem' }} />
                 </div>
               </Card>
             ))}

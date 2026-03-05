@@ -33,8 +33,36 @@ export async function uploadToCloudinary(
 }
 
 /**
- * Delete an image from Cloudinary by public ID.
+ * Upload any file (image or PDF) to Cloudinary.
+ * PDFs use resource_type 'raw' (no transformations).
  */
-export async function deleteFromCloudinary(publicId: string): Promise<void> {
-  await cloudinary.uploader.destroy(publicId);
+export async function uploadFileToCloudinary(
+  buffer: Buffer,
+  folder: string = 'deliverables',
+  isPdf: boolean = false
+): Promise<UploadResult> {
+  return new Promise((resolve, reject) => {
+    const options: any = {
+      folder: `portfolio/${folder}`,
+      resource_type: isPdf ? 'raw' : 'image',
+    };
+    if (!isPdf) {
+      options.transformation = [
+        { width: 1200, height: 900, crop: 'limit', quality: 'auto', fetch_format: 'auto' },
+      ];
+    }
+    cloudinary.uploader
+      .upload_stream(options, (error, result) => {
+        if (error || !result) return reject(error || new Error('Upload failed'));
+        resolve({ url: result.secure_url, publicId: result.public_id });
+      })
+      .end(buffer);
+  });
+}
+
+/**
+ * Delete a file from Cloudinary by public ID.
+ */
+export async function deleteFromCloudinary(publicId: string, resourceType: string = 'image'): Promise<void> {
+  await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
 }

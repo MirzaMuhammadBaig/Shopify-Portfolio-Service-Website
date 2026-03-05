@@ -26,12 +26,14 @@ const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout')
 const ProtectedRoute = lazy(() => import('./components/shared/ProtectedRoute'));
 const DashboardOrders = lazy(() => import('./pages/dashboard/DashboardOrders'));
 const DashboardProfile = lazy(() => import('./pages/dashboard/DashboardProfile'));
+const OrderDetailPage = lazy(() => import('./pages/dashboard/OrderDetailPage'));
 
 // Admin (only admin users)
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminServices = lazy(() => import('./pages/admin/AdminServices'));
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
+const AdminOrderDetail = lazy(() => import('./pages/admin/AdminOrderDetail'));
 
 const AdminBlogs = lazy(() => import('./pages/admin/AdminBlogs'));
 const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
@@ -73,6 +75,7 @@ export default function App() {
         >
           <Route index element={<DashboardProfile />} />
           <Route path="orders" element={<DashboardOrders />} />
+          <Route path="orders/:id" element={<OrderDetailPage />} />
         </Route>
 
         {/* Admin Panel */}
@@ -89,6 +92,7 @@ export default function App() {
           <Route path="services" element={<AdminServices />} />
           <Route path="projects" element={<AdminProjects />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="orders/:id" element={<AdminOrderDetail />} />
 
           <Route path="blogs" element={<AdminBlogs />} />
           <Route path="faqs" element={<AdminFaqs />} />

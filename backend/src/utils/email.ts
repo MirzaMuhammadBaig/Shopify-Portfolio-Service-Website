@@ -461,3 +461,159 @@ export const sendDeadlineReminderEmail = async (data: {
   });
 };
 
+export const sendDeliverablesSubmittedEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  githubUrl: string;
+  isAdmin: boolean;
+  customerName?: string;
+  customerEmail?: string;
+  orderUrl: string;
+}) => {
+  const subject = data.isAdmin
+    ? `Deliverables Submitted: Order #${data.orderNumber}`
+    : `Your Project is Ready for Review — Order #${data.orderNumber}`;
+  const heading = data.isAdmin ? 'Deliverables Submitted' : `Hi ${data.recipientName},`;
+  const message = data.isAdmin
+    ? `Deliverables have been submitted for order #${data.orderNumber}. The customer has been notified to review.`
+    : `Great news! Your project for <strong>${data.serviceTitle}</strong> is ready for your review. Please check the deliverables and the GitHub repository below.`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;"><span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span></h1>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${message}</p>
+        <div style="background: rgba(108, 99, 255, 0.1); border: 1px solid rgba(108, 99, 255, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong>Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0 0 12px;"><strong>Service:</strong> ${data.serviceTitle}</p>
+          <p style="margin: 0;"><strong>GitHub Repository:</strong> <a href="${data.githubUrl}" style="color: #00D9FF;">${data.githubUrl}</a></p>
+          ${data.isAdmin && data.customerName ? `<hr style="border: none; border-top: 1px solid rgba(108,99,255,0.3); margin: 16px 0;" /><p style="margin: 0 0 6px;"><strong>Customer:</strong> ${data.customerName}</p><p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00D9FF;">${data.customerEmail}</a></p>` : ''}
+        </div>
+        ${!data.isAdmin ? `<div style="text-align: center; margin: 32px 0;"><a href="${data.orderUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px;">Review Now</a></div>` : ''}
+        <p style="color: #666; font-size: 12px; text-align: center;">${data.isAdmin ? 'The customer will review and approve or request revisions.' : 'If you are satisfied, approve the project. Otherwise, you can request a revision.'}</p>
+      </div>
+    `,
+  });
+};
+
+export const sendOrderApprovedEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  isAdmin: boolean;
+  customerName?: string;
+  customerEmail?: string;
+}) => {
+  const subject = data.isAdmin ? `Order Approved: #${data.orderNumber}` : `Order Delivered — #${data.orderNumber}`;
+  const heading = data.isAdmin ? 'Order Approved by Customer' : `Hi ${data.recipientName},`;
+  const message = data.isAdmin
+    ? `The customer has approved order #${data.orderNumber} for <strong>${data.serviceTitle}</strong>. The order is now marked as Delivered.`
+    : `Your order for <strong>${data.serviceTitle}</strong> has been delivered successfully. Thank you for your trust!`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;"><span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span></h1>
+          <p style="color: #00C853; margin-top: 8px; font-weight: 600;">Order Delivered</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${message}</p>
+        <div style="background: rgba(0, 200, 83, 0.1); border: 1px solid rgba(0, 200, 83, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong>Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0;"><strong>Service:</strong> ${data.serviceTitle}</p>
+          ${data.isAdmin && data.customerName ? `<hr style="border: none; border-top: 1px solid rgba(0,200,83,0.3); margin: 16px 0;" /><p style="margin: 0 0 6px;"><strong>Customer:</strong> ${data.customerName}</p><p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00D9FF;">${data.customerEmail}</a></p>` : ''}
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center;">Thank you for choosing ShopifyPro.</p>
+      </div>
+    `,
+  });
+};
+
+export const sendRevisionRequestedEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  revisionCount: number;
+  isAdmin: boolean;
+  customerName?: string;
+  customerEmail?: string;
+}) => {
+  const subject = data.isAdmin
+    ? `Revision Requested: Order #${data.orderNumber} (Revision #${data.revisionCount})`
+    : `Revision Confirmed — Order #${data.orderNumber}`;
+  const heading = data.isAdmin ? 'Revision Requested' : `Hi ${data.recipientName},`;
+  const message = data.isAdmin
+    ? `The customer has requested a revision for order #${data.orderNumber} (<strong>${data.serviceTitle}</strong>). This is revision #${data.revisionCount}.`
+    : `Your revision request for <strong>${data.serviceTitle}</strong> has been submitted. Our team will start working on the changes.`;
+
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;"><span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span></h1>
+          <p style="color: #FF9800; margin-top: 8px; font-weight: 600;">Revision Requested</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">${heading}</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${message}</p>
+        <div style="background: rgba(255, 152, 0, 0.1); border: 1px solid rgba(255, 152, 0, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong>Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0 0 12px;"><strong>Service:</strong> ${data.serviceTitle}</p>
+          <p style="margin: 0;"><strong>Revision #:</strong> ${data.revisionCount}</p>
+          ${data.isAdmin && data.customerName ? `<hr style="border: none; border-top: 1px solid rgba(255,152,0,0.3); margin: 16px 0;" /><p style="margin: 0 0 6px;"><strong>Customer:</strong> ${data.customerName}</p><p style="margin: 0;"><strong>Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00D9FF;">${data.customerEmail}</a></p>` : ''}
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center;">${data.isAdmin ? 'Please review the feedback and make the necessary changes.' : 'We will notify you once the updated deliverables are ready.'}</p>
+      </div>
+    `,
+  });
+};
+
+export const sendUnreadMessageEmail = async (data: {
+  to: string;
+  recipientName: string;
+  senderName: string;
+  orderNumber: string;
+  messagePreview: string;
+  orderUrl: string;
+}) => {
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject: `New Message: Order #${data.orderNumber}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;"><span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span></h1>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">You have an unread message</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+          <strong>${data.senderName}</strong> sent you a message regarding order #${data.orderNumber}.
+        </p>
+        <div style="background: rgba(108, 99, 255, 0.1); border: 1px solid rgba(108, 99, 255, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="color: #B0B0C0; font-style: italic; margin: 0;">"${data.messagePreview.length > 150 ? data.messagePreview.substring(0, 150) + '...' : data.messagePreview}"</p>
+        </div>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.orderUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px;">Reply Now</a>
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center;">You received this email because you have an unread message for more than 15 minutes.</p>
+      </div>
+    `,
+  });
+};
+

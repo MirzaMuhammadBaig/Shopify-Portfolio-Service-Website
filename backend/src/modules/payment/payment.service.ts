@@ -24,7 +24,7 @@ const handlePaymentConfirmed = async (order: any) => {
   const now = new Date();
 
   // Auto-start order: set IN_PROGRESS with timeline
-  if (order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.CONFIRMED) {
+  if (order.status === ORDER_STATUS.PENDING) {
     const updateData: any = { status: ORDER_STATUS.IN_PROGRESS, startedAt: now };
     if (order.service?.deliveryDays) {
       updateData.estimatedDelivery = new Date(now.getTime() + order.service.deliveryDays * 86400000);

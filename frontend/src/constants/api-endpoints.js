@@ -27,6 +27,10 @@ export const API_ENDPOINTS = {
     MY: '/orders/my',
     BY_ID: (id) => `/orders/${id}`,
     STATUS: (id) => `/orders/${id}/status`,
+    DELIVER: (id) => `/orders/${id}/deliver`,
+    APPROVE: (id) => `/orders/${id}/approve`,
+    REVISION: (id) => `/orders/${id}/revision`,
+    MESSAGES: (id) => `/orders/${id}/messages`,
   },
 
   REVIEWS: {

@@ -10,7 +10,7 @@ export const orderValidation = {
 
   updateStatus: [
     body('status')
-      .isIn(['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED'])
+      .isIn(['PENDING', 'IN_PROGRESS', 'PENDING_APPROVAL', 'DELIVERED'])
       .withMessage('Invalid order status'),
     body('adminNotes').optional().isString(),
   ],

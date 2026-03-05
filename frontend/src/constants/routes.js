@@ -6,6 +6,7 @@ export const ROUTES = {
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
   DASHBOARD_ORDERS: '/dashboard/orders',
+  DASHBOARD_ORDER_DETAIL: '/dashboard/orders/:id',
   BLOG: '/blog',
   BLOG_DETAIL: '/blog/:slug',
   CONTACT: '/contact',
@@ -13,6 +14,7 @@ export const ROUTES = {
   ADMIN_USERS: '/admin/users',
   ADMIN_SERVICES: '/admin/services',
   ADMIN_ORDERS: '/admin/orders',
+  ADMIN_ORDER_DETAIL: '/admin/orders/:id',
 
   ADMIN_BLOGS: '/admin/blogs',
   ADMIN_REVIEWS: '/admin/reviews',

@@ -1,0 +1,63 @@
+.backLink { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--color-primary); text-decoration: none; margin-bottom: 20px; transition: opacity 0.2s; }
+.backLink:hover { opacity: 0.8; }
+
+.layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+.main { display: flex; flex-direction: column; gap: 16px; }
+
+.sidebar { position: sticky; top: 20px; align-self: start; }
+
+.section { padding: 20px; }
+.sectionHeaderRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.sectionTitle { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+.orderNumber { font-size: 1.2rem; font-weight: 700; }
+.serviceName { color: var(--color-text-secondary); font-size: 0.95rem; margin-bottom: 16px; }
+
+/* Details Grid */
+.detailsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.detailItem { display: flex; flex-direction: column; gap: 2px; }
+.detailLabel { font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.detailValue { font-size: 0.9rem; font-weight: 500; }
+@media (max-width: 480px) { .detailsGrid { grid-template-columns: 1fr; } }
+
+/* Timeline */
+.timeline { padding-top: 14px; border-top: 1px solid var(--color-border); }
+.timelineDates { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 6px; }
+.timelineTrack { width: 100%; height: 6px; background: var(--color-border); border-radius: 3px; overflow: hidden; }
+.timelineFill { height: 100%; background: linear-gradient(90deg, #6C63FF, #00D9FF); border-radius: 3px; transition: width 0.3s ease; }
+.timelinePercent { display: block; text-align: right; font-size: 0.72rem; color: var(--color-primary); font-weight: 500; margin-top: 4px; }
+
+/* Deliverables */
+.githubLink { display: inline-flex; align-items: center; gap: 6px; color: var(--color-primary); font-size: 0.9rem; text-decoration: none; margin-bottom: 12px; transition: opacity 0.2s; }
+.githubLink:hover { opacity: 0.8; }
+
+.deliverablesGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.deliverableItem { border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+.deliverableImage { width: 100%; height: 140px; object-fit: cover; display: block; transition: opacity 0.2s; }
+.deliverableImage:hover { opacity: 0.85; }
+.pdfLink { display: flex; align-items: center; gap: 6px; padding: 14px; color: var(--color-primary); font-size: 0.85rem; text-decoration: none; }
+.pdfLink:hover { opacity: 0.8; }
+
+/* Action buttons */
+.actionButtons { display: flex; gap: 12px; flex-wrap: wrap; }
+.approveBtn { display: inline-flex; align-items: center; gap: 6px; }
+.revisionBtn { display: inline-flex; align-items: center; gap: 6px; }
+
+.confirmBox { padding: 16px; background: var(--color-surface-light); border-radius: 10px; }
+.confirmBox p { font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 12px; }
+.confirmActions { display: flex; gap: 8px; }
+
+/* Review */
+.reviewComment { color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.5; margin-top: 8px; }
+.reviewDate { font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 8px; }
+.reviewForm { display: flex; flex-direction: column; gap: 16px; }
+.reviewField { display: flex; flex-direction: column; gap: 6px; }
+.reviewLabel { font-size: 0.85rem; font-weight: 500; color: var(--color-text-secondary); }
+.reviewActions { display: flex; gap: 8px; }
+.writeReviewPrompt { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.writeReviewText { font-size: 0.9rem; color: var(--color-text-secondary); }
+.stars { display: flex; gap: 4px; }
+.starBtn { background: none; padding: 4px; font-size: 1.5rem; cursor: pointer; }
+.starFilled { color: #FFB300; }
+.starEmpty { color: var(--color-surface-light); }

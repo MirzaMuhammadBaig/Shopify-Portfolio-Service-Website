@@ -16,11 +16,9 @@ enum Role {
 
 enum OrderStatus {
   PENDING
-  CONFIRMED
   IN_PROGRESS
-  COMPLETED
+  PENDING_APPROVAL
   DELIVERED
-  CANCELLED
 }
 
 enum PaymentStatus {
@@ -62,8 +60,8 @@ model User {
   orders        Order[]
   customOffers  CustomOffer[]
   reviews       Review[]
-
   payments      Payment[]
+  orderMessages OrderMessage[]
 
   @@index([email])
   @@index([role])
@@ -109,6 +107,8 @@ model Order {
   totalAmount    Decimal     @db.Decimal(10, 2)
   requirements   String?
   deliverables   String?
+  githubUrl      String?     @map("github_url")
+  revisionCount  Int         @default(0) @map("revision_count")
   adminNotes     String?     @map("admin_notes")
   startedAt         DateTime?   @map("started_at")
   estimatedDelivery DateTime?   @map("estimated_delivery")
@@ -118,15 +118,53 @@ model Order {
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  service     Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  customOffer CustomOffer? @relation(fields: [customOfferId], references: [id], onDelete: SetNull)
-  payment     Payment?
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service        Service?          @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  customOffer    CustomOffer?      @relation(fields: [customOfferId], references: [id], onDelete: SetNull)
+  payment        Payment?
+  orderDeliverables OrderDeliverable[]
+  messages       OrderMessage[]
 
   @@index([userId])
   @@index([status])
   @@index([orderNumber])
   @@map("orders")
+}
+
+// ─── ORDER DELIVERABLES ────────────────────────────────
+
+model OrderDeliverable {
+  id        String   @id @default(uuid())
+  orderId   String   @map("order_id")
+  fileUrl   String   @map("file_url")
+  fileType  String   @map("file_type") // IMAGE or PDF
+  fileName  String   @map("file_name")
+  publicId  String?  @map("public_id") // Cloudinary public ID for deletion
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_deliverables")
+}
+
+// ─── ORDER MESSAGES ────────────────────────────────────
+
+model OrderMessage {
+  id           String   @id @default(uuid())
+  orderId      String   @map("order_id")
+  senderId     String   @map("sender_id")
+  content      String
+  isRead       Boolean  @default(false) @map("is_read")
+  reminderSent Boolean  @default(false) @map("reminder_sent")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@index([isRead, reminderSent])
+  @@map("order_messages")
 }
 
 // ─── CUSTOM OFFERS ──────────────────────────────────────
