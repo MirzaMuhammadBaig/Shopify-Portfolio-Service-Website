@@ -2,7 +2,8 @@ import { orderRepository } from './order.repository';
 import { ApiError } from '../../utils/api-error';
 import { HTTP_STATUS, ORDER_MESSAGES, ORDER_STATUS } from '../../constants';
 import { getPagination, getMeta } from '../../utils/pagination';
-import { sendOrderStatusEmail } from '../../utils/email';
+import { sendOrderStatusEmail, sendReviewRequestEmail } from '../../utils/email';
+import { config } from '../../config';
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'Pending',
@@ -115,6 +116,17 @@ export const orderService = {
       recipientName: 'Admin',
       isAdmin: true,
     }).catch((err) => console.error('Failed to send status email to admin:', err));
+
+    // Send review request email when order is completed
+    if (data.status === ORDER_STATUS.COMPLETED && order.user?.email) {
+      sendReviewRequestEmail({
+        to: order.user.email,
+        recipientName: order.user.firstName || 'Customer',
+        orderNumber: order.orderNumber,
+        serviceTitle: order.service?.title || 'Custom Order',
+        ordersUrl: `${config.frontendUrl}/dashboard/orders`,
+      }).catch((err) => console.error('Failed to send review request email:', err));
+    }
 
     return updatedOrder;
   },

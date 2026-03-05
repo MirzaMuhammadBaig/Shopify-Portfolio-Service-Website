@@ -8,7 +8,6 @@ export const NAV_ITEMS = [
 export const DASHBOARD_NAV_ITEMS = [
   { label: 'Profile', path: '/dashboard' },
   { label: 'Orders', path: '/dashboard/orders' },
-  { label: 'Reviews', path: '/dashboard/reviews' },
 ];
 
 export const ADMIN_NAV_ITEMS = [

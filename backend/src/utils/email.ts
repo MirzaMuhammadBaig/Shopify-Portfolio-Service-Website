@@ -274,6 +274,49 @@ export const sendReviewNotificationEmail = async (data: {
   });
 };
 
+export const sendReviewRequestEmail = async (data: {
+  to: string;
+  recipientName: string;
+  orderNumber: string;
+  serviceTitle: string;
+  ordersUrl: string;
+}) => {
+  await transporter.sendMail({
+    from: config.email.from,
+    to: data.to,
+    subject: `Your Order #${data.orderNumber} is Complete — We'd Love Your Feedback!`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A1B; color: #ffffff; padding: 40px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 28px; margin: 0;">
+            <span style="background: linear-gradient(135deg, #6C63FF, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ShopifyPro</span>
+          </h1>
+          <p style="color: #B0B0C0; margin-top: 8px;">Your Order is Complete!</p>
+        </div>
+        <h2 style="font-size: 22px; margin-bottom: 16px;">Hi ${data.recipientName},</h2>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+          Great news! Your order has been completed successfully. We hope you're happy with the results!
+        </p>
+        <div style="background: #1E1E3F; border: 1px solid #2A2A4A; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <p style="margin: 0 0 12px;"><strong style="color: #6C63FF;">Order #:</strong> ${data.orderNumber}</p>
+          <p style="margin: 0;"><strong style="color: #6C63FF;">Service:</strong> ${data.serviceTitle}</p>
+        </div>
+        <p style="color: #B0B0C0; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+          Your feedback helps us improve and helps other customers make informed decisions. We'd really appreciate it if you could take a moment to share your experience.
+        </p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${data.ordersUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6C63FF, #00D9FF); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px;">
+            Write a Review
+          </a>
+        </div>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-top: 24px;">
+          Thank you for choosing ShopifyPro. We truly value your business!
+        </p>
+      </div>
+    `,
+  });
+};
+
 export const sendPaymentSuccessEmail = async (data: {
   to: string;
   recipientName: string;

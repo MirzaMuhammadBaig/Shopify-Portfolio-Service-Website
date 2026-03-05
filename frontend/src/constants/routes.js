@@ -6,8 +6,6 @@ export const ROUTES = {
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
   DASHBOARD_ORDERS: '/dashboard/orders',
-
-  DASHBOARD_REVIEWS: '/dashboard/reviews',
   BLOG: '/blog',
   BLOG_DETAIL: '/blog/:slug',
   CONTACT: '/contact',

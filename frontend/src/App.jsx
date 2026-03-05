@@ -25,7 +25,6 @@ const PaymentSuccessPage = lazy(() => import('./pages/payment/PaymentSuccessPage
 const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout'));
 const ProtectedRoute = lazy(() => import('./components/shared/ProtectedRoute'));
 const DashboardOrders = lazy(() => import('./pages/dashboard/DashboardOrders'));
-const DashboardReviews = lazy(() => import('./pages/dashboard/DashboardReviews'));
 const DashboardProfile = lazy(() => import('./pages/dashboard/DashboardProfile'));
 
 // Admin (only admin users)
@@ -74,7 +73,6 @@ export default function App() {
         >
           <Route index element={<DashboardProfile />} />
           <Route path="orders" element={<DashboardOrders />} />
-          <Route path="reviews" element={<DashboardReviews />} />
         </Route>
 
         {/* Admin Panel */}
