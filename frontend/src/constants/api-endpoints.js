@@ -28,14 +28,7 @@ export const API_ENDPOINTS = {
     BY_ID: (id) => `/orders/${id}`,
     STATUS: (id) => `/orders/${id}/status`,
   },
-  CHAT: {
-    CONVERSATIONS: '/chat/conversations',
-    CONVERSATION: (id) => `/chat/conversations/${id}`,
-    MESSAGES: (id) => `/chat/conversations/${id}/messages`,
-    MARK_READ: (id) => `/chat/conversations/${id}/read`,
-    UPDATE_SUBJECT: (id) => `/chat/conversations/${id}/subject`,
-    UNREAD: '/chat/unread',
-  },
+
   REVIEWS: {
     BASE: '/reviews',
     MY: '/reviews/my',

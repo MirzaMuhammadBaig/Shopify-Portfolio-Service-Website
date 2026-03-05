@@ -10,7 +10,7 @@ import { authRoutes } from './modules/auth/auth.routes';
 import { userRoutes } from './modules/user/user.routes';
 import { serviceRoutes } from './modules/service/service.routes';
 import { orderRoutes } from './modules/order/order.routes';
-import { chatRoutes } from './modules/chat/chat.routes';
+
 import { reviewRoutes } from './modules/review/review.routes';
 import { blogRoutes } from './modules/blog/blog.routes';
 import { projectRoutes } from './modules/project/project.routes';
@@ -49,7 +49,7 @@ app.use(`${api}/auth`, authRoutes);
 app.use(`${api}/users`, userRoutes);
 app.use(`${api}/services`, serviceRoutes);
 app.use(`${api}/orders`, orderRoutes);
-app.use(`${api}/chat`, chatRoutes);
+
 app.use(`${api}/reviews`, reviewRoutes);
 app.use(`${api}/blogs`, blogRoutes);
 app.use(`${api}/projects`, projectRoutes);

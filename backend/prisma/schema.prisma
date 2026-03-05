@@ -30,11 +30,6 @@ enum PaymentStatus {
   REFUNDED
 }
 
-enum MessageSender {
-  USER
-  ADMIN
-  SYSTEM
-}
 
 // ─── USERS ──────────────────────────────────────────────
 
@@ -60,7 +55,7 @@ model User {
   orders        Order[]
   customOffers  CustomOffer[]
   reviews       Review[]
-  conversations Conversation[]
+
   payments      Payment[]
 
   @@index([email])
@@ -171,37 +166,6 @@ model Payment {
   @@map("payments")
 }
 
-// ─── CONVERSATIONS & MESSAGES ───────────────────────────
-
-model Conversation {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  subject   String?
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages Message[]
-
-  @@index([userId])
-  @@map("conversations")
-}
-
-model Message {
-  id             String        @id @default(uuid())
-  conversationId String        @map("conversation_id")
-  sender         MessageSender
-  content        String
-  isRead         Boolean       @default(false) @map("is_read")
-  createdAt      DateTime      @default(now()) @map("created_at")
-
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@index([conversationId])
-  @@index([isRead])
-  @@map("messages")
-}
 
 // ─── REVIEWS ────────────────────────────────────────────
 

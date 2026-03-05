@@ -26,7 +26,7 @@ const DashboardLayout = lazy(() => import('./components/layout/DashboardLayout')
 const ProtectedRoute = lazy(() => import('./components/shared/ProtectedRoute'));
 const DashboardOverview = lazy(() => import('./pages/dashboard/DashboardOverview'));
 const DashboardOrders = lazy(() => import('./pages/dashboard/DashboardOrders'));
-const DashboardChat = lazy(() => import('./pages/dashboard/DashboardChat'));
+
 const DashboardReviews = lazy(() => import('./pages/dashboard/DashboardReviews'));
 const DashboardProfile = lazy(() => import('./pages/dashboard/DashboardProfile'));
 
@@ -35,7 +35,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminServices = lazy(() => import('./pages/admin/AdminServices'));
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
-const AdminChat = lazy(() => import('./pages/admin/AdminChat'));
+
 const AdminBlogs = lazy(() => import('./pages/admin/AdminBlogs'));
 const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
 const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
@@ -76,7 +76,7 @@ export default function App() {
         >
           <Route index element={<DashboardOverview />} />
           <Route path="orders" element={<DashboardOrders />} />
-          <Route path="chat" element={<DashboardChat />} />
+
           <Route path="reviews" element={<DashboardReviews />} />
           <Route path="profile" element={<DashboardProfile />} />
         </Route>
@@ -95,7 +95,7 @@ export default function App() {
           <Route path="services" element={<AdminServices />} />
           <Route path="projects" element={<AdminProjects />} />
           <Route path="orders" element={<AdminOrders />} />
-          <Route path="chat" element={<AdminChat />} />
+
           <Route path="blogs" element={<AdminBlogs />} />
           <Route path="faqs" element={<AdminFaqs />} />
           <Route path="reviews" element={<AdminReviews />} />

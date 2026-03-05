@@ -24,7 +24,7 @@ const FOOTER_LINKS = [
     title: 'Support',
     links: [
       { label: 'Dashboard', path: '/dashboard' },
-      { label: 'Chat', path: '/dashboard/chat' },
+
       { label: 'FAQs', path: '/' },
     ],
   },

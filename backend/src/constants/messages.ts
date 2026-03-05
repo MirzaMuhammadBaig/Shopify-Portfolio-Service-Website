@@ -34,13 +34,6 @@ export const ORDER_MESSAGES = {
   STATUS_UPDATED: 'Order status updated successfully',
 } as const;
 
-export const CHAT_MESSAGES = {
-  CONVERSATION_CREATED: 'Conversation created successfully',
-  MESSAGE_SENT: 'Message sent successfully',
-  FETCHED: 'Messages fetched successfully',
-  CONVERSATION_NOT_FOUND: 'Conversation not found',
-  SUBJECT_UPDATED: 'Conversation subject updated',
-} as const;
 
 export const REVIEW_MESSAGES = {
   CREATED: 'Review submitted successfully',

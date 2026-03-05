@@ -1,8 +1,7 @@
 import { Safepay } from '@sfpy/node-sdk';
 import { paymentRepository } from './payment.repository';
 import { orderRepository } from '../order/order.repository';
-import { chatRepository } from '../chat/chat.repository';
-import { chatService } from '../chat/chat.service';
+
 import { ApiError } from '../../utils/api-error';
 import { HTTP_STATUS, PAYMENT_MESSAGES, PAYMENT_METHODS, MANUAL_PAYMENT_METHODS, ORDER_STATUS } from '../../constants';
 import { getPagination, getMeta } from '../../utils/pagination';
@@ -16,7 +15,7 @@ const safepay = new Safepay({
   webhookSecret: config.payment.safepay.webhookSecret,
 } as any);
 
-/** Shared logic: auto-start order + send emails + chat message after payment confirmed.
+/** Shared logic: auto-start order + send emails after payment confirmed.
  *  IMPORTANT: This must be awaited — Vercel terminates serverless functions after response is sent. */
 const handlePaymentConfirmed = async (order: any) => {
   const serviceTitle = order.service?.title || 'Custom Order';
@@ -81,34 +80,6 @@ const handlePaymentConfirmed = async (order: any) => {
   );
 
   await Promise.allSettled(emailPromises);
-
-  // Chat: thank-you message to user
-  const deliveryNote = estimatedDelivery
-    ? ` Your estimated delivery date is ${estimatedDelivery.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.`
-    : '';
-
-  const thankYouMessage = `Thank you for your purchase! Your order #${order.orderNumber} for "${serviceTitle}" has been confirmed and is now in progress. Our team has started working on your project right away!${deliveryNote} We'll keep you updated on the progress. If you have any questions, feel free to message us here!`;
-
-  try {
-    // Find existing conversation or create new one
-    const conversations = await chatRepository.findConversations(order.userId);
-    let conversationId: string;
-
-    if (conversations.length > 0) {
-      conversationId = conversations[0].id;
-    } else {
-      const newConv = await chatRepository.createConversation(
-        order.userId,
-        `Order #${order.orderNumber} — ${serviceTitle}`,
-      );
-      conversationId = newConv.id;
-    }
-
-    // Send as ADMIN — triggers email notification via chat deduplication system
-    await chatService.sendMessage(conversationId, 'ADMIN', thankYouMessage);
-  } catch (err) {
-    console.error('Failed to send thank-you chat message:', err);
-  }
 };
 
 export const paymentService = {
@@ -260,7 +231,7 @@ export const paymentService = {
       paidAt: new Date(),
     });
 
-    // Auto-start order, send emails, and chat message (must await on Vercel)
+    // Auto-start order and send emails (must await on Vercel)
     if (payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {
@@ -325,7 +296,7 @@ export const paymentService = {
       paidAt: new Date(),
     });
 
-    // Auto-start order, send emails, and chat message (must await on Vercel)
+    // Auto-start order and send emails (must await on Vercel)
     if (payment.orderId) {
       const order = await orderRepository.findById(payment.orderId);
       if (order) {

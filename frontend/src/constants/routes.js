@@ -6,7 +6,7 @@ export const ROUTES = {
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
   DASHBOARD_ORDERS: '/dashboard/orders',
-  DASHBOARD_CHAT: '/dashboard/chat',
+
   DASHBOARD_REVIEWS: '/dashboard/reviews',
   DASHBOARD_PROFILE: '/dashboard/profile',
   BLOG: '/blog',
@@ -16,7 +16,7 @@ export const ROUTES = {
   ADMIN_USERS: '/admin/users',
   ADMIN_SERVICES: '/admin/services',
   ADMIN_ORDERS: '/admin/orders',
-  ADMIN_CHAT: '/admin/chat',
+
   ADMIN_BLOGS: '/admin/blogs',
   ADMIN_REVIEWS: '/admin/reviews',
 };
