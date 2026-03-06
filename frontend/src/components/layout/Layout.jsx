@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import WhatsAppButton from '../shared/WhatsAppButton';
+import Chatbot from '../shared/Chatbot';
 import ScrollProgress from '../shared/ScrollProgress';
 import PageLoader from '../ui/PageLoader';
 
@@ -32,6 +33,7 @@ export default function Layout({ children }) {
           {children}
         </main>
         <Footer />
+        <Chatbot />
         <WhatsAppButton />
         <ScrollProgress />
       </div>

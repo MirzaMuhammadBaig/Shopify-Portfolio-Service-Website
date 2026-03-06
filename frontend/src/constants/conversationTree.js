@@ -4,7 +4,7 @@ export const CONVERSATION_TREE = {
   // ROOT
   // ─────────────────────────────────────────────
   root: {
-    message: "Hi! I'm the ShopifyPro assistant. We specialize in Shopify development, SEO, and conversion optimization. What can I help you with today?",
+    message: "Hi there! I'm the ShopifyPro assistant — your go-to guide for everything Shopify.\n\nWe specialize in store setup, custom theme development, SEO, app development, migration, and conversion optimization. Browse the options below or type any question!",
     options: [
       { label: "Explore our services", next: "services" },
       { label: "View pricing", next: "pricing" },
@@ -683,7 +683,7 @@ export const CONVERSATION_TREE = {
   // CONTACT NODE (referenced from many nodes in later parts)
   // ─────────────────────────────────────────────
   contact: {
-    message: "Ready to move forward? Reach us directly — we typically respond within 2 business hours. Email: webdev.muhammad@gmail.com | WhatsApp/Phone: +92 320 9246199. Or use the contact form on our website for a free project consultation.",
+    message: "Ready to move forward? Reach us directly — we typically respond within 2 business hours.\n\nEmail: webdev.muhammad@gmail.com\nWhatsApp: +92 320 9246199\n\nOr fill out our [Contact Form](/contact) for a free project consultation. We'd love to hear about your project!",
     options: [
       { label: "Back to services", next: "services" },
       { label: "Back to pricing", next: "pricing" },
@@ -993,7 +993,7 @@ export const CONVERSATION_TREE = {
   },
 
   tech_speed_test: {
-    message: "Use Google PageSpeed Insights (pagespeed.web.dev) for Lighthouse scores and Core Web Vitals. GTmetrix gives waterfall charts showing exactly what slows your page. Shopify's built-in speed report (Online Store > Themes > Speed) gives a quick overview relative to other stores.",
+    message: "Use Google PageSpeed Insights (https://pagespeed.web.dev) for Lighthouse scores and Core Web Vitals. GTmetrix gives waterfall charts showing exactly what slows your page. Shopify's built-in speed report (Online Store > Themes > Speed) gives a quick overview relative to other stores.",
     options: [
       { label: "Get a free speed audit", next: "contact" },
       { label: "Back to Speed", next: "tech_speed" },
@@ -1136,7 +1136,7 @@ export const CONVERSATION_TREE = {
   },
 
   support_emergency: {
-    message: "For Pro plan members, emergency support is available with a 4-hour response SLA, 7 days a week. For non-retainer clients, emergency fixes are billed at $150/hour with a 24-hour response commitment. Contact us via WhatsApp for fastest response.",
+    message: "For Pro plan members, emergency support is available with a 4-hour response SLA, 7 days a week. For non-retainer clients, emergency fixes are billed at $150/hour with a 24-hour response commitment.\n\nFor fastest response, message us on WhatsApp: +92 320 9246199",
     options: [
       { label: "View support plans", next: "support_packages" },
       { label: "Contact us now", next: "contact" },
@@ -1643,7 +1643,7 @@ export const CONVERSATION_TREE = {
   },
 
   start_step1: {
-    message: "Book a free 30-minute discovery call via email (webdev.muhammad@gmail.com) or WhatsApp (+92 320 9246199). We'll discuss your business, goals, timeline, and budget. No pressure, no obligation — just an honest conversation about what you need.",
+    message: "Book a free 30-minute discovery call — no pressure, no obligation.\n\nEmail: webdev.muhammad@gmail.com\nWhatsApp: +92 320 9246199\n\nWe'll discuss your business, goals, timeline, and budget — just an honest conversation about what you need.",
     options: [
       { label: "Next: Discovery & proposal", next: "start_step2" },
       { label: "Book now", next: "contact" },
@@ -1829,7 +1829,7 @@ export const CONVERSATION_TREE = {
   // FALLBACK NODE
   // ─────────────────────────────────────────────
   fallback: {
-    message: "I don't have an exact answer for that, but our team would love to help! You can reach us directly at webdev.muhammad@gmail.com or WhatsApp +92 320 9246199. We typically respond within 2 hours.",
+    message: "I don't have an exact answer for that, but our team would love to help!\n\nYou can reach us directly:\nEmail: webdev.muhammad@gmail.com\nWhatsApp: +92 320 9246199\n\nOr use our [Contact Form](/contact) — we typically respond within 2 hours.",
     options: [
       { label: "Browse our services", next: "services" },
       { label: "View pricing", next: "pricing" },
