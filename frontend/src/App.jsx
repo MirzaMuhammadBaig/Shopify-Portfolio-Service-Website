@@ -48,7 +48,7 @@ export default function App() {
   return (
     <>
     <ScrollToTop />
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<PageLoader showProgress={false} />}>
       <Routes>
         {/* Public routes with main layout */}
         <Route element={<Layout><HomePage /></Layout>} path="/" />

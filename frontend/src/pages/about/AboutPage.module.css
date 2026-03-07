@@ -33,31 +33,39 @@
 }
 
 /* ═══════════════════════════════════════
-   ANIMATED BACKGROUND
+   ANIMATED BACKGROUND — Continuous Color
    ═══════════════════════════════════════ */
 @keyframes bgColorShift {
   0%   { background-position: 0% 0%; }
-  25%  { background-position: 50% 100%; }
-  50%  { background-position: 100% 50%; }
-  75%  { background-position: 50% 0%; }
+  25%  { background-position: 100% 50%; }
+  50%  { background-position: 50% 100%; }
+  75%  { background-position: 0% 50%; }
   100% { background-position: 0% 0%; }
+}
+
+@keyframes auroraFlow {
+  0%   { transform: rotate(0deg) scale(1); opacity: 0.5; }
+  25%  { transform: rotate(5deg) scale(1.05); opacity: 0.7; }
+  50%  { transform: rotate(-3deg) scale(1.1); opacity: 0.5; }
+  75%  { transform: rotate(4deg) scale(0.95); opacity: 0.65; }
+  100% { transform: rotate(0deg) scale(1); opacity: 0.5; }
 }
 
 @keyframes orbFloat1 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(60px, -40px) scale(1.1); }
-  66%      { transform: translate(-30px, 30px) scale(0.95); }
+  33%      { transform: translate(80px, -50px) scale(1.15); }
+  66%      { transform: translate(-40px, 40px) scale(0.9); }
 }
 
 @keyframes orbFloat2 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(-50px, 50px) scale(1.05); }
-  66%      { transform: translate(40px, -20px) scale(0.9); }
+  33%      { transform: translate(-60px, 60px) scale(1.1); }
+  66%      { transform: translate(50px, -30px) scale(0.85); }
 }
 
 @keyframes orbFloat3 {
   0%, 100% { transform: translate(0, 0) scale(0.95); }
-  50%      { transform: translate(-40px, -30px) scale(1.1); }
+  50%      { transform: translate(-50px, -40px) scale(1.15); }
 }
 
 .pageWrapper {
@@ -65,17 +73,44 @@
   overflow: hidden;
 }
 
+/* Base gradient layer — subtle flowing colors */
 .pageWrapper::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(ellipse 600px 600px at 15% 20%, rgba(108, 99, 255, 0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 500px at 85% 30%, rgba(0, 217, 255, 0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 400px 400px at 50% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
-  background-size: 200% 200%;
-  animation: bgColorShift 20s ease infinite;
+    radial-gradient(ellipse 700px 700px at 10% 15%, rgba(108, 99, 255, 0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 600px 600px at 90% 25%, rgba(0, 217, 255, 0.1) 0%, transparent 65%),
+    radial-gradient(ellipse 550px 550px at 50% 85%, rgba(168, 85, 247, 0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 500px 500px at 70% 60%, rgba(236, 72, 153, 0.06) 0%, transparent 60%);
+  background-size: 250% 250%;
+  animation: bgColorShift 14s ease infinite;
+  pointer-events: none;
+}
+
+/* Aurora band — flowing color ribbon */
+.pageWrapper::after {
+  content: '';
+  position: fixed;
+  top: -30%;
+  left: -20%;
+  width: 140%;
+  height: 160%;
+  z-index: -2;
+  background:
+    conic-gradient(
+      from 180deg at 50% 50%,
+      rgba(108, 99, 255, 0.08) 0deg,
+      rgba(0, 217, 255, 0.06) 60deg,
+      rgba(168, 85, 247, 0.07) 120deg,
+      rgba(236, 72, 153, 0.05) 180deg,
+      rgba(0, 217, 255, 0.08) 240deg,
+      rgba(108, 99, 255, 0.06) 300deg,
+      rgba(108, 99, 255, 0.08) 360deg
+    );
+  filter: blur(60px);
+  animation: auroraFlow 18s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -85,34 +120,34 @@
   filter: blur(80px);
   z-index: -1;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .bgOrb1 {
-  width: 400px;
-  height: 400px;
-  top: 10%;
+  width: 450px;
+  height: 450px;
+  top: 8%;
   left: -5%;
-  background: radial-gradient(circle, rgba(108, 99, 255, 0.12), transparent 70%);
-  animation: orbFloat1 18s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(108, 99, 255, 0.18), transparent 70%);
+  animation: orbFloat1 16s ease-in-out infinite;
 }
 
 .bgOrb2 {
-  width: 350px;
-  height: 350px;
-  top: 50%;
+  width: 400px;
+  height: 400px;
+  top: 48%;
   right: -8%;
-  background: radial-gradient(circle, rgba(0, 217, 255, 0.1), transparent 70%);
-  animation: orbFloat2 22s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(0, 217, 255, 0.15), transparent 70%);
+  animation: orbFloat2 20s ease-in-out infinite;
 }
 
 .bgOrb3 {
-  width: 300px;
-  height: 300px;
+  width: 350px;
+  height: 350px;
   bottom: 5%;
-  left: 30%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.08), transparent 70%);
-  animation: orbFloat3 16s ease-in-out infinite;
+  left: 28%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent 70%);
+  animation: orbFloat3 14s ease-in-out infinite;
 }
 
 /* ═══════════════════════════════════════
