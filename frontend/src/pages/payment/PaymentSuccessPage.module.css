@@ -26,6 +26,18 @@
   font-weight: 800;
 }
 
+.title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  margin: 12px auto 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #6C63FF, #00D9FF, #A855F7, #6C63FF);
+  background-size: 300% 100%;
+  animation: headingLineGlow 4s ease infinite;
+}
+
 .text {
   color: var(--color-text-secondary);
   font-size: 1rem;

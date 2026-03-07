@@ -43,9 +43,9 @@
   display: block;
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #6C63FF, #00D9FF);
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
+  background: linear-gradient(90deg, #6C63FF, #00D9FF, #A855F7, #6C63FF);
+  background-size: 300% 100%;
+  animation: headingLineGlow 4s ease infinite;
   margin-top: 12px;
   border-radius: 2px;
 }
@@ -77,6 +77,7 @@
   .title::after {
     animation: none;
     background-size: 100% 100%;
+    box-shadow: 0 0 6px rgba(108, 99, 255, 0.3);
   }
 
   /* Stop box-shadow repaint on mobile */

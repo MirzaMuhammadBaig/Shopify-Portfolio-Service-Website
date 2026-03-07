@@ -81,7 +81,7 @@ export const INTENTS = [
       /^(hi|hey|hello|hii+|helo|heyy+|hy|salam|aoa|yo|sup)\s+\S+(\s+\S+)?$/i,
     ],
     type: 'direct',
-    message: "Hey, welcome to ShopifyPro! So glad you stopped by!\n\nI'm your dedicated Shopify assistant — whether you're looking to build a brand-new store, need help with SEO, want a custom theme, or just have a quick question, I'm here for you 24/7.\n\nFeel free to type your question or pick an option below to get started!",
+    message: "Hi! 👋 Great to see you here.\n\nLooking to build something amazing?\nWe help businesses with web apps, blockchain solutions, and digital platforms.\n\nTell me what you need and I'll guide you.",
     options: [
       { label: "Explore our services", next: "services" },
       { label: "View pricing & packages", next: "pricing" },

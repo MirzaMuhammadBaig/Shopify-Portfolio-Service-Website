@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useInView } from 'framer-motion';
-import { HiCheckCircle, HiPhotograph, HiAcademicCap } from 'react-icons/hi';
+import { HiCheckCircle, HiAcademicCap, HiArrowRight } from 'react-icons/hi';
 import ScrollReveal from '../../components/animations/ScrollReveal';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -92,7 +92,6 @@ const STATIC_STORY = {
     'Average 3.2% conversion rate (vs 1.4% industry avg)',
     '90+ average Lighthouse performance score',
   ],
-  teamImage: null,
 };
 
 export default function AboutPage() {
@@ -159,42 +158,28 @@ export default function AboutPage() {
 
         {/* Our Story */}
         <div className={styles.storySection}>
-          <div className={styles.storyGrid}>
-            <ScrollReveal variant="fadeLeft">
-              <div className={styles.storyContent}>
-                <h2>{story.title || 'Our Story'}</h2>
-                {(story.content || '').split('\n').filter(Boolean).map((p, i) => (
-                  <p key={i}>{p}</p>
+          <ScrollReveal>
+            <div className={styles.storyContent}>
+              <h2>{story.title || 'Our Story'}</h2>
+              {(story.content || '').split('\n').filter(Boolean).map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+              <div className={styles.storyHighlights}>
+                {storyHighlights.map((text, i) => (
+                  <motion.div
+                    key={i}
+                    className={styles.storyHighlight}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
+                  >
+                    <HiCheckCircle /> {text}
+                  </motion.div>
                 ))}
-                <div className={styles.storyHighlights}>
-                  {storyHighlights.map((text, i) => (
-                    <motion.div
-                      key={i}
-                      className={styles.storyHighlight}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
-                    >
-                      <HiCheckCircle /> {text}
-                    </motion.div>
-                  ))}
-                </div>
               </div>
-            </ScrollReveal>
-            <ScrollReveal variant="fadeRight">
-              <div className={styles.storyImageWrap}>
-                {story.teamImage ? (
-                  <img src={story.teamImage} alt="Our Team" />
-                ) : (
-                  <div className={styles.storyImagePlaceholder}>
-                    <HiPhotograph />
-                    <span>Add your team photo here</span>
-                  </div>
-                )}
-              </div>
-            </ScrollReveal>
-          </div>
+            </div>
+          </ScrollReveal>
         </div>
 
         {/* Experience Timeline */}
@@ -300,8 +285,8 @@ export default function AboutPage() {
           {certificates.length > 6 && (
             <ScrollReveal>
               <div className={styles.certViewAll}>
-                <Link to="/certificates">
-                  <Button variant="outline">View All {certificates.length} Certificates</Button>
+                <Link to="/certificates" className={styles.certViewAllBtn}>
+                  View All Certificates <HiArrowRight />
                 </Link>
               </div>
             </ScrollReveal>
