@@ -1826,6 +1826,178 @@ export const CONVERSATION_TREE = {
   },
 
   // ─────────────────────────────────────────────
+  // INVENTORY & STOCK MANAGEMENT
+  // ─────────────────────────────────────────────
+  tech_inventory: {
+    message: "Shopify has powerful built-in inventory management, and we can extend it further with custom solutions. Whether you need multi-location tracking, low-stock alerts, or ERP integration — we've got you covered.",
+    options: [
+      { label: "Multi-location inventory", next: "inventory_multi_location" },
+      { label: "Back-in-stock notifications", next: "inventory_back_in_stock" },
+      { label: "ERP/warehouse integration", next: "inventory_erp" },
+      { label: "Back to main menu", next: "root" },
+    ],
+  },
+
+  inventory_multi_location: {
+    message: "Shopify supports up to 1,000 inventory locations. We configure location-based fulfillment rules, set up inventory transfers between locations, and build custom dashboards for stock visibility across all your warehouses, retail stores, and 3PLs.",
+    options: [
+      { label: "Back to Inventory", next: "tech_inventory" },
+      { label: "Get help with inventory setup", next: "contact" },
+    ],
+  },
+
+  inventory_back_in_stock: {
+    message: "We set up automated back-in-stock email and SMS notifications using Klaviyo or Back In Stock (app). Customers sign up to be notified when a sold-out product returns — this typically recovers 5–15% of otherwise lost sales.",
+    options: [
+      { label: "Back to Inventory", next: "tech_inventory" },
+      { label: "Set this up for my store", next: "contact" },
+    ],
+  },
+
+  inventory_erp: {
+    message: "We integrate Shopify with ERPs like NetSuite, SAP Business One, and TradeGecko (QuickBooks Commerce). Real-time bi-directional sync ensures inventory levels, orders, and customer data stay consistent across all systems.",
+    options: [
+      { label: "Back to Inventory", next: "tech_inventory" },
+      { label: "Discuss my integration needs", next: "contact" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // SHIPPING & FULFILLMENT
+  // ─────────────────────────────────────────────
+  tech_shipping: {
+    message: "From domestic shipping to worldwide fulfillment, we configure everything to ensure fast, reliable delivery for your customers. Shopify's shipping ecosystem is robust, and we know how to optimize it.",
+    options: [
+      { label: "Carrier-calculated rates", next: "shipping_carriers" },
+      { label: "Free shipping strategy", next: "shipping_free" },
+      { label: "International shipping", next: "shipping_international" },
+      { label: "Order tracking setup", next: "shipping_tracking" },
+      { label: "Back to main menu", next: "root" },
+    ],
+  },
+
+  shipping_carriers: {
+    message: "We configure real-time carrier-calculated rates from UPS, FedEx, DHL, USPS, Canada Post, and Royal Mail. Customers see accurate shipping costs at checkout based on weight, dimensions, and destination — reducing cart abandonment from unexpected shipping fees.",
+    options: [
+      { label: "Back to Shipping", next: "tech_shipping" },
+      { label: "Set up my shipping", next: "contact" },
+    ],
+  },
+
+  shipping_free: {
+    message: "Free shipping thresholds are one of the most effective conversion tools. We help you calculate the optimal threshold (typically 15–25% above your current AOV), configure the rules in Shopify, and add a dynamic progress bar in the cart showing how close the customer is to free shipping.",
+    options: [
+      { label: "Back to Shipping", next: "tech_shipping" },
+      { label: "Implement this for my store", next: "contact" },
+    ],
+  },
+
+  shipping_international: {
+    message: "We set up international shipping zones with country-specific rates, duties and taxes (using Shopify Markets), and localized checkout experiences. Combined with multi-currency support, your store can sell globally with a local feel.",
+    options: [
+      { label: "Multi-currency setup", next: "tech_international" },
+      { label: "Back to Shipping", next: "tech_shipping" },
+      { label: "Get started", next: "contact" },
+    ],
+  },
+
+  shipping_tracking: {
+    message: "We integrate real-time order tracking using AfterShip, Tracktor, or Shopify's native tracking. Customers receive automated SMS/email updates at each fulfillment stage — reducing 'Where is my order?' support tickets by up to 80%.",
+    options: [
+      { label: "Back to Shipping", next: "tech_shipping" },
+      { label: "Set up tracking", next: "contact" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // DISCOUNTS & PROMOTIONS
+  // ─────────────────────────────────────────────
+  tech_discounts: {
+    message: "Shopify offers powerful discount tools, and we can extend them with custom solutions. From simple coupon codes to complex automatic discounts, BOGO offers, and tiered pricing — we'll set up a promotion strategy that drives sales.",
+    options: [
+      { label: "Automatic discounts", next: "discount_automatic" },
+      { label: "BOGO & bundle deals", next: "discount_bogo" },
+      { label: "Flash sale setup", next: "discount_flash_sale" },
+      { label: "Back to main menu", next: "root" },
+    ],
+  },
+
+  discount_automatic: {
+    message: "Automatic discounts apply at checkout without a code — reducing friction. We configure percentage-off, fixed-amount, and buy-X-get-Y rules. Shopify Functions (formerly Scripts) allow advanced logic like tiered discounts: 10% off $100+, 15% off $200+, 20% off $300+.",
+    options: [
+      { label: "Back to Discounts", next: "tech_discounts" },
+      { label: "Set up discounts for my store", next: "contact" },
+    ],
+  },
+
+  discount_bogo: {
+    message: "Buy-one-get-one and bundle deals are conversion powerhouses. We configure Shopify's native BOGO discounts or build custom bundle builders using apps like Bundler or custom code. Bundles typically increase AOV by 20–35%.",
+    options: [
+      { label: "How to increase AOV", next: "tips_aov" },
+      { label: "Back to Discounts", next: "tech_discounts" },
+      { label: "Get started", next: "contact" },
+    ],
+  },
+
+  discount_flash_sale: {
+    message: "Flash sales create urgency and drive spikes in revenue. We set up countdown timers, limited-stock indicators, dedicated sale collection pages, and automated email/SMS blasts timed to the sale window. Post-sale, everything reverts automatically.",
+    options: [
+      { label: "Back to Discounts", next: "tech_discounts" },
+      { label: "Plan my flash sale", next: "contact" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // MULTI-STORE MANAGEMENT
+  // ─────────────────────────────────────────────
+  tech_multi_store: {
+    message: "Managing multiple Shopify stores? We help brands run separate stores for different regions, languages, or product lines — with centralized inventory, unified analytics, and consistent branding across all storefronts.",
+    options: [
+      { label: "Shopify Markets vs. separate stores", next: "multi_store_markets" },
+      { label: "Centralized inventory", next: "inventory_multi_location" },
+      { label: "Do I need Shopify Plus?", next: "plus_eligibility" },
+      { label: "Back to main menu", next: "root" },
+    ],
+  },
+
+  multi_store_markets: {
+    message: "Shopify Markets lets you sell in multiple countries from a single store — with localized currencies, languages, and domains. It's ideal for most brands. Separate stores make sense when you need completely different catalogs, branding, or checkout flows per region. We'll help you pick the right approach.",
+    options: [
+      { label: "Back to Multi-Store", next: "tech_multi_store" },
+      { label: "Discuss my setup", next: "contact" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // CONTENT & BLOGGING
+  // ─────────────────────────────────────────────
+  tech_content: {
+    message: "Content is king for SEO and brand authority. We help set up and optimize Shopify's built-in blog, create content strategies, and write conversion-focused product descriptions that rank on Google and persuade buyers.",
+    options: [
+      { label: "Blog setup & strategy", next: "content_blog" },
+      { label: "Product description writing", next: "content_product_copy" },
+      { label: "Content for SEO", next: "svc_seo" },
+      { label: "Back to main menu", next: "root" },
+    ],
+  },
+
+  content_blog: {
+    message: "Shopify's built-in blog is great for SEO. We configure custom blog templates, set up categories with tags, add author bios, implement related posts, and create a content calendar targeting your high-value keywords. Consistent blogging can increase organic traffic by 50–100% in 6 months.",
+    options: [
+      { label: "Back to Content", next: "tech_content" },
+      { label: "Start a content strategy", next: "contact" },
+    ],
+  },
+
+  content_product_copy: {
+    message: "We write product descriptions that sell. Each description includes: a benefit-focused headline, scannable bullet points, sensory/emotional language, SEO keywords naturally woven in, and a clear call-to-action. Pricing: $15–$25 per product for professional copywriting.",
+    options: [
+      { label: "Back to Content", next: "tech_content" },
+      { label: "Get a quote for copywriting", next: "contact" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
   // FALLBACK NODE
   // ─────────────────────────────────────────────
   fallback: {

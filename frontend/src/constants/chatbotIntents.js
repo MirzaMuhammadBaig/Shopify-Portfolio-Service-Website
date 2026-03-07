@@ -77,9 +77,11 @@ export const INTENTS = [
       /^(hi+|hey+|hello+|helo+)\s+(there|chatbot|bot|assistant|shopifypro|buddy|friend|mate|bro|dear|sir|madam|team)/i,
       /^(dear|respected)\s+(sir|madam|team|shopifypro)/i,
       /^(assalam\s*o?\s*alaikum|wa\s*alaikum|aoa)/i,
+      // Short 2-3 word messages containing a greeting (e.g. "hi bro", "hey there", "hello ji")
+      /^(hi|hey|hello|hii+|helo|heyy+|hy|salam|aoa|yo|sup)\s+\S+(\s+\S+)?$/i,
     ],
     type: 'direct',
-    message: "Hey there! Welcome to ShopifyPro — great to have you here!\n\nI'm your Shopify expert assistant, ready to help you with everything from launching a brand-new store to scaling an existing one. Whether you have a quick question or need a full project consultation, I've got you covered.\n\nWhat would you like to explore?",
+    message: "Hey, welcome to ShopifyPro! So glad you stopped by!\n\nI'm your dedicated Shopify assistant — whether you're looking to build a brand-new store, need help with SEO, want a custom theme, or just have a quick question, I'm here for you 24/7.\n\nFeel free to type your question or pick an option below to get started!",
     options: [
       { label: "Explore our services", next: "services" },
       { label: "View pricing & packages", next: "pricing" },
@@ -970,6 +972,182 @@ export const INTENTS = [
     ],
     type: 'node',
     node: 'ind_beauty_subscriptions',
+  },
+
+  // ═══════════════════════════════════════════════
+  // INVENTORY & STOCK
+  // ═══════════════════════════════════════════════
+  {
+    id: 'inventory',
+    patterns: [
+      /inventory/i,
+      /stock\s*(manage|track|sync|level|count)/i,
+      /out\s*of\s*stock/i,
+      /back\s*in\s*stock/i,
+      /warehouse/i,
+      /sku/i,
+      /barcode/i,
+    ],
+    type: 'node',
+    node: 'tech_inventory',
+  },
+
+  // ═══════════════════════════════════════════════
+  // SHIPPING & FULFILLMENT
+  // ═══════════════════════════════════════════════
+  {
+    id: 'shipping',
+    patterns: [
+      /shipping/i,
+      /fulfillment/i,
+      /fulfilment/i,
+      /deliver(y|ies)/i,
+      /ship\s*(to|from|worldwide|international)/i,
+      /free\s*shipping/i,
+      /shipping\s*(rate|zone|cost|method)/i,
+      /track(ing)?\s*(order|package|shipment)/i,
+    ],
+    type: 'node',
+    node: 'tech_shipping',
+  },
+
+  // ═══════════════════════════════════════════════
+  // DISCOUNT & COUPON
+  // ═══════════════════════════════════════════════
+  {
+    id: 'discount',
+    patterns: [
+      /discount/i,
+      /coupon/i,
+      /promo\s*code/i,
+      /voucher/i,
+      /offer/i,
+      /sale\s*(event|page|setup)/i,
+      /flash\s*sale/i,
+      /do\s*you\s*(have|offer)\s*(a\s*)?(discount|deal|offer|coupon)/i,
+    ],
+    type: 'node',
+    node: 'tech_discounts',
+  },
+
+  // ═══════════════════════════════════════════════
+  // MULTI-STORE
+  // ═══════════════════════════════════════════════
+  {
+    id: 'multi_store',
+    patterns: [
+      /multi[- ]?store/i,
+      /multiple\s*store/i,
+      /second\s*store/i,
+      /another\s*store/i,
+      /manage\s*(multiple|several|two|2)\s*store/i,
+    ],
+    type: 'node',
+    node: 'tech_multi_store',
+  },
+
+  // ═══════════════════════════════════════════════
+  // CONTENT & BLOGGING
+  // ═══════════════════════════════════════════════
+  {
+    id: 'content',
+    patterns: [
+      /blog(ging)?/i,
+      /content\s*(market|strateg|writ|creat)/i,
+      /write\s*(blog|article|content)/i,
+      /copywriting/i,
+      /product\s*description/i,
+    ],
+    type: 'node',
+    node: 'tech_content',
+  },
+
+  // ═══════════════════════════════════════════════
+  // POSITIVE FEEDBACK
+  // ═══════════════════════════════════════════════
+  {
+    id: 'positive',
+    patterns: [
+      /^(great|awesome|amazing|perfect|cool|nice|wonderful|excellent|fantastic|brilliant|love\s*it|sounds?\s*good|looks?\s*good|that'?s?\s*great|impressive)/i,
+      /^(ok|okay|sure|alright|got\s*it|understood|makes\s*sense|i\s*see)/i,
+    ],
+    type: 'direct',
+    message: "Glad to hear that! Is there anything else you'd like to know? I can help with services, pricing, technical questions, or connect you directly with our team.",
+    options: [
+      { label: "Explore our services", next: "services" },
+      { label: "View pricing", next: "pricing" },
+      { label: "I have a question", next: "root" },
+      { label: "Talk to a human", next: "contact" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════
+  // NEGATIVE / FRUSTRATION
+  // ═══════════════════════════════════════════════
+  {
+    id: 'frustrated',
+    patterns: [
+      /not\s*help(ful|ing)/i,
+      /doesn'?t\s*(help|work|make\s*sense)/i,
+      /useless/i,
+      /waste\s*(of\s*)?time/i,
+      /frustrated/i,
+      /annoyed/i,
+      /this\s*(is\s*)?(bad|terrible|awful|horrible)/i,
+    ],
+    type: 'direct',
+    message: "I'm sorry to hear that! I want to make sure you get the help you need. Let me connect you directly with our team — they can assist you personally.\n\nEmail: webdev.muhammad@gmail.com\nWhatsApp: +92 320 9246199\n\nOr try rephrasing your question and I'll do my best!",
+    options: [
+      { label: "Talk to a human", next: "contact" },
+      { label: "Let me try again", next: "root" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════
+  // HIRING / FREELANCER
+  // ═══════════════════════════════════════════════
+  {
+    id: 'hire',
+    patterns: [
+      /hire\s*(you|a\s*developer|shopify)/i,
+      /freelanc/i,
+      /looking\s*for\s*(a\s*)?(developer|designer|expert|freelanc)/i,
+      /available\s*(for\s*)?(hire|work|project)/i,
+      /can\s*(i|we)\s*hire/i,
+      /do\s*you\s*take\s*(on\s*)?(project|client|work)/i,
+    ],
+    type: 'direct',
+    message: "Absolutely — we're open for new projects and would love to work with you!\n\nWhether it's a one-time build or ongoing partnership, here's how to get started:\n\n1. Book a free 30-minute discovery call\n2. We'll scope your project and provide a fixed-price quote within 24 hours\n3. Once approved, we kick off immediately\n\nLet's talk about your project!",
+    options: [
+      { label: "Book a free call", next: "contact" },
+      { label: "View our services", next: "services" },
+      { label: "See pricing", next: "pricing" },
+      { label: "About our team", next: "about_us" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════
+  // URGENCY / ASAP
+  // ═══════════════════════════════════════════════
+  {
+    id: 'urgent',
+    patterns: [
+      /\basap\b/i,
+      /urgent(ly)?/i,
+      /emergency/i,
+      /right\s*now/i,
+      /immediately/i,
+      /as\s*soon\s*as\s*possible/i,
+      /rush\s*(order|project|job)/i,
+      /my\s*store\s*is\s*(down|broken|crashed)/i,
+    ],
+    type: 'direct',
+    message: "I understand the urgency! For emergency situations, here's the fastest way to reach us:\n\nWhatsApp (fastest): +92 320 9246199\nEmail: webdev.muhammad@gmail.com\n\nWe offer rush delivery on most services and have a 4-hour emergency SLA on our Pro support plan. Don't worry — we'll get you sorted!",
+    options: [
+      { label: "Emergency support plans", next: "support_packages" },
+      { label: "WhatsApp us now", next: "contact" },
+      { label: "Rush delivery options", next: "timelines" },
+    ],
   },
 ];
 

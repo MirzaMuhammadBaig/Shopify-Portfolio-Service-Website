@@ -71,6 +71,18 @@ export const API_ENDPOINTS = {
     BASE: '/payments',
     VERIFY: (id) => `/payments/${id}/verify`,
   },
+  ABOUT: {
+    BASE: '/about',
+    STATS: '/about/stats',
+    STAT_BY_ID: (id) => `/about/stats/${id}`,
+    STORY: '/about/story',
+    EXPERIENCES: '/about/experiences',
+    EXPERIENCE_BY_ID: (id) => `/about/experiences/${id}`,
+    MEMBERS: '/about/members',
+    MEMBER_BY_ID: (id) => `/about/members/${id}`,
+    CERTIFICATES: '/about/certificates',
+    CERTIFICATE_BY_ID: (id) => `/about/certificates/${id}`,
+  },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
   },

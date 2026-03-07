@@ -32,17 +32,31 @@ export default function OrderChat({ orderId, disabled = false }) {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  if (disabled) {
+    return (
+      <div className={styles.chatContainer}>
+        <div className={styles.chatHeader}>
+          <h4 className={styles.chatTitle}>Order Chat</h4>
+        </div>
+        <div className={styles.messagesContainer}>
+          <div className={styles.emptyChat}>
+            This chat will open when the order will be completed and approval from you is pending.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.chatContainer}>
       <div className={styles.chatHeader}>
         <h4 className={styles.chatTitle}>Order Chat</h4>
-        {disabled && <span className={styles.chatDisabled}>Chat is closed</span>}
       </div>
 
       <div className={styles.messagesContainer} ref={containerRef}>
         {messages.length === 0 && (
           <div className={styles.emptyChat}>
-            {disabled ? 'Chat history is empty.' : 'No messages yet. Start the conversation!'}
+            No messages yet. Start the conversation!
           </div>
         )}
         {messages.map((msg) => {
@@ -66,21 +80,19 @@ export default function OrderChat({ orderId, disabled = false }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {!disabled && (
-        <form className={styles.inputArea} onSubmit={handleSend}>
-          <input
-            type="text"
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Type a message..."
-            className={styles.chatInput}
-            maxLength={1000}
-          />
-          <button type="submit" className={styles.sendBtn} disabled={!input.trim()}>
-            <HiPaperAirplane />
-          </button>
-        </form>
-      )}
+      <form className={styles.inputArea} onSubmit={handleSend}>
+        <input
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Type a message..."
+          className={styles.chatInput}
+          maxLength={1000}
+        />
+        <button type="submit" className={styles.sendBtn} disabled={!input.trim()}>
+          <HiPaperAirplane />
+        </button>
+      </form>
     </div>
   );
 }

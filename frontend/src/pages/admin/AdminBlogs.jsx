@@ -9,7 +9,7 @@ import { formatDate } from '../../utils/formatters';
 import toast from 'react-hot-toast';
 import styles from './AdminTable.module.css';
 
-const EMPTY_FORM = { title: '', content: '', excerpt: '', metaTitle: '', metaDesc: '', isPublished: false };
+const EMPTY_FORM = { title: '', content: '', excerpt: '', metaTitle: '', metaDesc: '', isPublished: false, publishedAt: '' };
 
 export default function AdminBlogs() {
   const [showForm, setShowForm] = useState(false);
@@ -41,18 +41,25 @@ export default function AdminBlogs() {
       metaTitle: p.metaTitle || '',
       metaDesc: p.metaDesc || '',
       isPublished: p.isPublished || false,
+      publishedAt: p.publishedAt ? new Date(p.publishedAt).toISOString().slice(0, 16) : '',
     });
     setShowForm(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = { ...form };
+    if (payload.publishedAt) {
+      payload.publishedAt = new Date(payload.publishedAt).toISOString();
+    } else {
+      delete payload.publishedAt;
+    }
     try {
       if (editingId) {
-        await updateBlog.mutateAsync({ id: editingId, data: form });
+        await updateBlog.mutateAsync({ id: editingId, data: payload });
         toast.success('Blog post updated!');
       } else {
-        await createBlog.mutateAsync(form);
+        await createBlog.mutateAsync(payload);
         toast.success('Blog post created!');
       }
       setForm(EMPTY_FORM);
@@ -89,6 +96,13 @@ export default function AdminBlogs() {
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
               <input type="checkbox" name="isPublished" checked={form.isPublished} onChange={handleChange} /> Publish immediately
             </label>
+            <Input
+              label="Publish Date & Time (optional — defaults to now if published)"
+              name="publishedAt"
+              type="datetime-local"
+              value={form.publishedAt}
+              onChange={handleChange}
+            />
             <Button type="submit" loading={editingId ? updateBlog.isPending : createBlog.isPending}>
               {editingId ? 'Update Post' : 'Create Post'}
             </Button>

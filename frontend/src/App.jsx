@@ -17,6 +17,8 @@ const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 const GuestRoute = lazy(() => import('./components/shared/GuestRoute'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
 const BlogDetailPage = lazy(() => import('./pages/blog/BlogDetailPage'));
+const AboutPage = lazy(() => import('./pages/about/AboutPage'));
+const CertificatesPage = lazy(() => import('./pages/certificates/CertificatesPage'));
 const ContactPage = lazy(() => import('./pages/contact/ContactPage'));
 const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
 const PaymentSuccessPage = lazy(() => import('./pages/payment/PaymentSuccessPage'));
@@ -40,6 +42,7 @@ const AdminProjects = lazy(() => import('./pages/admin/AdminProjects'));
 const AdminFaqs = lazy(() => import('./pages/admin/AdminFaqs'));
 const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 const AdminPayments = lazy(() => import('./pages/admin/AdminPayments'));
+const AdminAbout = lazy(() => import('./pages/admin/AdminAbout'));
 
 export default function App() {
   return (
@@ -53,6 +56,8 @@ export default function App() {
         <Route element={<Layout><ServiceDetailPage /></Layout>} path="/services/:slug" />
         <Route element={<Layout><BlogPage /></Layout>} path="/blog" />
         <Route element={<Layout><BlogDetailPage /></Layout>} path="/blog/:slug" />
+        <Route element={<Layout><AboutPage /></Layout>} path="/about" />
+        <Route element={<Layout><CertificatesPage /></Layout>} path="/certificates" />
         <Route element={<Layout><ContactPage /></Layout>} path="/contact" />
         <Route element={<Layout><GuestRoute><LoginPage /></GuestRoute></Layout>} path="/login" />
         <Route element={<Layout><GuestRoute><RegisterPage /></GuestRoute></Layout>} path="/register" />
@@ -98,6 +103,7 @@ export default function App() {
           <Route path="faqs" element={<AdminFaqs />} />
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="payments" element={<AdminPayments />} />
+          <Route path="about" element={<AdminAbout />} />
         </Route>
       </Routes>
     </Suspense>

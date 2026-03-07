@@ -52,6 +52,7 @@ export const blogService = {
     metaDesc?: string;
     tags?: any;
     isPublished?: boolean;
+    publishedAt?: string;
   }) => {
     const allSlugs = await blogRepository.findAllSlugs();
     const existingSlugs = allSlugs.map((s: { slug: string }) => s.slug);
@@ -62,10 +63,14 @@ export const blogService = {
       counter++;
     }
 
+    const publishedAt = data.publishedAt
+      ? new Date(data.publishedAt)
+      : data.isPublished ? new Date() : undefined;
+
     return blogRepository.create({
       ...data,
       slug,
-      publishedAt: data.isPublished ? new Date() : undefined,
+      publishedAt,
     });
   },
 
@@ -85,7 +90,9 @@ export const blogService = {
       data.slug = slug;
     }
 
-    if (data.isPublished && !post.isPublished) {
+    if (data.publishedAt) {
+      data.publishedAt = new Date(data.publishedAt);
+    } else if (data.isPublished && !post.isPublished) {
       data.publishedAt = new Date();
     }
 

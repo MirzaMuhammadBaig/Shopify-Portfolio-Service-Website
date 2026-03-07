@@ -10,6 +10,7 @@ export const blogValidation = {
     body('metaDesc').optional().trim().isLength({ max: 160 }),
     body('tags').optional().isArray(),
     body('isPublished').optional().isBoolean(),
+    body('publishedAt').optional().isISO8601().withMessage('publishedAt must be a valid date'),
   ],
 
   update: [
@@ -21,5 +22,6 @@ export const blogValidation = {
     body('metaDesc').optional().trim().isLength({ max: 160 }),
     body('tags').optional().isArray(),
     body('isPublished').optional().isBoolean(),
+    body('publishedAt').optional().isISO8601().withMessage('publishedAt must be a valid date'),
   ],
 };

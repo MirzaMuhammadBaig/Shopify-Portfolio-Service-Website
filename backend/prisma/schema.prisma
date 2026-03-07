@@ -290,6 +290,78 @@ model Testimonial {
   @@map("testimonials")
 }
 
+// ─── ABOUT PAGE ────────────────────────────────────────
+
+model AboutStat {
+  id        String   @id @default(uuid())
+  label     String
+  value     Int
+  suffix    String   @default("+")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("about_stats")
+}
+
+model AboutStory {
+  id         String   @id @default(uuid())
+  title      String   @default("Our Story")
+  content    String
+  highlights Json     @default("[]")
+  teamImage  String?  @map("team_image")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("about_story")
+}
+
+model AboutExperience {
+  id          String   @id @default(uuid())
+  year        String
+  title       String
+  description String
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("about_experiences")
+}
+
+model AboutTeamMember {
+  id         String   @id @default(uuid())
+  name       String
+  role       String
+  specialty  String
+  experience String
+  image      String?
+  sortOrder  Int      @default(0) @map("sort_order")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  certificates AboutCertificate[]
+
+  @@map("about_team_members")
+}
+
+model AboutCertificate {
+  id          String   @id @default(uuid())
+  title       String
+  issuer      String
+  year        String
+  description String?
+  image       String?
+  memberId    String   @map("member_id")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  member AboutTeamMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@map("about_certificates")
+}
+
 // ─── BLOG ───────────────────────────────────────────────
 
 model BlogPost {

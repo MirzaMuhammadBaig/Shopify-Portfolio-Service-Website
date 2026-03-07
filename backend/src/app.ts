@@ -18,6 +18,7 @@ import { faqRoutes } from './modules/faq/faq.routes';
 import { testimonialRoutes } from './modules/testimonial/testimonial.routes';
 import { paymentRoutes } from './modules/payment/payment.routes';
 import { adminRoutes } from './modules/admin/admin.routes';
+import { aboutRoutes } from './modules/about/about.routes';
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use(`${api}/faqs`, faqRoutes);
 app.use(`${api}/testimonials`, testimonialRoutes);
 app.use(`${api}/payments`, paymentRoutes);
 app.use(`${api}/admin`, adminRoutes);
+app.use(`${api}/about`, aboutRoutes);
 
 // ─── ERROR HANDLING ─────────────────────────────────────
 app.use(notFoundHandler);

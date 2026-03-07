@@ -87,6 +87,14 @@ export const PAYMENT_MESSAGES = {
   SAFEPAY_SESSION_CREATED: 'Safepay checkout session created',
 } as const;
 
+export const ABOUT_MESSAGES = {
+  CREATED: 'About item created successfully',
+  UPDATED: 'About item updated successfully',
+  DELETED: 'About item deleted successfully',
+  NOT_FOUND: 'About item not found',
+  FETCHED: 'About data fetched successfully',
+} as const;
+
 export const GENERAL_MESSAGES = {
   SERVER_ERROR: 'Internal server error',
   VALIDATION_ERROR: 'Validation error',

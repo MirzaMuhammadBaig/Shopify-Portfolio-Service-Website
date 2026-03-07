@@ -1,5 +1,6 @@
 export const NAV_ITEMS = [
   { label: 'Home', path: '/' },
+  { label: 'About', path: '/about' },
   { label: 'Services', path: '/services' },
   { label: 'Blog', path: '/blog' },
   { label: 'Contact', path: '/contact' },
@@ -21,4 +22,5 @@ export const ADMIN_NAV_ITEMS = [
   { label: 'Blogs', path: '/admin/blogs' },
   { label: 'FAQs', path: '/admin/faqs' },
   { label: 'Reviews', path: '/admin/reviews' },
+  { label: 'About Us', path: '/admin/about' },
 ];
