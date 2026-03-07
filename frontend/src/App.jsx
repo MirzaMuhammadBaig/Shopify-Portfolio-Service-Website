@@ -50,24 +50,24 @@ export default function App() {
     <ScrollToTop />
     <Suspense fallback={<PageLoader showProgress={false} />}>
       <Routes>
-        {/* Public routes with main layout */}
-        <Route element={<Layout><HomePage /></Layout>} path="/" />
-        <Route element={<Layout><ServicesPage /></Layout>} path="/services" />
-        <Route element={<Layout><ServiceDetailPage /></Layout>} path="/services/:slug" />
-        <Route element={<Layout><BlogPage /></Layout>} path="/blog" />
-        <Route element={<Layout><BlogDetailPage /></Layout>} path="/blog/:slug" />
-        <Route element={<Layout><AboutPage /></Layout>} path="/about" />
-        <Route element={<Layout><CertificatesPage /></Layout>} path="/certificates" />
-        <Route element={<Layout><ContactPage /></Layout>} path="/contact" />
-        <Route element={<Layout><GuestRoute><LoginPage /></GuestRoute></Layout>} path="/login" />
-        <Route element={<Layout><GuestRoute><RegisterPage /></GuestRoute></Layout>} path="/register" />
-        <Route element={<Layout><VerifyEmailPage /></Layout>} path="/verify-email" />
-        <Route element={<Layout><GuestRoute><ForgotPasswordPage /></GuestRoute></Layout>} path="/forgot-password" />
-        <Route element={<Layout><ResetPasswordPage /></Layout>} path="/reset-password" />
-
-        {/* Payment */}
-        <Route element={<Layout><PaymentSuccessPage /></Layout>} path="/payment/success/:orderId" />
-        <Route element={<ProtectedRoute><Layout><CheckoutPage /></Layout></ProtectedRoute>} path="/checkout/:orderId" />
+        {/* Public routes — Layout mounts once, pages swap via Outlet */}
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:slug" element={<ServiceDetailPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/certificates" element={<CertificatesPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+          <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/payment/success/:orderId" element={<PaymentSuccessPage />} />
+          <Route path="/checkout/:orderId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+        </Route>
 
         {/* User Dashboard */}
         <Route

@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import WhatsAppButton from '../shared/WhatsAppButton';
 import Chatbot from '../shared/Chatbot';
 import ScrollProgress from '../shared/ScrollProgress';
 import PageLoader from '../ui/PageLoader';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
-export default function Layout({ children }) {
+export default function Layout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -30,7 +32,9 @@ export default function Layout({ children }) {
       }}>
         <Navbar />
         <main style={{ position: 'relative', zIndex: 1 }}>
-          {children}
+          <Suspense fallback={<LoadingSpinner />}>
+            <Outlet />
+          </Suspense>
         </main>
         <Footer />
         <Chatbot />
